@@ -18,8 +18,8 @@ public class TestND4J_basic_op {
     public static void main(String[] args) {
         int n=2000;
         long t1=FactoryUtils.tic();
-//        INDArray cm1=Nd4j.randn(n, n);
-//        t1=FactoryUtils.toc(t1);
+        INDArray cm1=Nd4j.randn(n, n);
+        t1=FactoryUtils.toc(t1);
         INDArray cm2=Nd4j.zeros(n, n);
         t1=FactoryUtils.toc(t1);
         INDArray cm4=Nd4j.zeros(n, n).add(12).mul(1255555);

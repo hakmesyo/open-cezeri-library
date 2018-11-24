@@ -739,6 +739,8 @@ public final class CMatrix implements Serializable {
         this.array = FactoryUtils.transpose(m);
         this.returnedValue = new CReturn();
     }
+    
+    
 
     private CMatrix(byte[] d) {
         double[][] m = new double[1][d.length];
