@@ -2691,4 +2691,58 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
+    public static double[][] meshGridX(double from, double to, int numberOf) {
+        double[][] ret = new double[numberOf][numberOf];
+//        double incr = (to - from + 1) / numberOf;
+        double incr = (to - from) / (numberOf-1);
+        for (int i = 0; i < numberOf; i++) {
+            for (int j = 0; j < numberOf; j++) {
+                ret[i][j] = from + j * incr;
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] meshGridY(double from, double to, int numberOf) {
+        return transpose(meshGridX(from, to, numberOf));
+    }
+
+    public static double[][] meshGridX(double[][] array, double from, double to) {
+        int nr = array.length;
+        int nc = array[0].length;
+        double incr = (to - from) / (nc-1);
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                array[i][j] = from + j * incr;
+            }
+        }
+        return array;
+    }
+
+    public static double[][] meshGridY(double[][] array, double from, double to) {
+        return transpose(meshGridX(array, from, to));
+    }
+
+    public static double[][] meshGridIterateForward(double[][] array) {
+        int nr=array.length;
+        int nc=array[0].length;
+        double[][] ret=clone(array);
+        int mid=nc/2;
+        double[] left=new double[mid];
+        double[] right=new double[mid];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < mid-1; j++) {
+                ret[i][j]=array[i][j+1];
+            }
+            ret[i][mid-1]=array[i][0];
+            //ret[i][mid]=array[i][1];
+            ret[i][mid]=0;
+            ret[i][mid+1]=array[i][nc-1];
+            
+            for (int j = mid+2; j < nc; j++) {
+                ret[i][j]=array[i][j-1];
+            }
+        }
+        return ret;
+    }
 }

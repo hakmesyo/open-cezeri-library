@@ -7287,4 +7287,124 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    /**
+     * generate a kernel of Laplacian of Gaussian so called Mexican Hat as 2D
+     * LoG(x,y) = [(x^2+y^2-2*Sig^2)/Sig^4]*e^(-(x^2+y^2)/(2*Sig^2))
+     *
+     * @param sigma : standard deviation
+     * @return CMatrix
+     */
+    public CMatrix mexicanHat(double sigma) {
+        CMatrix ret = this.clone(this);
+        int nr = ret.getRowNumber();
+        int nc = ret.getColumnNumber();
+        int mid = nr / 2;
+        CMatrix cmx=CMatrix.getInstance().linspace(-mid, mid, nr).replicateColumn(nc).transpose();//.dump();
+        CMatrix cmy=cmx.transpose();//.dump();
+        double std2=sigma*sigma;
+        double std4=std2*std2;
+        CMatrix arg=cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).multiplyScalar(-1).divideScalar(2*std2);
+        CMatrix h=arg.exp();
+        double sumh=h.sumTotal();
+        if (sumh!=0) {
+            h=h.divideScalar(sumh);
+        }
+        CMatrix arg2=cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).minusScalar(2*std2).divideScalar(std4);
+        CMatrix h1=h.multiplyElement(arg2);
+        h=h1.minusScalar(h1.sumTotal()/(ret.getMatrixVolume()));
+        
+        return h;
+    }
+    
+    public double getMatrixVolume(){
+        return this.getRowNumber()*this.getColumnNumber();
+    }
+
+    /**
+     * generate mesh grid matrix along x axes
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+    public CMatrix meshGridX(double from, double to) {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.meshGridX(ret.array,from,to);
+        return ret;
+    }
+    
+    /**
+     * generate mesh grid matrix along x axes in default
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+    public CMatrix meshGrid(double from, double to) {
+        return meshGridX(from, to);
+    }
+    /**
+     * generate mesh grid matrix along x axes 
+     * yields square matrix of numberOf x numberOf
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGridX(double from, double to,int numberOf) {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.meshGridX(from,to,numberOf);
+        return ret;
+    }
+    /**
+     * generate mesh grid matrix along x axes in default
+     * yields square matrix of numberOf x numberOf
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGrid(double from, double to,int numberOf) {
+        return meshGridX(from, to, numberOf);
+    }
+    /**
+     * generate mesh grid matrix along y axes
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @return CMatrix
+     */
+    public CMatrix meshGridY(double from, double to) {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.meshGridY(ret.array,from,to);
+        return ret;
+    }
+    /**
+     * generate mesh grid matrix along y axes 
+     * yields square matrix of numberOf x numberOf
+     * it is used for applying 2D functions on the plane in a loop-less manner
+     * resembles to the Matlab meshgrid command
+     * @param from:initial point
+     * @param to:end point
+     * @param numberOf:# of elements
+     * @return CMatrix
+     */
+    public CMatrix meshGridY(double from, double to,int numberOf) {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.meshGridY(from,to,numberOf);
+        return ret;
+    }
+    
+    public CMatrix meshGridIterateForward(){
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.meshGridIterateForward(ret.array);
+        return ret;
+    }
 }
