@@ -15,11 +15,19 @@ import org.nd4j.linalg.factory.Nd4j;
  * @author BAP1
  */
 public class TestND4J_basic_op {
+
     public static void main(String[] args) {
-        int n=20000;
-        long t1=FactoryUtils.tic();
-        INDArray cm2=Nd4j.randn(n, n);
-        t1=FactoryUtils.toc(t1);
+        int n = 30000;
+        long t=0;
+        long t1 = FactoryUtils.tic();
+//        while (t<n*n){
+//            t++;
+//        }
+//        for (double i = 0; i < n*n; i++) {
+//            
+            INDArray cm2 = Nd4j.randn(n, n);
+//        }
+        t1 = FactoryUtils.toc(t1);
 //        INDArray cm4=Nd4j.zeros(n, n).add(12).mul(1255555);
 //        t1=FactoryUtils.toc(t1);
 //        CMatrix cm3 = CMatrix.getInstance()
@@ -28,6 +36,6 @@ public class TestND4J_basic_op {
 //        
 //        t1=FactoryUtils.toc(t1);
 //        System.out.println(cm);
-        
+
     }
 }

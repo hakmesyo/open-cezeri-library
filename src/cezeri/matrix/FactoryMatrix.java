@@ -2519,7 +2519,8 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] fillRandMatrix(double[][] d, int min, int max, Random rnd) {
        for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
-                d[i][j] = min + rnd.nextDouble() * (max - min);
+//                d[i][j] = min + rnd.nextDouble() * (max - min);
+                d[i][j] = Math.random() * (max - min+1)+min;
             }
         }
         return d;

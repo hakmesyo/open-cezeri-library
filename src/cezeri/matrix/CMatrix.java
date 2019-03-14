@@ -4147,6 +4147,8 @@ public final class CMatrix implements Serializable {
 //            this.array = ImageProcess.imageToDoublePixels255(this.image);
             this.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
             this.imagePath = path;
+        }else{
+            System.err.println("null pointer exception, image could not be loaded properly");
         }
         return this;
     }
@@ -6500,10 +6502,17 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix im2QuantizationLevel(int n) {
-        if (n >= 256) {
+        if (n >= 256 || n<=0) {
             return this;
         }
-        double t = 255.0 / n;
+        double t=1;
+        n=n-1;
+        if (n==0) {
+            t=255;
+        }else{            
+            t = 255.0 / n;
+        }
+        
         CMatrix ret = this.clone(this);
 
         ret = map(0, n).round().timesScalar(t);
