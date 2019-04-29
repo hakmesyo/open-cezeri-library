@@ -631,7 +631,6 @@ public final class ImageProcess {
                 pixels[3][row][col] = (aRow[col]) & 0xFF;        // Blue
             }
         }
-
         return pixels;
     }
 
@@ -3175,8 +3174,8 @@ public final class ImageProcess {
     }
 
     public static BufferedImage toGrayLevel(BufferedImage image) {
-//        return toNewColorSpace(image, BufferedImage.TYPE_BYTE_GRAY);
-        return pixelsToImageGray(imageToPixelsDouble(image));
+        return toNewColorSpace(image, BufferedImage.TYPE_BYTE_GRAY);
+//        return pixelsToImageGray(imageToPixelsDouble(image));
     }
 
     public static BufferedImage toBinary(BufferedImage image) {

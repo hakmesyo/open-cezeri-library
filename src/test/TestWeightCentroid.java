@@ -12,7 +12,7 @@ import java.awt.Color;
  *
  * @author BAP1
  */
-public class TestCentroid {
+public class TestWeightCentroid {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
                 .imread("images\\yaprak.jpg");
