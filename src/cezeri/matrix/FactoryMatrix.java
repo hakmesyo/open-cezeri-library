@@ -2745,4 +2745,42 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
+
+    public static double[][] inverseLog(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=Math.pow(10, Math.log(d[i][j]+1));
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] inversePower(double x, double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=Math.pow(x, d[i][j]);
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] applyFunction(double[][] d, double[] f) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        int val=0;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                val=(int)d[i][j];
+                ret[i][j]=f[val];
+            }
+        }
+        return ret;
+    }
 }

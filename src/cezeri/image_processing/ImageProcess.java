@@ -2365,35 +2365,44 @@ public final class ImageProcess {
 
     public static BufferedImage getRedChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
-        int[][] ret = new int[d.length][d[0].length];
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
-                ret[i][j] = d[i][j][1];
+        int[][][] ret = new int[d.length][d[0].length][4];
+        int nr=d.length;
+        int nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j][0] = d[i][j][0];
+                ret[i][j][1] = d[i][j][1];
             }
         }
-        return pixelsToImageColor(d);
+        return pixelsToImageColor(ret);
     }
 
     public static BufferedImage getGreenChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
-        int[][] ret = new int[d.length][d[0].length];
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
-                ret[i][j] = d[i][j][2];
+        int[][][] ret = new int[d.length][d[0].length][4];
+        int nr=d.length;
+        int nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j][0] = d[i][j][0];
+                ret[i][j][2] = d[i][j][2];
             }
         }
-        return pixelsToImageColor(d);
+        return pixelsToImageColor(ret);
     }
 
     public static BufferedImage getBlueChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
-        int[][] ret = new int[d.length][d[0].length];
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
-                ret[i][j] = d[i][j][2];
+        int[][][] ret = new int[d.length][d[0].length][4];
+        int nr=d.length;
+        int nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j][0] = d[i][j][0];
+                ret[i][j][3] = d[i][j][3];
             }
         }
-        return pixelsToImageColor(d);
+        return pixelsToImageColor(ret);
     }
 
     public static double[][] getRedChannelDouble(double[][][] d) {

@@ -38,6 +38,9 @@ public class C_KNN {
         for (int i = 0; i < train.length; i++) {
             double[] tr=train[i];
             double dist=FactoryUtils.getEucledianDistanceExceptLastElement(tr,test);
+            System.out.println("dist = " + dist);
+            double dist2=CMatrix.getInstance(tr).cmd(":","0:end").minus(CMatrix.getInstance(test)).pow(2).sum().sqrt().getValue();
+            System.out.println("dist2 = " + dist2);
             lst.add(dist);
         }
         Double[] d=new Double[lst.size()];

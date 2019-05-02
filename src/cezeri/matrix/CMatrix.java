@@ -7407,4 +7407,38 @@ public final class CMatrix implements Serializable {
         ret.array=FactoryMatrix.meshGridIterateForward(ret.array);
         return ret;
     }
+
+    public CMatrix inverseLog() {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.inverseLog(ret.array);
+        return ret;
+    }
+
+    public CMatrix inversePower(double x) {
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.inversePower(x,ret.array);
+        return ret;
+    }
+
+    public CMatrix powerByScalar(double x) {
+        return inversePower(x);
+    }
+
+    public CMatrix imWeightCenter(boolean isShow) {
+        CMatrix ret = this.clone(this);
+        CPoint cp=ImageProcess.getCenterOfGravityColor(ret.image, isShow);
+        double[] d=new double[2];
+        d[0]=cp.row;
+        d[1]=cp.column;
+        ret.setArray(d);
+        return ret;
+    }
+
+    public CMatrix applyFunction(CMatrix f) {
+        CMatrix ret = this.clone(this);
+        ret=ret.rgb2gray();
+        ret.array=FactoryMatrix.applyFunction(ret.array,f.toDoubleArray1D());
+        ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        return ret;
+    }
 }
