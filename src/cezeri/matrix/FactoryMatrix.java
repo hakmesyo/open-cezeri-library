@@ -1650,7 +1650,7 @@ public final class FactoryMatrix implements Serializable {
     }
 
     /**
-     * column based covariance calculation based
+     * column based covariance calculation
      *
      * @param array
      * @return 2D double array
@@ -1680,6 +1680,26 @@ public final class FactoryMatrix implements Serializable {
             }
         }
         return ret;
+    }
+    
+    /**
+     * column based correlation coefficient values
+     *
+     * @param array
+     * @return 2D double array
+     */
+    public static double[][] corrcoef(double[][] array) {
+        double[][] cov=cov(array);
+        double[] std=std(array);
+        int nr=cov.length;
+        int nc=cov[0].length;
+        double[][] corr=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                corr[i][j]=cov[i][j]/(std[i]*std[j]);
+            }
+        }
+        return corr;
     }
 
     /**
@@ -2780,6 +2800,19 @@ public final class FactoryMatrix implements Serializable {
                 val=(int)d[i][j];
                 ret[i][j]=f[val];
             }
+        }
+        return ret;
+    }
+
+    public static double[][] addClassLabel(double[][] cm,double cl) {
+        int nr=cm.length;
+        int nc=cm[0].length;
+        double[][] ret=new double[nr][nc+1];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=cm[i][j];
+            }
+            ret[i][nc]=cl;
         }
         return ret;
     }

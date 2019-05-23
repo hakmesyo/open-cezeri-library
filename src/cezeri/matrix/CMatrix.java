@@ -47,6 +47,7 @@ import cezeri.feature.extraction.FeatureExtractionRingProjection;
 import cezeri.gui.FXCharts;
 import cezeri.gui.FrameBar;
 import cezeri.gui.FrameDataGrid;
+import cezeri.gui.FrameHeatMap;
 import cezeri.gui.FrameHistogram;
 import cezeri.gui.FramePlot;
 import cezeri.gui.FrameScatterPlot;
@@ -114,6 +115,7 @@ public final class CMatrix implements Serializable {
     private Instances wekaInstance = null;
     public static FrameImage frameImage = null;
     private static FramePlot framePlot = null;
+    private static FrameHeatMap frameHeatMap = null;
     public String plotType = "-";
     private static boolean isPlotFXLaunched = false;
     private List<String> columnNames = new ArrayList();
@@ -929,12 +931,23 @@ public final class CMatrix implements Serializable {
      * set the array of current matrix note that clone is not calling anymore,
      * current matrix structure will be changed
      *
-     * @param a : double[]
+     * @param a : double[][]
      * @return CMatrix
      */
     public CMatrix setArray(double[][] array) {
         this.array = array;
         return this;
+    }
+    
+    /**
+     * set the array of current matrix note that clone is not calling anymore,
+     * current matrix structure will be changed
+     *
+     * @param a : double[][][]
+     * @return CMatrix
+     */
+    public CMatrix setArray(double[][][] array) {
+        return fromARGB(array);
     }
 
     /**
@@ -3729,6 +3742,47 @@ public final class CMatrix implements Serializable {
 
         ret = ret.setArray(FactoryMatrix.cov(ret.array));
         ret.name = this.name + "|covariance";
+        return ret;
+    }
+    
+    /**
+     * Matrix covariance
+     *
+     * @return covariance value of only two subsequent column vectors
+     */
+    public CMatrix covValue() {
+        CMatrix ret = this.clone(this);
+        double[][] cov_d=FactoryMatrix.cov(ret.array);
+        double[] d={cov_d[0][1]};
+        ret = ret.setArray(d);
+        ret.name = this.name + "|covariance value";
+        return ret;
+    }
+    
+    /**
+     * Matrix correlation coefficient
+     *
+     * @return correlation coefficient matrix
+     */
+    public CMatrix corrcoef() {
+        CMatrix ret = this.clone(this);
+        double[][] corr=FactoryMatrix.corrcoef(ret.array);
+        ret = ret.setArray(corr);
+        ret.name = this.name + "|correlation coefficient";
+        return ret;
+    }
+    
+    /**
+     * Matrix correlation coefficient value
+     *
+     * @return correlation coefficient value
+     */
+    public CMatrix corrcoefValue() {
+        CMatrix ret = this.clone(this);
+        double[][] corr=FactoryMatrix.corrcoef(ret.array);
+        double[] d={corr[0][1]};
+        ret = ret.setArray(d);
+        ret.name = this.name + "|correlation coefficient value";
         return ret;
     }
 
@@ -7439,6 +7493,33 @@ public final class CMatrix implements Serializable {
         ret=ret.rgb2gray();
         ret.array=FactoryMatrix.applyFunction(ret.array,f.toDoubleArray1D());
         ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        return ret;
+    }
+    
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix as cells from blue to red in default
+     * or user can give the color range 
+     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
+     * @return 
+     */
+    public CMatrix heatmap(){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+
+    public CMatrix addClassLabel(String scl) {
+        CMatrix ret = this.clone(this);
+        double cl=Double.parseDouble(scl);
+        ret.setArray(FactoryMatrix.addClassLabel(ret.array,cl));
         return ret;
     }
 }
