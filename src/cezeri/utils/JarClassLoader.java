@@ -90,7 +90,6 @@ import javax.swing.JApplet;
  * Create a launcher class to start your class
  * <code>com.mycompany.MyApp main()</code> method to start your application
  * <code>
-<pre>
 public class MyAppLauncher {
 
     public static void main(String[] args) {
@@ -103,11 +102,10 @@ public class MyAppLauncher {
     } // main()
 
 } // class MyAppLauncher
-</pre>
  * </code>
  * <p>
  * An application could be started in two different environments:
- * <br/>
+ * 
  * 1. Application is started from an exploded JAR with dependent resources
  * locations defined in a classpath.
  * Command line to start the application could point to the main class e.g.
@@ -119,7 +117,7 @@ public class MyAppLauncher {
  * uses <code>JarClassLoader</code> which transparently passes class
  * loading to the system class loader.
  *
- * <br/>
+ * 
  * 2. Application is started from a JAR with dependent JARs and other
  * resources inside the main JAR.
  * Application must be started with <code>MyAppLauncher.main()</code> and
@@ -129,12 +127,11 @@ public class MyAppLauncher {
  * <p>The launcher class for the Java applet is very similar to application
  * launcher.
  * <code>
-<pre>
 public class MyAppletLauncher extends JApplet {
 
     private JarClassLoader jcl;
     
-    @Override
+    Override
     public void init() {
         jcl = new JarClassLoader();
         try {
@@ -144,23 +141,22 @@ public class MyAppletLauncher extends JApplet {
         }
     }
     
-    @Override
+    Override
     public void start() {
         jcl.startApplet();
     }
     
-    @Override
+    Override
     public void stop() {
         jcl.stopApplet();
     }
     
-    @Override
+    Override
     public void destroy() {
         jcl.destroyApplet();
     }
     
 } // class MyAppletLauncher
-</pre>
  * </code>
  * The applet launcher class could have both <code>main()</code> and applet 
  * related methods for UI class which could be started as an application or
@@ -185,7 +181,7 @@ public class MyAppletLauncher extends JApplet {
  * See details in {@link #shutdown()}.
  * <p>
  * See also discussion "How load library from jar file?"
- * http://discuss.develop.com/archives/wa.exe?A2=ind0302&L=advanced-java&D=0&P=4549
+ * 
  * Unfortunately, the native method java.lang.ClassLoader$NativeLibrary.unload()
  * is package accessed in a package accessed inner class.
  * Moreover, it's called from finalizer. This does not allow releasing
@@ -203,8 +199,7 @@ public class JarClassLoader extends ClassLoader {
     /**
      * VM parameter key to define log level.
      * Valid levels are defined in {@link LogLevel}.
-     * Default value is {@link LogLevel#OFF}.
-     */
+    */
     public static final String KEY_LOGGER_LEVEL = "JarClassLoader.logger.level";
 
     /**
@@ -774,9 +769,9 @@ public class JarClassLoader extends ClassLoader {
      * <p>(3) Actual cause of InvocationTargetException
      *
      * See
-     * {@link http://java.sun.com/developer/Books/javaprogramming/JAR/api/jarclassloader.html}
+     * link http://java.sun.com/developer/Books/javaprogramming/JAR/api/jarclassloader.html
      * and
-     * {@link http://java.sun.com/developer/Books/javaprogramming/JAR/api/example-1dot2/JarClassLoader.java}
+     * link http://java.sun.com/developer/Books/javaprogramming/JAR/api/example-1dot2/JarClassLoader.java
      */
     public void invokeMain(String sClass, String[] args) throws Throwable {
         Class<?> clazz = loadClass(sClass);

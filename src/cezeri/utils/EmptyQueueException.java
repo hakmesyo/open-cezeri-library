@@ -4,7 +4,7 @@ package cezeri.utils;
  *
  * This exception is thrown by Queue class methods to indicate an empty queue.
  *
- * @author Yasser EL-Manzalawy <ymelmanz@yahoo.com>
+ * @author Yasser EL-Manzalawy ymelmanz@yahoo.com
  *
  *  This software is provided as is, without representation as to its
  *  fitness for any purpose, and without warranty of any kind, either

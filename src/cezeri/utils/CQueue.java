@@ -26,6 +26,7 @@ public final class CQueue {
      * Inserts a new element at the rear of the queue.
      *
      * @param element element to be inserted.
+     * @return Object
      */
     public Object enqueue(Object element) {
         items.add(element);

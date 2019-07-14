@@ -467,7 +467,6 @@ public final class FactoryUtils {
      * given f_1..f_n format
      *
      * @param file_path : path with desired file_name
-     * @param d : data matrix
      * @param learning_type : TLearningType.REGRESSION or
      * TLearningType.CLASSIFICATION
      */
@@ -1364,7 +1363,7 @@ public final class FactoryUtils {
      * decrypt encrypted value with salt value by means of xor knowing that
      * double xor with salt yields original value
      *
-     * @param original
+     * @param encrypted
      * @param salt
      * @return
      */
@@ -1372,6 +1371,11 @@ public final class FactoryUtils {
         return encrypted ^ salt;
     }
 
+    /**
+     *
+     * @param m
+     * @return
+     */
     public static double[] toDoubleArray(Vector m) {
         double[] ret = new double[m.size()];
         for (int i = 0; i < m.size(); i++) {
@@ -1986,7 +1990,7 @@ public final class FactoryUtils {
      * mantığı kullanılarak dizinin başına taşar. Negatif için de durum
      * böyledir.
      *
-     * @param prev
+     * @param prevComb
      * @param set
      * @return
      */
@@ -3241,7 +3245,8 @@ public final class FactoryUtils {
      * buna dik olan ikinci boyutun pixel olarak uzunluğunu hesaplar
      *
      * @param m=matrix
-     * @param t=threshold
+     * @param thr=threshold
+     * @param isShow
      * @return
      */
     public static double[] getObjectDimensions(double[][] m, int thr, boolean isShow) {
@@ -3317,7 +3322,8 @@ public final class FactoryUtils {
      * buna dik olan ikinci boyutun pixel olarak uzunluğunu hesaplar
      *
      * @param m=matrix
-     * @param t=threshold
+     * @param thr=threshold
+     * @param isShow
      * @return
      */
     public static double[] getObjectDimensionsV2(double[][] m, int thr, boolean isShow) {

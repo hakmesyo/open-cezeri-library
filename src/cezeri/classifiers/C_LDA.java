@@ -45,11 +45,6 @@ public class C_LDA {
 	/**
 	 * Calculates a linear discriminant analysis (LDA) with all necessary
 	 * 
-	 * @param data
-	 *            The data as double array. The array must have the same size as
-	 *            the group array
-	 * @param group
-	 *            The membership in the different groups
 	 * @param p
 	 *            Set to true, if the probability estimation should be based on
 	 *            the real group sizes (true), or if the share of each group

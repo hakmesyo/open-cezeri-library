@@ -41,7 +41,7 @@ public class FactoryColorMap {
     /**
      * Generate default color map. Color ranges from blue(darkest) to red color. 
      * At the center green color is positioned
-     * @param d : 1D array to be colored
+     * @param d2 : double[][] array
      * @return : 1D Color Array
      */
     public static Color[][] mapColorDefault(double[][] d2){
@@ -75,7 +75,7 @@ public class FactoryColorMap {
      * Generate centered color map. Color ranges from black(coldest) to white (hottest) color. 
      * around the center color given
      * @param d2 : value of center color
-     * @param d : 1D array to be colored
+     * @param centeredColor :Color
      * @return : 1D Color Array
      */
     public static Color[][] mapColorAroundCenterColor(double[][] d2,Color centeredColor){

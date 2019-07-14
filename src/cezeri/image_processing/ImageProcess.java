@@ -72,12 +72,7 @@ public final class ImageProcess {
     /**
      * Canny Edge Detector
      *
-     * @param double[][] : inputImage
-     * @param lowThreshold: default value is 0.3f
-     * @param highTreshold:default value is 1.0f
-     * @param gaussianKernelRadious:default value is 2.5f
-     * @param guassianKernelWidth:default value is 3
-     * @param isContrastNormalized : default false
+     * @param d : inputImage
      * @return BufferedImage
      */
     public static double[][] edgeDetectionCanny(double[][] d) {
@@ -173,7 +168,7 @@ public final class ImageProcess {
     /**
      * Musa Edge Detector
      *
-     * @param double[][] d: inputImage
+     * @param d: inputImage
      * @param thr: threshold double value
      * @return
      */
@@ -199,7 +194,7 @@ public final class ImageProcess {
     /**
      * Canny Edge Detector
      *
-     * @param double[][] : inputImage
+     * @param d : inputImage
      * @param lowThreshold: default value is 0.3f
      * @param highTreshold:default value is 1.0f
      * @param gaussianKernelRadious:default value is 2.5f
@@ -1309,7 +1304,7 @@ public final class ImageProcess {
      * resize the image to desired width and height value by using
      * Image.SCALE_SMOOTH format
      *
-     * @param img:BufferedImage
+     * @param src:BufferedImage
      * @param w:width
      * @param h:height
      * @return
@@ -1346,7 +1341,7 @@ public final class ImageProcess {
     /**
      * Resizes an image using a Graphics2D object backed by a BufferedImage.
      *
-     * @param srcImg - source image to scale
+     * @param src - source image to scale
      * @param w - desired width
      * @param h - desired height
      * @return - the new resized image
@@ -2778,7 +2773,7 @@ public final class ImageProcess {
      * Binarize Image with a given threshold value you can determine threshold
      * value from otsu approach
      *
-     * @param original
+     * @param d
      * @return
      */
     public static BufferedImage binarizeGrayScaleImage(double[][] d, int threshold) {

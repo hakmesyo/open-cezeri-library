@@ -50,7 +50,7 @@ public class FrameImageAdvanced extends javax.swing.JFrame {
      * Draws A Picture Frame
      *
      * @param img : image to be drawn
-     * @param name : Caption of the frame
+     * @param imagePath : Caption of the frame
      */
     public FrameImageAdvanced(BufferedImage img, String imagePath) {
         super(imagePath);

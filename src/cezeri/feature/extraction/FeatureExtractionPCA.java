@@ -19,7 +19,7 @@ import Jama.Matrix;
  * Support class for Principle Components Analysis. This does some light lifting, but the real work
  * is done in the Jama code.
  * 
- * @author Gabe Johnson <johnsogg@cmu.edu>
+ * @author Gabe Johnson johnsogg@cmu.edu
  */
 public class FeatureExtractionPCA {
 

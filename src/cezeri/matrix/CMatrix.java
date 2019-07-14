@@ -249,7 +249,6 @@ public final class CMatrix implements Serializable {
     /**
      * try to locate first cezeri matrix
      *
-     * @param n
      * @return previous Matrix
      */
     public CMatrix prevFirst() {
@@ -287,7 +286,6 @@ public final class CMatrix implements Serializable {
     /**
      * try to locate last cezeri matrix
      *
-     * @param n
      * @return previous Matrix
      */
     public CMatrix nextLast() {
@@ -440,7 +438,6 @@ public final class CMatrix implements Serializable {
     /**
      * generate a matrix from open cv mat object
      *
-     * @param d: double array of int
      * @return CMatrix double type
      */
     public static CMatrix getInstance(Mat m) {
@@ -535,7 +532,7 @@ public final class CMatrix implements Serializable {
     /**
      * generate a matrix from arff file format of Weka
      *
-     * @param m : ARFF file path as String object
+     * @param path : ARFF file path as String object
      * @return CMatrix double type
      */
     public static CMatrix fromARFF(String path) {
@@ -552,7 +549,7 @@ public final class CMatrix implements Serializable {
     /**
      * generate a matrix by reading arff file format of Weka
      *
-     * @param m : ARFF file path as String object
+     * @param path : ARFF file path as String object
      * @return CMatrix double type
      */
     public CMatrix readARFF(String path) {
@@ -570,7 +567,7 @@ public final class CMatrix implements Serializable {
      * generate a matrix by reading csv file format and holds column names as
      * feature names and classLabels
      *
-     * @param m : csv file path
+     * @param path : csv file path
      * @return CMatrix double type
      */
     public CMatrix readCSV(String path) {
@@ -931,7 +928,7 @@ public final class CMatrix implements Serializable {
      * set the array of current matrix note that clone is not calling anymore,
      * current matrix structure will be changed
      *
-     * @param a : double[][]
+     * @param array : double[][]
      * @return CMatrix
      */
     public CMatrix setArray(double[][] array) {
@@ -943,7 +940,7 @@ public final class CMatrix implements Serializable {
      * set the array of current matrix note that clone is not calling anymore,
      * current matrix structure will be changed
      *
-     * @param a : double[][][]
+     * @param array : double[][][]
      * @return CMatrix
      */
     public CMatrix setArray(double[][][] array) {
@@ -1258,7 +1255,8 @@ public final class CMatrix implements Serializable {
     /**
      * generate a nr x nc-size matrix with a fixed value n
      *
-     * @param m
+     * @param nr
+     * @param nc
      * @param n
      * @return
      */
@@ -1448,8 +1446,8 @@ public final class CMatrix implements Serializable {
      *
      * @param r
      * @param c
-     * @param min
-     * @param max
+     * @param mean
+     * @param var
      * @return
      */
     public CMatrix randnMeanVariance(int r, int c, double mean, double var) {
@@ -1661,7 +1659,6 @@ public final class CMatrix implements Serializable {
      *
      * show on single frame for each call only one frame is maintained
      *
-     * @param title:caption of the frame
      * @return
      */
     public CMatrix imshowRefresh() {
@@ -1672,7 +1669,6 @@ public final class CMatrix implements Serializable {
      *
      * show on single frame for each call only one frame is maintained
      *
-     * @param title:caption of the frame
      * @return
      */
     public CMatrix imRefresh() {
@@ -1772,7 +1768,6 @@ public final class CMatrix implements Serializable {
     /**
      * Detaylı ve gelişmiş resim gösteren figure açar
      *
-     * @param title:caption of the figure
      * @return
      */
 //    public CMatrix imshowAdvanced(String title) {
@@ -2664,7 +2659,6 @@ public final class CMatrix implements Serializable {
      * B.Matlabdeki randperm in aynısı Görevi kendisine verilen n sayısına kadar
      * random indexler üretmek
      *
-     * @param n
      * @return
      */
     public CMatrix randPerm(int from, int to) {
@@ -2826,7 +2820,7 @@ public final class CMatrix implements Serializable {
 
     /**
      * sinc(x) is a partial function normalized with pi which is defined as |1,
-     * t=0 sinc(x) =| |sin(pi*x)/(pi*x) t<>0
+     * t=0 sinc(x) =| |sin(pi*x)/(pi*x) t != 0
      *
      *
      * @return
@@ -2961,7 +2955,7 @@ public final class CMatrix implements Serializable {
     
     /**
      * format double values with provided precision
-     * @param digit
+     * @param precision
      * @return
      */
     public CMatrix round(int precision) {
@@ -3682,7 +3676,6 @@ public final class CMatrix implements Serializable {
      * are provided in int[] d parameter object
      *
      * @param op:logical criteria
-     * @param x :Target value or matching constant number
      * @return
      */
     public CMatrix find(TMatrixOperator op, double t1, double t2) {
@@ -4424,7 +4417,6 @@ public final class CMatrix implements Serializable {
      * Matlab compatible command: transform matrix items 1,0,-1 if greater than
      * 0 and if equals 0 and if smaller than 0, respectively
      *
-     * @param t : threshold
      *
      * @return CMatrix
      */
@@ -4445,9 +4437,9 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * signum is a sign function which satisfies three conditions |-1 :x<0
+     * signum is a sign function which satisfies three conditions |-1 :x less than 0
      * signum(x)=| 0 :x=0
-     *           |+1 :x>0
+     *           |+1 :x greater than 0
      *
      * @return
      */
@@ -5007,7 +4999,6 @@ public final class CMatrix implements Serializable {
     /**
      * Matlab compliant mean filter or average filter for 2D image matrix
      *
-     * @param window_size
      * @return
      */
     public CMatrix filter2() {
@@ -5534,7 +5525,6 @@ public final class CMatrix implements Serializable {
      * perform Canny Edge Detection operator recommended parameters 0.3f, 1.0f,
      * 2.5f, 3, false
      *
-     * @param img
      * @param lowThreshold
      * @param highThreshold
      * @param gaussianKernelRadious
@@ -5786,11 +5776,6 @@ public final class CMatrix implements Serializable {
     /**
      * draw a specified color polygon onto image use imshow to visualize
      *
-     * @param r:row
-     * @param c:column
-     * @param w:width
-     * @param h:height
-     * @param color:Color.RED i.e.
      * @return
      */
     public CMatrix drawPolygon(Polygon p, int thickness, Color color) {
@@ -5805,10 +5790,6 @@ public final class CMatrix implements Serializable {
      * fill a specified color round rectangle onto image from point1 to point 2
      * use imshow to visualize
      *
-     * @param r:row
-     * @param c:column
-     * @param w:width
-     * @param h:height
      * @param color:Color.RED i.e.
      * @return
      */
@@ -5823,10 +5804,6 @@ public final class CMatrix implements Serializable {
     /**
      * draw a specified color shape use imshow to visualize
      *
-     * @param r:row
-     * @param c:column
-     * @param w:width
-     * @param h:height
      * @param color:Color.RED i.e.
      * @return
      */
@@ -5841,10 +5818,6 @@ public final class CMatrix implements Serializable {
     /**
      * fill a specified color shape use imshow to visualize
      *
-     * @param r:row
-     * @param c:column
-     * @param w:width
-     * @param h:height
      * @param color:Color.RED i.e.
      * @return
      */
@@ -6015,8 +5988,7 @@ public final class CMatrix implements Serializable {
      * Medikal Görüntülemedeki Computed Tomograpghy nin radon transferinin tersi
      * işlemi sinograph eğrilerinden asıl görüntüye dönüştürür
      *
-     * @param numberOfAngles
-     * @param numberOfProjections
+     * @param imgSize
      * @return
      */
     public CMatrix transformRadonBackward(int imgSize) {
@@ -6228,8 +6200,7 @@ public final class CMatrix implements Serializable {
      * %75 train için , %25 test için ayırır. Geriye CMatrix[0] train, ve
      * CMatrix[1] ise test set olarak gönderir.
      *
-     * @param nFolds
-     * @return array of CMatrix
+      * @return array of CMatrix
      */
     public CMatrix[] splitTestAndTrain(int ntrain, int ntest) {
         CMatrix ds = this.clone(this);
@@ -6253,7 +6224,6 @@ public final class CMatrix implements Serializable {
      * durumunda, %75 train için , %25 test için ayırır. Geriye CMatrix[0]
      * train, ve CMatrix[1] ise test set olarak gönderir.
      *
-     * @param nFolds
      * @return array of CMatrix
      */
     public CMatrix[] splitTestAndTrain(double r) {
@@ -6460,15 +6430,12 @@ public final class CMatrix implements Serializable {
      * check matrix number of rows and columns it should be identical or equal
      * or same
      *
-     * @param cm : checked matrix
-     * @return boolean
+     * @param cm1 : checked matrix
+     * @param cm2 : checked matrix
+     * @return 
      */
     public boolean isIdentical(CMatrix cm1, CMatrix cm2) {
-        if (cm1.getRowNumber() == cm2.getRowNumber() && cm1.getColumnNumber() == cm2.getColumnNumber()) {
-            return true;
-        } else {
-            return false;
-        }
+        return cm1.getRowNumber() == cm2.getRowNumber() && cm1.getColumnNumber() == cm2.getColumnNumber();
     }
 
     /**

@@ -1,14 +1,11 @@
 package cezeri.utils;
 
 import cezeri.matrix.FactoryMatrix;
-import java.util.Iterator;
-import java.util.Vector;
 
 public class FactoryNormalization {
 
     /**
      *
-     * @param vect
      * @return It's a pretty simple concept. Suppose that a teacher wants to
      * rank her students on a scale of 1-10. She uses their average test score
      * percentages to rank them.

@@ -108,10 +108,10 @@ public class ZoomManager<X, Y> {
 	 *
 	 *
 	 * Creates a new {@code ZoomManager}.
-	 * </p>
+	 * 
 	 * <b> Due to a bug, {@code series} must not be added to the chart! </b> If you
 	 * do so, the chart will be emtpy.
-	 * </p>
+	 * 
 	 *
 	 *
 	 * @param chartParent
@@ -144,10 +144,10 @@ public class ZoomManager<X, Y> {
 	 *
 	 *
 	 * Creates a new {@code ZoomManager}.
-	 * </p>
+	 * 
 	 * <b> Due to a bug, {@code series} must not be added to the chart! </b> If you
 	 * do so, the chart will be emtpy.
-	 * </p>
+	 * 
 	 *
 	 *
 	 * @param chartParent

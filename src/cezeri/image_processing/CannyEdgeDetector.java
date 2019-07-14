@@ -216,7 +216,7 @@ public class CannyEdgeDetector {
 	 * Sets the radius of the Gaussian convolution kernel used to smooth the
 	 * source image prior to gradient calculation.
 	 * 
-	 * @return a Gaussian kernel radius in pixels, must exceed 0.1f.
+	 * return a Gaussian kernel radius in pixels, must exceed 0.1f.
 	 */
 	
 	public void setGaussianKernelRadius(float gaussianKernelRadius) {

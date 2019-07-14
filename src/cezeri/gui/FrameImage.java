@@ -39,7 +39,7 @@ public class FrameImage extends javax.swing.JFrame {
      * Draws A Picture Frame
      *
      * @param img : image to be drawn
-     * @param name : Caption of the frame
+     * @param title : Caption of the frame
      */
     public FrameImage(BufferedImage img, String title) {
         super(title);

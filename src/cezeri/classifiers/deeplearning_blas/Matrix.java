@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 /**
  * Wrapper class around MTJs Matrix.
- * @link https://github.com/fommil/matrix-toolkits-java
+ * link https://github.com/fommil/matrix-toolkits-java
  *
  * Having a wrapper class makes it easier to change underlying matrix lib.
  * Also, implements a few methods lacking in MTJ

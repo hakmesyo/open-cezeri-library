@@ -90,8 +90,8 @@ import java.io.*;
  * milliseconds.
  *
  * <p><b>Changes Since V4:</b> New initialization algorithms.  See
- * (see <a href="http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html"</a>
- * http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html</a>)
+ * (see a href="http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html"
+ * http://www.math.keio.ac.jp/matumoto/MT2002/emt19937ar.html
  *
  * <p>The MersenneTwister code is based on standard MT19937 C/C++ 
  * code by Takuji Nishimura,
@@ -454,7 +454,7 @@ public strictfp class MersenneTwister extends java.util.Random implements Serial
 
     /** This method is for completness' sake. 
         Returns a long drawn uniformly from 0 to n-1.  Suffice it to say,
-        n must be > 0, or an IllegalArgumentException is raised. */
+        n must be greater than 0, or an IllegalArgumentException is raised. */
     
     public long nextLong(final long n) 
         {

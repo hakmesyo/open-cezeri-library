@@ -31,14 +31,6 @@ import weka.core.Instances;
  */
 public class FeatureSelectionRanker {
 
-    /**
-     * b. works only on type="binary classification" no need to normalize
-     * dataset before applying fisher
-     *
-     * @param data dataset
-     * @param type TMachineLearning.CLASSIFICATION
-     * @return
-     */
 
     public static String yaz(String msg) {
         System.out.println(msg);

@@ -48,7 +48,6 @@ import java.io.InputStream;
 </UL>
 <DL>
 <DT><B>Example of use:</B></DT>
-<P>
 <DD>Solve a linear system A x = b and compute the residual norm, ||b - A x||.
 <P><PRE>
       double[][] vals = {{1.,2.,3},{4.,5.,6.},{7.,8.,10.}};
@@ -167,7 +166,7 @@ Serializable
 
    /**
     * Construct a matrix from a Vector of double[]
-    * @param rows	A Vector<double[]> containing double[] items. Each double[] item
+    * @param rows	A Vector double[] containing double[] items. Each double[] item
     * is a row of the matrix to create. All double[] items must be of the same length.
     */
    public Matrix (Vector<double[]> rows, boolean clone){

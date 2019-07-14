@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 /**Calculates the mel-based cepstra coefficients for one frame of speech.  
  * Based on the original MFCC implementation described in:  
- * [1] Davis & Mermelstein - IEEE Transactions on ASSP, August 1980.  
+ * [1] Davis  Mermelstein - IEEE Transactions on ASSP, August 1980.  
  * Additional references are:  
  * [2] Joseph Picone, Proceedings of the IEEE, Sep. 1993.  
  * [3] Jankowski et al. IEEE Trans. on Speech and Audio Processing. July, 1995.  
@@ -26,7 +26,7 @@ import java.util.Arrays;
  *  
  * @author Aldebaro Klautau  
  * @version 2.0 - March 07, 2001  
- * @see MFCCPatternGenerator  
+ * see MFCCPatternGenerator  
 */   
    
 // if m_oisZeroThCepstralCoefficientCalculated is true,   

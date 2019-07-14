@@ -611,7 +611,7 @@ class Body3D {
  *     I'll call them xpix, ypix (pixel) when I want to distinguish 
  *     them from other coordinate systems.
  * <pre>
-       xPixOrigin   ->    xPixOrigin+width
+       xPixOrigin   -    xPixOrigin+width
        -------------------- yPixOrigin
        |                  |
        |                  |  |             Graphics (xpix,ypix)
@@ -630,7 +630,7 @@ class Body3D {
  *     I'll call these (xcoord,ycoord,zcoord) when I want to distinguish
  *     them from the Graphics values.
  * <pre>
-       xMin    ->        xMax
+       xMin    -        xMax
        -------------------- yMax
        |                  |
        |      |           |  ^

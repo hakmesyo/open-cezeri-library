@@ -7,47 +7,36 @@ import java.util.Vector;
 import java.io.File;
 
 /**
- * <p/>
- * Java Implementation of the Hough Transform.<br />
- * Used for finding straight lines in an image.<br />
+ * 
+ * Java Implementation of the Hough Transform.
+ * Used for finding straight lines in an image.
  * by Olly Oechsle
- * </p>
- * <p/>
- * Note: This class is based on original code from:<br />
+ * 
+ * 
+ * Note: This class is based on original code from:
  * <a
  * href="http://homepages.inf.ed.ac.uk/rbf/HIPR2/hough.htm">http://homepages.inf.ed.ac.uk/rbf/HIPR2/hough.htm</a>
- * </p>
- * <p/>
- * If you represent a line as:<br />
+ * If you represent a line as:
  * x cos(theta) + y sin (theta) = r
- * </p>
- * <p/>
  * ... and you know values of x and y, you can calculate all the values of r by
  * going through all the possible values of theta. If you plot the values of r
  * on a graph for every value of theta you get a sinusoidal curve. This is the
  * Hough transformation.
- * </p>
- * <p/>
- * The hough tranform works by looking at a number of such x,y coordinates,
+  * The hough tranform works by looking at a number of such x,y coordinates,
  * which are usually found by some kind of edge detection. Each of these
  * coordinates is transformed into an r, theta curve. This curve is discretised
  * so we actually only look at a certain discrete number of theta values.
  * "Accumulator" cells in a hough array along this curve are incremented for X
  * and Y coordinate.
- * </p>
- * <p/>
  * The accumulator space is plotted rectangularly with theta on one axis and r
  * on the other. Each point in the array represents an (r, theta) value which
  * can be used to represent a line using the formula above.
- * </p>
- * <p/>
- * Once all the points have been added should be full of curves. The algorithm
+  * Once all the points have been added should be full of curves. The algorithm
  * then searches for local peaks in the array. The higher the peak the more
  * values of x and y crossed along that curve, so high peaks give good
  * indications of a line.
- * </p>
  *
- * @author Olly Oechsle, University of Essex
+ * author Olly Oechsle, University of Essex
  */
 public class HoughTransform extends Thread {
 
@@ -205,7 +194,7 @@ public class HoughTransform extends Thread {
      * and returns them as a Vector of HoughLine objects, which can be used to
      * draw on the
      *
-     * @param percentageThreshold The percentage threshold above which lines are
+     * param percentageThreshold The percentage threshold above which lines are
      * determined from the hough array
      */
     public Vector<HoughLine> getLines(int threshold) {

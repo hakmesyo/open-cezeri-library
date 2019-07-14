@@ -161,7 +161,7 @@ public class FrameHistogram extends javax.swing.JFrame {
     }
 
     /**
-     * @param args the command line arguments
+     * param args the command line arguments
      */
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_dataGrid;

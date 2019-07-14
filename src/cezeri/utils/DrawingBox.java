@@ -116,7 +116,7 @@ public class DrawingBox extends ClosableFrame {
      * listeners.
      *
      * @see     java.awt.event.MouseAdapter
-     * @see     java.awt.event.MouseEvent#translatePoint(int int)
+     * @see     java.awt.event.MouseEvent
      * @see     java.awt.Container#getInsets()
      */
     public class DBMouseAdapter extends MouseAdapter {
@@ -148,7 +148,6 @@ public class DrawingBox extends ClosableFrame {
      * translation remains in effect for any downstream mouse motion listeners.
      *
      * @see   java.awt.event.MouseMotionAdapter
-     * @see   java.awt.event.MouseEvent#translatePoint(int int)
      * @see   java.awt.Container#getInsets()
      */
     public class DBMouseMotionAdapter extends MouseMotionAdapter {
@@ -323,7 +322,6 @@ public class DrawingBox extends ClosableFrame {
    *                      circle to be drawn.
    * @param   radius  the radius of the circle to be drawn.
    *
-   * @see     CSLib#drawCircle(int, int, int)
    */
   public void drawCircle (Point p, int radius) {
     drawCircle (p.x, p.y, radius);
@@ -354,7 +352,6 @@ public class DrawingBox extends ClosableFrame {
    *                      circle to be filled.
    * @param   radius  the radius of the circle to be filled.
    *
-   * @see     CSLib#fillCircle(int, int, int)
    */
   public void fillCircle (Point p, int radius) {
     fillCircle(p.x, p.y, radius);
@@ -390,9 +387,9 @@ public class DrawingBox extends ClosableFrame {
    *
    * @see     java.awt.Graphics#fillOval
    */
-  public void fillOval (int x1, int y1, int width, int height) {
-    gContext.fillOval (x1, y1, width, height);
-    g.fillOval (x1, y1, width, height);
+  public void fillOval (int x, int y, int width, int height) {
+    gContext.fillOval (x, y, width, height);
+    g.fillOval (x, y, width, height);
   }
  
   /** 
@@ -410,9 +407,9 @@ public class DrawingBox extends ClosableFrame {
    *
    * @see     java.awt.Graphics#drawOval
    */
-  public void drawOval (int x1, int y1, int width, int height) {
-    gContext.drawOval (x1, y1, width, height);
-    g.drawOval (x1, y1, width, height);
+  public void drawOval (int x, int y, int width, int height) {
+    gContext.drawOval (x, y, width, height);
+    g.drawOval (x, y, width, height);
   }
 
   /** 
