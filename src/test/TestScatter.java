@@ -15,6 +15,6 @@ public class TestScatter {
     public static void main(String[] args) {
         CMatrix cm1 = CMatrix.getInstance().rand(1,100).timesScalar(100).transpose();
         CMatrix cm2 = cm1.jitter(5);
-        CMatrix cm3 = cm1.cat(1, cm2).plot();
+        CMatrix cm3 = cm1.cat(1, cm2).scatter().plot();
     }
 }

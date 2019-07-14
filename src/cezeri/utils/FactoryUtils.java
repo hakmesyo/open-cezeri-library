@@ -1305,6 +1305,17 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static Object[] toDoubleArray1D(Object[][] m) {
+        Object[] ret = new Object[m.length * m[0].length];
+        int k = 0;
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                ret[k++] = m[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static double[][] toDoubleArray2D(byte[][] m) {
         double[][] ret = new double[m.length][m[0].length];
         for (int i = 0; i < m.length; i++) {
@@ -1573,9 +1584,25 @@ public final class FactoryUtils {
         }
         return q;
     }
+    
+    /**
+     * b.try to format double number with precision number
+     *
+     * @param num
+     * @return
+     */
+    public static double[][] formatDouble(double[][] num,int precision) {
+        double[][] q = new double[num.length][num[0].length];
+        for (int i = 0; i < num.length; i++) {
+            for (int j = 0; j < num[0].length; j++) {
+                q[i][j] = formatDouble(num[i][j],precision);
+            }
+        }
+        return q;
+    }
 
     /**
-     * b.try to format double numer with n digit precision by default
+     * b.try to format double number with n digit precision by default
      *
      * @param num
      * @return

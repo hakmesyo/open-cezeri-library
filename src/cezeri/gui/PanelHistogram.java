@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 
 /**
  *
@@ -51,7 +52,10 @@ public class PanelHistogram extends TPanelData {
     @Override
     public void paint(Graphics gr1) {
         Graphics2D gr = (Graphics2D) gr1;
-        Font fnt = gr.getFont();
+        gr.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+         Font fnt = gr.getFont();
 //        gr.setFont(new Font(fnt.getFontName(), 1, 18));
         gr.setColor(Color.lightGray);
         int w = getWidth();

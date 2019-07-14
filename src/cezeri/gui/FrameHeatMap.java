@@ -5,12 +5,8 @@
  */
 package cezeri.gui;
 
-import cezeri.types.TFigureAttribute;
-import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CMatrix;
-import cezeri.matrix.FactoryMatrix;
-import cezeri.utils.FactoryUtils;
-import java.io.File;
+import java.awt.Color;
 
 /**
  *
@@ -19,8 +15,6 @@ import java.io.File;
 public final class FrameHeatMap extends javax.swing.JFrame {
 
     private CMatrix cm;
-    private TFigureAttribute figureAttribute;
-    private boolean isSort = true;
     /**
      * Creates new form CPlot
      */
@@ -32,16 +26,37 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         this.cm = cm;
         initComponents();
         getHeatMapPanel().setMatrix(cm);
-        this.setTitle(cm.name+" :: Scatter");
+        this.setTitle(cm.name+" :: HeatMap");
     }
     
-    public FrameHeatMap(CMatrix cm,TFigureAttribute attr) {
+    public FrameHeatMap(CMatrix cm, int width, int height) {
         this.cm = cm;
-        this.figureAttribute=attr;
         initComponents();
         getHeatMapPanel().setMatrix(cm);
-//        getHeatMapPanel().setFigureAttribute(this.figureAttribute);
-        this.setTitle(cm.name+" :: Scatter");
+        this.setTitle(cm.name+" :: HeatMap");
+        this.setSize(width, height+60);
+        repaint();
+    }
+
+    public FrameHeatMap(CMatrix cm, int width, int height, boolean showCellEdge) {
+        this.cm = cm;
+        initComponents();
+        getHeatMapPanel().setMatrix(cm);
+        getHeatMapPanel().setShowCellEdges(showCellEdge);
+        this.setTitle(cm.name+" :: HeatMap");
+        this.setSize(width, height+60);
+        repaint();
+    }
+
+    public FrameHeatMap(CMatrix cm, int width, int height, boolean showCellEdge, boolean showValue) {
+        this.cm = cm;
+        initComponents();
+        getHeatMapPanel().setMatrix(cm);
+        getHeatMapPanel().setShowCellEdges(showCellEdge);
+        getHeatMapPanel().setShowValue(showValue);
+        this.setTitle(cm.name+" :: HeatMap");
+        this.setSize(width, height+60);
+        repaint();
     }
 
     public void setMatrix(CMatrix cm) {
@@ -61,11 +76,6 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         panel_heat_map = new cezeri.gui.PanelHeatMap(cm);
         jPanel2 = new javax.swing.JPanel();
         btn_dataGrid = new javax.swing.JButton();
-        btn_plot = new javax.swing.JButton();
-        btn_save = new javax.swing.JButton();
-        txt_dpi = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        btnSort = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -91,59 +101,17 @@ public final class FrameHeatMap extends javax.swing.JFrame {
             }
         });
 
-        btn_plot.setText("Plot");
-        btn_plot.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_plotActionPerformed(evt);
-            }
-        });
-
-        btn_save.setText("Save");
-        btn_save.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_saveActionPerformed(evt);
-            }
-        });
-
-        txt_dpi.setText("300");
-
-        jLabel2.setText("dpi");
-
-        btnSort.setText("sort");
-        btnSort.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSortActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(btn_dataGrid)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_plot, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
-                .addComponent(btnSort)
-                .addGap(89, 89, 89))
+                .addContainerGap(720, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(btn_save)
-                .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel2))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(btn_dataGrid)
-                .addComponent(btn_plot)
-                .addComponent(btnSort))
+            .addComponent(btn_dataGrid)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -168,41 +136,6 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         CMatrix cm = getHeatMapPanel().getMatrix();
         new FrameDataGrid(cm).setVisible(true);
     }//GEN-LAST:event_btn_dataGridActionPerformed
-
-    private void btn_plotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_plotActionPerformed
-        TFigureAttribute attr=new TFigureAttribute();
-        attr.figureCaption=this.getTitle();
-        getHeatMapPanel().getMatrix().plot(attr);
-    }//GEN-LAST:event_btn_plotActionPerformed
-
-    private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
-        savePanel();
-    }//GEN-LAST:event_btn_saveActionPerformed
-
-    private void btnSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSortActionPerformed
-        sort();
-    }//GEN-LAST:event_btnSortActionPerformed
-
-    private void sort() {
-        if (isSort) {
-            CMatrix m2 = cm.clone(cm);
-            double[][] d = m2.toDoubleArray2D();
-            double[] d2 = FactoryMatrix.clone(d[0]);
-            int[] index = FactoryUtils.sortArrayAndReturnIndex(d2, "desc");
-            CMatrix cmx = FactoryUtils.sortRows(m2, index);
-//            String[] s = getScatterPlotPanel().getAxisText();
-            getHeatMapPanel().setMatrix(cmx);
-            isSort = false;
-            btnSort.setText("unsort");
-            return;
-        } else {
-//            String[] s = getScatterPlotPanel().getAxisText();
-            getHeatMapPanel().setMatrix(cm);
-//            getScatterPlotPanel().setAxisText(s);
-            btnSort.setText("sort");
-            isSort = true;
-        }
-    }
 
     public PanelHeatMap getHeatMapPanel() {
         return (PanelHeatMap) panel_heat_map;
@@ -246,31 +179,20 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         });
     }
 
-    private void savePanel() {
-        PanelHeatMap cp = getHeatMapPanel();
-        int dpi = Integer.parseInt(txt_dpi.getText());
-        double scale = dpi / 96.0;
-        cp.setSize((int) (cp.getWidth() * scale), (int) (cp.getHeight() * scale));
-        File file = FactoryUtils.getFileFromChooser();
-        if (file != null) {
-            ImageProcess.saveGridImage(ImageProcess.getBufferedImage(getHeatMapPanel()), file.getAbsolutePath());
-        } else {
-            FactoryUtils.showMessage("kaydedilemedi CPlotFrame.savePanel()");
-        }
-        cp.setSize((int) (cp.getWidth() / scale), (int) (cp.getHeight() / scale));
-//        cp.setFontSize((int)(scale*10));
-    }
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSort;
     private javax.swing.JButton btn_dataGrid;
-    private javax.swing.JButton btn_plot;
-    private javax.swing.JButton btn_save;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel panel_heat_map;
-    private javax.swing.JTextField txt_dpi;
     // End of variables declaration//GEN-END:variables
+
+    public void setFromColor(Color fromColor) {
+        getHeatMapPanel().setFromColor(fromColor);
+    }
+    public void setCenterColor(Color centerColor) {
+        getHeatMapPanel().setCenterColor(centerColor);
+    }
+    public void setToColor(Color toColor) {
+        getHeatMapPanel().setToColor(toColor);
+    }
 
 }

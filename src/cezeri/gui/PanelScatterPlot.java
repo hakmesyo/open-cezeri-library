@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import javax.swing.JLabel;
@@ -69,7 +70,10 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
     @Override
     public void paint(Graphics gr1) {
         Graphics2D gr = (Graphics2D) gr1;
-        if (cm.getRowNumber() == 1) {
+        gr.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+         if (cm.getRowNumber() == 1) {
             gr.drawString("You can't plot scatter diagram on single observation", getWidth() / 2 - 50, getHeight() / 2);
             super.paintComponents(gr);
             return;

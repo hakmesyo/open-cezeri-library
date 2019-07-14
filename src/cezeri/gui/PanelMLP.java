@@ -3,6 +3,8 @@ package cezeri.gui;
 import cezeri.utils.FactoryUtils;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
@@ -81,8 +83,12 @@ public class PanelMLP extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g) {
-        g.setColor(Color.white);
+    public void paint(Graphics gg) {
+        Graphics2D g = (Graphics2D) gg;
+        g.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+         g.setColor(Color.white);
         g.fillRect(0, 0, getWidth(), getHeight());
         g.setColor(Color.blue);
         g.drawString("Error", 30, 40);

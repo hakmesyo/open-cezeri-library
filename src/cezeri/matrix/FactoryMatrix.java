@@ -3,6 +3,9 @@ package cezeri.matrix;
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 import cezeri.utils.FactoryUtils;
+import static cezeri.utils.FactoryUtils.showMessage;
+import static cezeri.utils.FactoryUtils.toDoubleArray1D;
+import cezeri.utils.PerlinNoise;
 import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -1681,7 +1684,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
-    
+
     /**
      * column based correlation coefficient values
      *
@@ -1689,14 +1692,14 @@ public final class FactoryMatrix implements Serializable {
      * @return 2D double array
      */
     public static double[][] corrcoef(double[][] array) {
-        double[][] cov=cov(array);
-        double[] std=std(array);
-        int nr=cov.length;
-        int nc=cov[0].length;
-        double[][] corr=new double[nr][nc];
+        double[][] cov = cov(array);
+        double[] std = std(array);
+        int nr = cov.length;
+        int nc = cov[0].length;
+        double[][] corr = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                corr[i][j]=cov[i][j]/(std[i]*std[j]);
+                corr[i][j] = cov[i][j] / (std[i] * std[j]);
             }
         }
         return corr;
@@ -2485,8 +2488,8 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] fillRandMatrix(double[][] d, Random rnd) {
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 d[i][j] = rnd.nextDouble();
@@ -2505,7 +2508,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-    
+
     public static double[][] fillRandMatrix(double[][] d, int max, Random rnd) {
 //        SecureRandom r = new SecureRandom();
         for (int i = 0; i < d.length; i++) {
@@ -2537,10 +2540,10 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] fillRandMatrix(double[][] d, int min, int max, Random rnd) {
-       for (int i = 0; i < d.length; i++) {
+        for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
 //                d[i][j] = min + rnd.nextDouble() * (max - min);
-                d[i][j] = Math.random() * (max - min+1)+min;
+                d[i][j] = Math.random() * (max - min + 1) + min;
             }
         }
         return d;
@@ -2548,7 +2551,7 @@ public final class FactoryMatrix implements Serializable {
 
     public static double[][] fillRandMatrix(double[][] d, int min, int max) {
         SecureRandom r = new SecureRandom();
-       for (int i = 0; i < d.length; i++) {
+        for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
                 d[i][j] = min + r.nextDouble() * (max - min);
             }
@@ -2695,18 +2698,18 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static int[] rand(int n, int scale, Random rnd) {
-        int[] ret=new int[n];
+        int[] ret = new int[n];
         for (int i = 0; i < n; i++) {
-            ret[i]=rnd.nextInt(scale);
+            ret[i] = rnd.nextInt(scale);
         }
         return ret;
     }
 
     public static int[] rand(int n, int scale) {
         SecureRandom r = new SecureRandom();
-        int[] ret=new int[n];
+        int[] ret = new int[n];
         for (int i = 0; i < n; i++) {
-            ret[i]=r.nextInt(scale);
+            ret[i] = r.nextInt(scale);
         }
         return ret;
     }
@@ -2714,7 +2717,7 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] meshGridX(double from, double to, int numberOf) {
         double[][] ret = new double[numberOf][numberOf];
 //        double incr = (to - from + 1) / numberOf;
-        double incr = (to - from) / (numberOf-1);
+        double incr = (to - from) / (numberOf - 1);
         for (int i = 0; i < numberOf; i++) {
             for (int j = 0; j < numberOf; j++) {
                 ret[i][j] = from + j * incr;
@@ -2730,7 +2733,7 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] meshGridX(double[][] array, double from, double to) {
         int nr = array.length;
         int nc = array[0].length;
-        double incr = (to - from) / (nc-1);
+        double incr = (to - from) / (nc - 1);
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 array[i][j] = from + j * incr;
@@ -2744,76 +2747,184 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] meshGridIterateForward(double[][] array) {
-        int nr=array.length;
-        int nc=array[0].length;
-        double[][] ret=clone(array);
-        int mid=nc/2;
-        double[] left=new double[mid];
-        double[] right=new double[mid];
+        int nr = array.length;
+        int nc = array[0].length;
+        double[][] ret = clone(array);
+        int mid = nc / 2;
+        double[] left = new double[mid];
+        double[] right = new double[mid];
         for (int i = 0; i < nr; i++) {
-            for (int j = 0; j < mid-1; j++) {
-                ret[i][j]=array[i][j+1];
+            for (int j = 0; j < mid - 1; j++) {
+                ret[i][j] = array[i][j + 1];
             }
-            ret[i][mid-1]=array[i][0];
+            ret[i][mid - 1] = array[i][0];
             //ret[i][mid]=array[i][1];
-            ret[i][mid]=0;
-            ret[i][mid+1]=array[i][nc-1];
-            
-            for (int j = mid+2; j < nc; j++) {
-                ret[i][j]=array[i][j-1];
+            ret[i][mid] = 0;
+            ret[i][mid + 1] = array[i][nc - 1];
+
+            for (int j = mid + 2; j < nc; j++) {
+                ret[i][j] = array[i][j - 1];
             }
         }
         return ret;
     }
 
     public static double[][] inverseLog(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=Math.pow(10, Math.log(d[i][j]+1));
+                ret[i][j] = Math.pow(10, Math.log(d[i][j] + 1));
             }
         }
         return ret;
     }
 
     public static double[][] inversePower(double x, double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=Math.pow(x, d[i][j]);
+                ret[i][j] = Math.pow(x, d[i][j]);
             }
         }
         return ret;
     }
 
     public static double[][] applyFunction(double[][] d, double[] f) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
-        int val=0;
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
+        int val = 0;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                val=(int)d[i][j];
-                ret[i][j]=f[val];
+                val = (int) d[i][j];
+                ret[i][j] = f[val];
             }
         }
         return ret;
     }
 
-    public static double[][] addClassLabel(double[][] cm,double cl) {
-        int nr=cm.length;
-        int nc=cm[0].length;
-        double[][] ret=new double[nr][nc+1];
+    public static double[][] addClassLabel(double[][] cm, double cl) {
+        int nr = cm.length;
+        int nc = cm[0].length;
+        double[][] ret = new double[nr][nc + 1];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=cm[i][j];
+                ret[i][j] = cm[i][j];
             }
-            ret[i][nc]=cl;
+            ret[i][nc] = cl;
         }
         return ret;
     }
+
+    public static double[][] reshape(double[][] d, int r, int c) {
+        if (d.length * d[0].length != r * c) {
+            System.err.println("size mismatch");
+            return d;
+        }
+        double[][] ret = new double[r][c];
+        double[] a = toDoubleArray1D(d);
+        int k = 0;
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                ret[i][j] = a[k++];
+            }
+        }
+        return ret;
+    }
+
+    public static Object[][] reshape(Object[][] d, int r, int c) {
+        if (d.length * d[0].length != r * c) {
+            System.err.println("size mismatch");
+            return d;
+        }
+        Object[][] ret = new Object[r][c];
+        Object[] a = toDoubleArray1D(d);
+        int k = 0;
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                ret[i][j] = a[k++];
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] reshape(double[] d, int r, int c) {
+        double[][] ret = new double[r][c];
+        if (d.length != r * c) {
+            showMessage("size mismatch");
+            return ret;
+        }
+        int k = 0;
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                ret[i][j] = d[k++];
+            }
+        }
+        return ret;
+    }
+    
+    public static Object[][] reshape(Object[] d, int r, int c) {
+        Object[][] ret = new Object[r][c];
+        if (d.length != r * c) {
+            showMessage("size mismatch");
+            return ret;
+        }
+        int k = 0;
+        for (int j = 0; j < c; j++) {
+            for (int i = 0; i < r; i++) {
+                ret[i][j] = d[k++];
+            }
+        }
+        return ret;
+    }
+    
+    public static double[][] perlinNoise(double[][] d){
+        int nr=d.length;
+        int nc=d[0].length;
+        
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=PerlinNoise.noise(i*0.1,j*0.1,0);
+            }
+        }
+        return ret;
+    }
+    
+    public static double[][] perlinNoise(double[][] d,double scale){
+        int nr=d.length;
+        int nc=d[0].length;
+        
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=PerlinNoise.noise(i*scale,j*scale,1.44);
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] convolve(double[][] d, double[][] kernel) {
+        int mid=kernel.length/2;
+        int nr=d.length;
+        int nc=d[0].length;        
+        double[][] ret=new double[nr-2*mid][nc-2*mid];
+        for (int i = mid; i < nr-mid; i++) {
+            for (int j = mid; j < nc-mid; j++) {
+                double t=0;
+                for (int k = 0; k < kernel.length; k++) {
+                    for (int l = 0; l < kernel[0].length; l++) {
+                        t+=kernel[k][l]*d[i-mid+k][j-mid+l];
+                    }
+                    ret[i-mid][j-mid]=t/(kernel.length*kernel[0].length);
+                }
+            }
+        }
+        return ret;
+    }
+
 }

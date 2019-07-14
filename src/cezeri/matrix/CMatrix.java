@@ -1290,6 +1290,13 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    public CMatrix rand() {
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, random));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+    
     public CMatrix rand(int n) {
         CMatrix ret = new CMatrix(n);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, random));
@@ -1339,6 +1346,13 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    public CMatrix randn() {
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.fillRandNormalMatrix(ret.array, random));
+        ret.name = this.name + "|randn";
+        return ret.clone(this);
+    }
+    
     /**
      * Generates nxn square matrix with normal distribution
      *
@@ -1929,7 +1943,7 @@ public final class CMatrix implements Serializable {
         FrameImageHistogram frm = new FrameImageHistogram(cc);
         frm.setTitle(title);
         frm.setVisible(true);
-        return this;
+        return ret;
     }
 
     /**
@@ -1985,7 +1999,7 @@ public final class CMatrix implements Serializable {
         ret.array = FactoryUtils.hist(ret.array, nBins);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret);
         frm.setVisible(true);
-        return this;
+        return ret;
     }
 
     /**
@@ -2944,6 +2958,19 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|round";
         return ret;
     }
+    
+    /**
+     * format double values with provided precision
+     * @param digit
+     * @return
+     */
+    public CMatrix round(int precision) {
+        CMatrix ret = this.clone(this);
+        ret.image = null;
+        ret.array=FactoryUtils.formatDouble(ret.array,precision);
+        ret.name = this.name + "|round";
+        return ret;
+    }
 
     public CMatrix toDegrees() {
         CMatrix ret = this.clone(this);
@@ -3378,6 +3405,10 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix head() {
         System.out.println("Matrix of [" + array.length + "x" + array[0].length + "]");
+        int max=5;
+        if (this.getRowNumber()<max) {
+            max=this.getRowNumber();
+        }
         if (columnNames != null && !columnNames.isEmpty()) {
             for (String columnName : columnNames) {
                 System.out.print(columnName + "\t");
@@ -3385,16 +3416,17 @@ public final class CMatrix implements Serializable {
             System.out.println("");
         }
         if (classLabels != null && !classLabels.isEmpty()) {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < max; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                     System.out.print(FactoryUtils.formatDouble(array[i][j]) + "\t");
                 }
                 System.out.println(classLabels.get(i));
             }
         } else {
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < max; i++) {
                 for (int j = 0; j < array[0].length; j++) {
-                    System.out.print(array[i] + "\t");
+                    System.out.print(array[i][j] + "\t");
+                    
                 }
                 System.out.println("");
             }
@@ -3963,27 +3995,31 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix getAlphaChannelColor() {
-        this.image = ImageProcess.getAlphaChannelColor(image);
-        this.array = ImageProcess.imageToPixelsDouble(this.image);
-        return this;
+        CMatrix ret=this.clone(this);
+        ret.image = ImageProcess.getAlphaChannelColor(ret.image);
+        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
+        return ret;
     }
 
     public CMatrix getRedChannelColor() {
-        this.image = ImageProcess.getRedChannelColor(image);
-        this.array = ImageProcess.imageToPixelsDouble(this.image);
-        return this;
+        CMatrix ret=this.clone(this);
+        ret.image = ImageProcess.getRedChannelColor(ret.image);
+        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
+        return ret;
     }
 
     public CMatrix getGreenChannelColor() {
-        this.image = ImageProcess.getGreenChannelColor(image);
-        this.array = ImageProcess.imageToPixelsDouble(this.image);
-        return this;
+        CMatrix ret=this.clone(this);
+        ret.image = ImageProcess.getGreenChannelColor(ret.image);
+        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
+        return ret;
     }
 
     public CMatrix getBlueChannelColor() {
-        this.image = ImageProcess.getBlueChannelColor(image);
-        this.array = ImageProcess.imageToPixelsDouble(this.image);
-        return this;
+        CMatrix ret=this.clone(this);
+        ret.image = ImageProcess.getBlueChannelColor(ret.image);
+        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
+        return ret;
     }
 
     public CMatrix resetMatrix() {
@@ -4174,21 +4210,22 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
-    public CMatrix imread(String path) {
+    public CMatrix imread(String path) {        
         return readImage(path);
     }
 
     public CMatrix readImage() {
         File fl = ImageProcess.readImage();
         BufferedImage bf = ImageProcess.readImageFromFile(fl);
+        CMatrix ret=this.clone(this);
         if (bf != null) {
-            this.image = bf;
+            ret.image = bf;
 //            this.array = FactoryUtils.toDoubleArray(ImageProcess.imageToPixels255(image));
-            this.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
-            this.imagePath = fl.getAbsolutePath();
+            ret.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
+            ret.imagePath = fl.getAbsolutePath();
 //            this.rgbImageArray = FactoryUtils.toTripleArray(ImageProcess.imageToPixels(image));
         }
-        return this;
+        return ret;
     }
 
     public CMatrix readImage(String path) {
@@ -4555,17 +4592,30 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * Matlab compatible command: calculate entropy value
+     * Matlab compatible command: calculate entropy value based on columns
      *
      * @return CMatrix
      */
     public CMatrix entropy() {
         CMatrix ret = this.clone(this);
-
+        ret.setArray(ret.getColumnEntropy());
         ret.returnedValue.str = "" + getEntropy();
         return ret;
     }
 
+    /**
+     * calculate entropy values of each columns
+     * @return double[]
+     */
+    public double[] getColumnEntropy() {
+        int nc=this.getColumnNumber();
+        double[] entropies = new double[nc];
+        for (int i = 0; i < nc; i++) {
+            entropies[i]=this.cmd(":",""+i).getEntropy();
+        }
+        return entropies;
+    }
+    
     public double getEntropy() {
         double entropy = 0.0d;
         double[] pdfArray = getPDFData().toDoubleArray1D();
@@ -4579,6 +4629,31 @@ public final class CMatrix implements Serializable {
         return entropy;
     }
 
+    /**
+     * Matlab compatible command: calculate energy value based on columns
+     *
+     * @return CMatrix
+     */
+    public CMatrix energy() {
+        CMatrix ret = this.clone(this);
+        ret.setArray(ret.getColumnEnergy());
+        ret.returnedValue.str = "" + getEnergy();
+        return ret;
+    }
+    
+    /**
+     * calculate energy values of each columns
+     * @return double[]
+     */
+    public double[] getColumnEnergy() {
+        int nc=this.getColumnNumber();
+        double[] energies = new double[nc];
+        for (int i = 0; i < nc; i++) {
+            energies[i]=this.cmd(":",""+i).getEnergy();
+        }
+        return energies;
+    }
+    
     public double getEnergy() {
         double energy = 0.0d;
         for (int i = 0; i < getRowNumber(); i++) {
@@ -4589,6 +4664,31 @@ public final class CMatrix implements Serializable {
         return energy;
     }
 
+    /**
+     * Matlab compatible command: calculate kurtosis value based on columns
+     *
+     * @return CMatrix
+     */
+    public CMatrix kurtosis() {
+        CMatrix ret = this.clone(this);
+        ret.setArray(ret.getColumnKurtosis());
+        ret.returnedValue.str = "" + getKurtosis();
+        return ret;
+    }
+    
+    /**
+     * calculate energy values of each columns
+     * @return double[]
+     */
+    public double[] getColumnKurtosis() {
+        int nc=this.getColumnNumber();
+        double[] kurtosis = new double[nc];
+        for (int j = 0; j < nc; j++) {
+            kurtosis[j]=this.cmd(":",""+j).getKurtosis();
+        }
+        return kurtosis;
+    }
+    
     public double getKurtosis() {
         int[] nums = toIntArray1D();
         int n = nums.length;
@@ -4619,6 +4719,31 @@ public final class CMatrix implements Serializable {
         return cm;
     }
 
+    /**
+     * Matlab compatible command: calculate skewness value based on columns
+     *
+     * @return CMatrix
+     */
+    public CMatrix skewness() {
+        CMatrix ret = this.clone(this);
+        ret.setArray(ret.getColumnSkewness());
+        ret.returnedValue.str = "" + getSkewness();
+        return ret;
+    }
+    
+    /**
+     * calculate skewness values of each columns
+     * @return double[]
+     */
+    public double[] getColumnSkewness() {
+        int nc=this.getColumnNumber();
+        double[] skewness = new double[nc];
+        for (int j = 0; j < nc; j++) {
+            skewness[j]=this.cmd(":",""+j).getSkewness();
+        }
+        return skewness;
+    }
+    
     public double getSkewness() {
         int[] nums = toIntArray1D();
         int n = nums.length;
@@ -4666,7 +4791,7 @@ public final class CMatrix implements Serializable {
      * en uç değerlere en fazla ceza verecek ve ortaya yani 127 griye geldiğinde
      * ise ceza seviyesi çok radikal bir şekilde düşecek bir higher order
      * non-linear bir fonksiyon ile çarpmak veya convolution almak gerekiyor.
-     * Hiperspketral görüntüler genellikle hiç bir zaman o değerinden
+     * Hiperspketral görüntüler genellikle hiç bir zaman 0 değerinden
      * başlamadığı için total hesaplandıktan sonra bir eşik değeri ile sağa
      * doğru shift edilmiştir. Diğer görüntüler için bu doğru olmayabilir.
      *
@@ -7516,10 +7641,187 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix as cells from blue to red in default
+     * or user can give the color range 
+     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
+     * @param showValue : write the value of the cell et the center
+     * @return 
+     */
+    public CMatrix heatmap(boolean showValue){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this);
+            }
+            frameHeatMap.setMatrix(this);            
+        }
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix around the center color
+     * @param centerColor cells are colored around this color
+     * @return original CMatrix
+     */
+    public CMatrix heatmap(Color centerColor){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix around center color
+     * @param centerColor cells are colored around this color
+     * @param width :width of the frame
+     * @param height:height of the frame
+     * @return original CMatrix
+     */
+    public CMatrix heatmap(Color centerColor,int width,int height){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this,width,height);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this,width,height);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix around center color
+     * @param centerColor cells are colored around this color
+     * @param width :width of the frame
+     * @param height:height of the frame
+     * @param showCellEdge : cell's edge visible or not
+     * @return original CMatrix
+     */
+    public CMatrix heatmap(Color centerColor,int width,int height,boolean showCellEdge){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix around center color
+     * @param centerColor cells are colored around this color
+     * @param width :width of the frame
+     * @param height:height of the frame
+     * @param showCellEdge : cell's edge visible or not
+     * @return original CMatrix
+     */
+    public CMatrix heatmap(Color centerColor,int width,int height,boolean showCellEdge,boolean showValue){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge,showValue);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge,showValue);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+    /**
+     * compatible with Matlab's heatmap function
+     * try to colorize the matrix as cells from blue to red in default
+     * or user can give the color range 
+     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
+     * @param fromColor  start color
+     * @param centerColor center color
+     * @param toColor final color
+     * @return 
+     */
+    public CMatrix heatmap(Color fromColor, Color centerColor, Color toColor){
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setFromColor(fromColor);
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setToColor(toColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+
     public CMatrix addClassLabel(String scl) {
         CMatrix ret = this.clone(this);
         double cl=Double.parseDouble(scl);
         ret.setArray(FactoryMatrix.addClassLabel(ret.array,cl));
+        return ret;
+    }
+    
+    /**
+     * perlin noise generator with scale equals to 0.1 by default
+     * @return
+     */
+    public CMatrix perlinNoise(){
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.perlinNoise(ret.array));
+        ret.name = this.name + "|perlinNoise";
+        return ret;
+    }
+    
+    /**
+     * perlin noise generator with scale 0.01 to 10
+     * @param scale 0.01 to 10 hint: you should decrease scale if your matrix become larger
+     * @return
+     */
+    public CMatrix perlinNoise(double scale){
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.perlinNoise(ret.array,scale));
+        ret.name = this.name + "|perlinNoise";
+        return ret;
+    }
+    
+    /**
+     * Convolution operation
+     * @param kernel : kernel should be smaller than the original matrix
+     * @return cloned CMatrix object
+     */
+    public CMatrix convolve(CMatrix kernel){
+        if (kernel.getRowNumber()!=kernel.getColumnNumber()
+                || kernel.getRowNumber()%2==0
+                || kernel.getColumnNumber()%2==0
+                || kernel.getRowNumber()>=this.getRowNumber() 
+                || kernel.getColumnNumber()>=this.getColumnNumber()) {
+            System.err.println("kernel mismatch");
+            return this;
+        }
+        CMatrix ret=this.clone(this);
+        ret.name = this.name + "|convolve";
+        ret.setArray(FactoryMatrix.convolve(ret.array,kernel.array));
         return ret;
     }
 }

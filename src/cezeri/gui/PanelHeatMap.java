@@ -9,12 +9,14 @@ import cezeri.matrix.CMatrix;
 import cezeri.utils.FactoryNormalization;
 import cezeri.utils.FactoryUtils;
 import cezeri.types.TVoteMap;
+import cezeri.utils.FactoryColorMap;
 import cezeri.utils.FactoryStatistic;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.util.List;
 import java.util.Map;
 
@@ -24,45 +26,56 @@ import java.util.Map;
  */
 public class PanelHeatMap extends javax.swing.JPanel {
 
-    private List<TVoteMap> vm;
-    private String[] fNames;
-    private double[] votes;
-    private double scale = 1;
-    private CMatrix cm=null;
+    private CMatrix cm = null;
+    private Color fromColor, centerColor, toColor;
+    private boolean isValueVisible = false;
+    private double[][] matrixValue = null;
+    private boolean isCellEdgeVisible = false;
+
+    public Color getFromColor() {
+        return fromColor;
+    }
+
+    public void setFromColor(Color fromColor) {
+        this.fromColor = fromColor;
+    }
+
+    public Color getCenterColor() {
+        return centerColor;
+    }
+
+    public void setCenterColor(Color centerColor) {
+        this.centerColor = centerColor;
+    }
+
+    public Color getToColor() {
+        return toColor;
+    }
+
+    public void setToColor(Color toColor) {
+        this.toColor = toColor;
+    }
 
     public PanelHeatMap(CMatrix cm) {
         this.cm = cm;
         repaint();
     }
-    
-    public PanelHeatMap(List<TVoteMap> m) {
-        this.vm = m;
-        processVoteMap(m);
-        repaint();
-    }
 
     public void setMatrix(CMatrix cm) {
-        cm = cm.transpose();
         this.cm = cm;
+        this.matrixValue = cm.toDoubleArray2D();
         repaint();
     }
 
     public CMatrix getMatrix() {
         return this.cm;
     }
-    
-    public void setMap(List<TVoteMap> m) {
-        this.vm = m;
-        processVoteMap(m);
-        repaint();
-    }
-
-    public List<TVoteMap> getMap() {
-        return this.vm;
-    }
 
     public void paint(Graphics gr1) {
         Graphics2D gr = (Graphics2D) gr1;
+        gr.setRenderingHint(
+                RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         Font fnt = gr.getFont();
         gr.setFont(new Font(fnt.getFontName(), 1, 18));
         gr.setColor(Color.white);
@@ -73,64 +86,10 @@ public class PanelHeatMap extends javax.swing.JPanel {
         gr.drawRect(0, 0, w - 1, h - 1);
         gr.drawRect(1, 1, w - 3, h - 3);
         gr.setColor(Color.black);
-        int px = 50;
-        int py = 50;
-        Rectangle rect = new Rectangle(px, py, w - 2*px, h - 2*py);
-//        drawVoteMap(gr, rect);
-    }
-
-    private void drawVoteMap(Graphics2D gr, Rectangle rect) {
-        gr.setColor(Color.red);
-        int n = fNames.length;
-        int ch=rect.height-150;
-        int cw = rect.width / n;
-        double carp=255.0/maxNorm;
-        double[] cl=FactoryUtils.normalizeToCanvas(votes,rect);
-        for (int i = 0; i < n; i++) {
-            int x = rect.x + i * cw;
-            int y = rect.height;
-            int color = 255 - (int) (votes[i]*carp);
-            gr.setColor(new Color(color, color, color));
-            int h = (int) cl[i];
-            gr.fillRect(x, y - h, cw, h);
-            gr.setColor(Color.red);
-            gr.drawRect(x, y - h, cw, h);
-            gr.setColor(Color.blue);
-            gr.drawString(votes[i] + "", x + 20, y - h-5);
-            if (fNames[i].equals("Nem")) {
-                fNames[i]="H1";
-            }
-            gr.drawString(fNames[i], x + 30, rect.height+30);
-        }
-    }
-    
-    private void drawVoteMap2(Graphics2D gr, Rectangle rect) {
-        gr.setColor(Color.red);
-        int n = fNames.length;
-        int ch=rect.height-150;
-        int cw = rect.width / n;
-        double[] cl = FactoryNormalization.normalizeIntensity(votes, 20, 230);
-        for (int i = 0; i < n; i++) {
-            int x = rect.x + i * cw;
-            int y = rect.y + 200;
-            gr.setColor(Color.green);
-//            int h = (int) cl[i]/3+50;
-            int h = (int) cl[i];
-            gr.fillRect(x, y - h, cw, h);
-            gr.setColor(Color.red);
-            gr.drawRect(x, y - h, cw, h);
-            int color = 255 - (int) cl[i];
-            gr.setColor(new Color(color, color, color));
-            gr.fillRect(x, y, cw, ch);
-            gr.setColor(Color.red);
-            gr.drawRect(x, y, cw, ch);
-            gr.setColor(Color.blue);
-            gr.drawString(votes[i] + "", x + 20, y - h-5);
-            if (fNames[i].equals("Nem")) {
-                fNames[i]="H1";
-            }
-            gr.drawString(fNames[i], x + 20, rect.y+rect.height+10);
-        }
+        int px = 5;
+        int py = 5;
+        Rectangle rect = new Rectangle(px, py, w - 2 * px, h - 2 * py);
+        drawHeatMap(gr, rect);
     }
 
     /**
@@ -157,43 +116,83 @@ public class PanelHeatMap extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    public void setScale(double scale) {
-        this.scale = scale;
+    private void drawHeatMap(Graphics2D gr, Rectangle rect) {
+        if (fromColor == null && centerColor == null && toColor == null) {
+            //default is from blue (cold) to red (hot) color
+            Color[][] colorMatrix = registerDefaultColor(cm);
+            int nr = colorMatrix.length;
+            int nc = colorMatrix[0].length;
+            double delta_x = 1.0 * rect.width / nc;
+            double delta_y = 1.0 * rect.height / nr;
+            for (int i = 0; i < nr; i++) {
+                for (int j = 0; j < nc; j++) {
+                    gr.setColor(colorMatrix[i][j]);
+                    gr.fillRect((int) (j * delta_x + rect.x), (int) (i * delta_y + rect.y), (int) (delta_x + 1), (int) (delta_y + 1));
+                    if (isValueVisible) {
+                        gr.setColor(switchColor(colorMatrix[i][j]));
+                        gr.drawString("" + FactoryUtils.formatDouble(matrixValue[i][j]), (int) (j * delta_x + rect.x) + (int) (delta_x + 1) / 2, (int) (i * delta_y + rect.y) + (int) (delta_y + 1) / 2);
+                    }
+                    if (isCellEdgeVisible) {
+                        gr.setColor(Color.black);
+                        gr.drawRect((int) (j * delta_x + rect.x), (int) (i * delta_y + rect.y), (int) (delta_x + 1), (int) (delta_y + 1));
+                    }
+                }
+            }
+        } else if (centerColor != null) {
+            //center is specified color and coldest is black and hottest is wihite
+            Color[][] colorMatrix = registerCenterColor(cm, centerColor);
+            int nr = colorMatrix.length;
+            int nc = colorMatrix[0].length;
+            double delta_x = 1.0 * rect.width / nc;
+            double delta_y = 1.0 * rect.height / nr;
+            for (int i = 0; i < nr; i++) {
+                for (int j = 0; j < nc; j++) {
+                    gr.setColor(colorMatrix[i][j]);
+                    gr.fillRect((int) (j * delta_x + rect.x), (int) (i * delta_y + rect.y), (int) (delta_x + 1), (int) (delta_y + 1));
+                    if (isValueVisible) {
+                        gr.setColor(switchColor(colorMatrix[i][j]));
+                        gr.drawString("" + FactoryUtils.formatDouble(matrixValue[i][j], 2), (int) (j * delta_x + rect.x) + (int) (delta_x + 1) / 4, (int) (i * delta_y + rect.y) + (int) (delta_y + 1) / 2);
+                    }
+                    if (isCellEdgeVisible) {
+                        gr.setColor(Color.black);
+                        gr.drawRect((int) (j * delta_x + rect.x), (int) (i * delta_y + rect.y), (int) (delta_x + 1), (int) (delta_y + 1));
+                    }
+                }
+            }
+        } else {
+
+        }
+    }
+
+    //default is from blue (cold) to red (hot) color. At the center, green color is appeared by default in a RGB still.
+    private Color[][] registerDefaultColor(CMatrix cm) {
+        Color[][] col = FactoryColorMap.mapColorDefault(cm.toDoubleArray2D());
+        return col;
+    }
+
+    //from black(coldest) to white(hottest) around center color.
+    private Color[][] registerCenterColor(CMatrix cm, Color center) {
+        Color[][] col = FactoryColorMap.mapColorAroundCenterColor(cm.toDoubleArray2D(), center);
+        return col;
+    }
+
+    public void setShowCellEdges(boolean showCellEdge) {
+        isCellEdgeVisible = showCellEdge;
         repaint();
     }
 
-    public double getScale() {
-        return scale;
+    public void setShowValue(boolean showValue) {
+        isValueVisible = showValue;
+        repaint();
     }
-    
-    int maxNorm=100;
-    
-    private void processVoteMap(List<TVoteMap> m) {
-        Object[] obj = m.toArray();
-        double[] val = new double[obj.length];
-        String[] name = new String[obj.length];
-        for (int i = 0; i < obj.length; i++) {
-            val[i] = ((TVoteMap)obj[i]).value;
-            name[i] = ((TVoteMap)obj[i]).name;
+
+    private Color switchColor(Color col) {
+        int thr=2097152;
+        if ((col.getRed()+1) * (col.getGreen()+1) * (col.getBlue()+1) > 60000) {
+            return Color.black;
+        } else {
+            return Color.white;
         }
-        votes = FactoryNormalization.normalizeIntensity(val, 20, maxNorm);
-//        votes = val;
-        fNames = name;
-    }
-    
-    private void processVoteMap2(Map<String, Double> m) {
-        Object[] dd = m.values().toArray();
-        double[] d = new double[dd.length];
-        for (int i = 0; i < dd.length; i++) {
-            d[i] = (double) dd[i];
-        }
-        votes = d;
-        Object[] ss = m.keySet().toArray();
-        String[] s = new String[ss.length];
-        for (int i = 0; i < dd.length; i++) {
-            s[i] = ss[i] + "";
-        }
-        fNames = s;
     }
 
 }
