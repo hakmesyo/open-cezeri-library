@@ -6,7 +6,7 @@
 
 package cezeri.utils;
 
-import cezeri.matrix_processing.CPoint;
+import cezeri.matrix.CPoint;
 import cezeri.types.TVoteMap;
 import java.util.Comparator;
 

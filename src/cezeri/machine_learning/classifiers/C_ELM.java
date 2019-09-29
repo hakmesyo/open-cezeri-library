@@ -7,7 +7,7 @@ package cezeri.machine_learning.classifiers;
  * The original WEBSITE: http://www.ntu.edu.sg/eee/icis/cv/egbhuang.htm
  * */
 
-import cezeri.matrix_processing.Inverse;
+import cezeri.matrix.Inverse;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

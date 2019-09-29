@@ -1,6 +1,6 @@
 package cezeri.machine_learning.classifiers;
 
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.FactoryMatrix;
 import cezeri.utils.FactoryNormalization;
 import cezeri.utils.FactoryUtils;
 import java.util.ArrayList;

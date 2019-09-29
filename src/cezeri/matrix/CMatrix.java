@@ -36,13 +36,13 @@
  * https://blogs.oracle.com/tao/entry/set_netbeans_user_interface_language
  *
  */
-package cezeri.matrix_processing;
+package cezeri.matrix;
 
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;
-import cezeri.machine_learning.feature_extraction.FeatureExtractionLBP;
-import cezeri.machine_learning.feature_extraction.FeatureExtractionPistachio;
-import cezeri.machine_learning.feature_extraction.FeatureExtractionRingProjection;
+import cezeri.machine_learning.extraction.FeatureExtractionLBP;
+import cezeri.machine_learning.extraction.FeatureExtractionPistachio;
+import cezeri.machine_learning.extraction.FeatureExtractionRingProjection;
 import cezeri.gui.FrameBar;
 import cezeri.gui.FrameDataGrid;
 import cezeri.gui.FrameHeatMap;
@@ -7265,6 +7265,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix make_blobs(int n_samples, int n_features, int centers) {
+        int a=1;
         return make_blobs(n_samples, n_features, centers, 100, 5);
     }
 
@@ -7283,6 +7284,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix make_blobs(int n_samples, int n_features, int centers, int mean_scale, int var_scale) {
+        int a=1;
         if (n_samples < centers) {
             return this;
         }

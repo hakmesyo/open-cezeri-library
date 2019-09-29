@@ -2,10 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.machine_learning.feature_extraction;
+package cezeri.machine_learning.extraction;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.FactoryMatrix;
 import cezeri.utils.FactoryUtils;
 import java.awt.image.BufferedImage;
 

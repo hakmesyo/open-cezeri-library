@@ -5,7 +5,7 @@
  */
 package cezeri.gui;
 
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.utils.FactoryNormalization;
 import cezeri.utils.FactoryUtils;
 import cezeri.types.TVoteMap;

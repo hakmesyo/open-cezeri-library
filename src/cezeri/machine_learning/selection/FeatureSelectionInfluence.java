@@ -5,7 +5,7 @@
  */
 package cezeri.machine_learning.selection;
 
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -2,7 +2,7 @@ package cezeri.machine_learning.classifiers.deeplearning_blas;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 //import cezeri.matrix.CMatrix;
 
 import java.io.*;

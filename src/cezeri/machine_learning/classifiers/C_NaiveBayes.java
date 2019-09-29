@@ -5,7 +5,7 @@
  */
 package cezeri.machine_learning.classifiers;
 
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.types.TMatrixOperator;
 import cezeri.utils.FactoryUtils;
 

@@ -3,22 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.machine_learning.feature_extraction;
+package cezeri.machine_learning.extraction;
 
 import cezeri.machine_learning.evaluater.FactoryEvaluation;
-import cezeri.matrix_processing.CMatrix;
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.types.TLearningType;
-import cezeri.types.TMatrixOperator;
 import cezeri.utils.FactoryUtils;
 import java.util.ArrayList;
-import java.util.List;
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
-import weka.classifiers.lazy.IBk;
-import weka.classifiers.trees.REPTree;
 import weka.core.Instances;
 
 /**

@@ -2,8 +2,8 @@ package cezeri.machine_learning.classifiers.deeplearning_ocl;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
-import cezeri.matrix_processing.CMatrix;
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.CMatrix;
+import cezeri.matrix.FactoryMatrix;
 import cezeri.utils.FactoryUtils;
 //import cezeri.matrix.CMatrix;
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.machine_learning.feature_extraction;
+package cezeri.machine_learning.extraction;
 
  //=====================================================
 //      Name:           GLCM_Texture

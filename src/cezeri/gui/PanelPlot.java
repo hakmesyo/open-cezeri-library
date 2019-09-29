@@ -6,8 +6,8 @@
 package cezeri.gui;
 
 import cezeri.types.TFigureAttribute;
-import cezeri.matrix_processing.CMatrix;
-import cezeri.matrix_processing.CPoint;
+import cezeri.matrix.CMatrix;
+import cezeri.matrix.CPoint;
 import cezeri.types.TPointType;
 import cezeri.utils.FactoryUtils;
 import static cezeri.utils.FactoryUtils.generateColor;

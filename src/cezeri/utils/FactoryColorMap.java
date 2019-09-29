@@ -5,7 +5,7 @@
  */
 package cezeri.utils;
 
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.FactoryMatrix;
 import java.awt.Color;
 import java.util.Arrays;
 

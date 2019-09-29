@@ -1,6 +1,6 @@
 package cezeri.utils;
 
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.FactoryMatrix;
 
 public class FactoryNormalization {
 

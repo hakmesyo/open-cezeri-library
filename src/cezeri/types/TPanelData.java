@@ -10,7 +10,7 @@ package cezeri.types;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.utils.MersenneTwister;
 import java.awt.Color;
 import java.awt.Graphics;

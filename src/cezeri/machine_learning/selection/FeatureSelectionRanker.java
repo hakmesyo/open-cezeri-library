@@ -6,7 +6,7 @@
 package cezeri.machine_learning.selection;
 
 import cezeri.machine_learning.evaluater.FactoryEvaluation;
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.utils.CustomComparatorForFeatureRank;
 import cezeri.utils.FactoryCombination;
 import cezeri.utils.FactoryInstance;

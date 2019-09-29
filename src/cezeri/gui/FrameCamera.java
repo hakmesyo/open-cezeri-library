@@ -5,7 +5,6 @@
  */
 package cezeri.gui;
 
-import test.*;
 import cezeri.device.webcam.WebCameraControlPanel;
 import cezeri.device.webcam.WebCameraPanel;
 import java.awt.image.BufferedImage;

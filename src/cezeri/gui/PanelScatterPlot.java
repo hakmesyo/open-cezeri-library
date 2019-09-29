@@ -6,7 +6,7 @@
 package cezeri.gui;
 
 import cezeri.types.TFigureAttribute;
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.types.EPerformanceMetrics;
 import cezeri.utils.FactoryStatistic;
 import cezeri.utils.FactoryUtils;

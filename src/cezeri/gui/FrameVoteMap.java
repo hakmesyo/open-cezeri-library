@@ -6,7 +6,7 @@
 package cezeri.gui;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.utils.FactoryUtils;
 import cezeri.types.TVoteMap;
 import java.io.File;

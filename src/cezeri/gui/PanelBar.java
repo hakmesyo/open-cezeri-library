@@ -6,7 +6,7 @@
 package cezeri.gui;
 
 import cezeri.types.TPanelData;
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 import cezeri.utils.FactoryUtils;
 import java.awt.AlphaComposite;
 import java.awt.Color;

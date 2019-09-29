@@ -7,7 +7,7 @@ package cezeri.device.webcam;
 
 import cezeri.gui.FrameImage;
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix_processing.CPoint;
+import cezeri.matrix.CPoint;
 import cezeri.utils.FactoryUtils;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;

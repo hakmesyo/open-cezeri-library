@@ -1,4 +1,4 @@
-package cezeri.machine_learning.feature_extraction;
+package cezeri.machine_learning.extraction;
 
 import java.io.BufferedReader;
 import java.io.File;

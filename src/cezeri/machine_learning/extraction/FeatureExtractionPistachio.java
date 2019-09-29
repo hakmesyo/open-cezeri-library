@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.machine_learning.feature_extraction;
+package cezeri.machine_learning.extraction;
 
 import cezeri.gui.FrameImage;
 import cezeri.image_processing.AdaptiveRegionGrowing;
 import cezeri.image_processing.EdgeTracking;
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix_processing.CMatrix;
-import cezeri.matrix_processing.CPoint;
-import cezeri.matrix_processing.FactoryMatrix;
+import cezeri.matrix.CMatrix;
+import cezeri.matrix.CPoint;
+import cezeri.matrix.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
 import cezeri.utils.FactoryUtils;
 import cezeri.utils.GCodeWorkList;

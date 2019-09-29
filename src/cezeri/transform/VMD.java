@@ -10,7 +10,7 @@ Dr.Musa Ataş El-Cezeri Cybernetics and Robotics Lab 2017
  */
 package cezeri.transform;
 
-import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix.CMatrix;
 
 /**
  *
