@@ -13,7 +13,7 @@ package cezeri.image_processing;
 import cezeri.types.TRoi;
 import cezeri.types.TGrayPixel;
 import cezeri.types.TWord;
-import cezeri.feature.extraction.FeatureExtractionLBP;
+import cezeri.machine_learning.feature_extraction.FeatureExtractionLBP;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
 import cezeri.matrix.CRectangle;

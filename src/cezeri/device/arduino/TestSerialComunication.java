@@ -25,26 +25,26 @@ public class TestSerialComunication implements SerialPortEventListener {
 
     public static void main(String[] args) {
         TestSerialComunication obj = new TestSerialComunication();
-        obj.start("COM5");
-        try {
-            for (int i = 0; i < 2; i++) {
-                obj.sendDataToSerialPort("3:500-5:500-70:50");
-                Thread.sleep(500);
-            }
-        } catch (InterruptedException ex) {
-        }
-        
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TestSerialComunication.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        obj.stop();
-        System.exit(0);
+        obj.start("COM14");
+//        try {
+//            for (int i = 0; i < 2; i++) {
+//                obj.sendDataToSerialPort("3:500-5:500-70:50");
+//                Thread.sleep(500);
+//            }
+//        } catch (InterruptedException ex) {
+//        }
+//        
+//        try {
+//            Thread.sleep(20000);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(TestSerialComunication.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        obj.stop();
+//        System.exit(0);
     }
 
     public void start(String comPort) {
-        st = slib.serialInitialize(serialPort, comPort);
+        st = slib.serialInitialize(serialPort, comPort,115200);
     }
 
     @Override

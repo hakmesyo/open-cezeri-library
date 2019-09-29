@@ -38,13 +38,11 @@
  */
 package cezeri.matrix;
 
-import cezeri.controller.ControllerFXCharts;
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;
-import cezeri.feature.extraction.FeatureExtractionLBP;
-import cezeri.feature.extraction.FeatureExtractionPistachio;
-import cezeri.feature.extraction.FeatureExtractionRingProjection;
-import cezeri.gui.FXCharts;
+import cezeri.machine_learning.feature_extraction.FeatureExtractionLBP;
+import cezeri.machine_learning.feature_extraction.FeatureExtractionPistachio;
+import cezeri.machine_learning.feature_extraction.FeatureExtractionRingProjection;
 import cezeri.gui.FrameBar;
 import cezeri.gui.FrameDataGrid;
 import cezeri.gui.FrameHeatMap;
@@ -80,12 +78,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Application;
-import javafx.application.Platform;
 import javax.swing.JFrame;
 import org.opencv.core.Mat;
-import transform.TransformFFT;
-import transform.TransformRadon;
+import cezeri.transform.TransformFFT;
+import cezeri.transform.TransformRadon;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
@@ -117,22 +113,10 @@ public final class CMatrix implements Serializable {
     private static FramePlot framePlot = null;
     private static FrameHeatMap frameHeatMap = null;
     public String plotType = "-";
-    private static boolean isPlotFXLaunched = false;
     private List<String> columnNames = new ArrayList();
     private List classLabels = new ArrayList();
     private double[] xData4FX;
-    //public static CMatrix lastCM;
     private static Random random = new SecureRandom();
-
-    public void runOnce() {
-        if (!isPlotFXLaunched) {
-            new Thread(() -> {
-//                Platform.setImplicitExit(false);
-                Application.launch(FXCharts.class, new String[1]);
-            }).start();
-            isPlotFXLaunched = true;
-        }
-    }
 
     public CMatrix buildFrameImage() {
         if (frameImage == null) {
@@ -6965,39 +6949,6 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
-    /**
-     * improved version of plot, based on javafx charts
-     *
-     * @return
-     */
-    public CMatrix plotFX() {
-        new ControllerFXCharts(this).show();
-        return this;
-    }
-
-    /**
-     * improved version of plot, based on javafx charts
-     *
-     * @param title : Title of the chart
-     * @return
-     */
-    public CMatrix plotFX(String title) {
-        new ControllerFXCharts(this).show(title);
-        return this;
-    }
-
-    /**
-     * improved version of plot, based on javafx charts
-     *
-     * @param title : Title of the chart
-     * @param xAxisLabel : label of the x axis
-     * @param yAxisLabel : label of the y axis
-     * @return
-     */
-    public CMatrix plotFX(String title, String xAxisLabel, String yAxisLabel) {
-        new ControllerFXCharts(this).show(title, xAxisLabel, yAxisLabel);
-        return this;
-    }
 
     /**
      * improved version of plot, based on javafx charts

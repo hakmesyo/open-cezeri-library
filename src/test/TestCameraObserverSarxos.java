@@ -47,7 +47,7 @@ public class TestCameraObserverSarxos implements WebcamListener{
     }
 
     private void start() {
-        webcam = Webcam.getWebcams().get(0);
+        webcam = Webcam.getWebcams().get(1);
         webcam.setViewSize(WebcamResolution.VGA.getSize());
         webcam.addWebcamListener(TestCameraObserverSarxos.this);
         webcam.open();  

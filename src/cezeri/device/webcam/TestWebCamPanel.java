@@ -24,7 +24,7 @@ public class TestWebCamPanel {
 			new Dimension(1000, 500),
 		};
                 
-		Webcam webcam = Webcam.getWebcams().get(0);
+		Webcam webcam = Webcam.getWebcams().get(1);
 		webcam.setViewSize(WebcamResolution.VGA.getSize());
 //                webcam.setCustomViewSizes(nonStandardResolutions);
 //                webcam.setViewSize(WebcamResolution.HD720.getSize());

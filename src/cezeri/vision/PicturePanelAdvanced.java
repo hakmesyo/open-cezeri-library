@@ -1,6 +1,6 @@
 package cezeri.vision;
 
-import cezeri.feature.extraction.FeatureExtractionLBP;
+import cezeri.machine_learning.feature_extraction.FeatureExtractionLBP;
 import cezeri.gui.FrameImageHistogram;
 import cezeri.gui.FrameImage;
 import cezeri.gui.FrameImageAdvanced;

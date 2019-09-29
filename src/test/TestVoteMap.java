@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.feature.selection.FeatureSelectionVoteMap;
+import cezeri.machine_learning.selection.FeatureSelectionVoteMap;
 import cezeri.gui.FrameVoteMap;
 import cezeri.utils.FactoryNormalization;
 import cezeri.utils.FactoryUtils;
