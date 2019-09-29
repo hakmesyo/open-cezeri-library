@@ -5,7 +5,7 @@
 package cezeri.machine_learning.feature_extraction;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.matrix_processing.FactoryMatrix;
 import cezeri.utils.FactoryUtils;
 import java.awt.image.BufferedImage;
 

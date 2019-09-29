@@ -6,7 +6,7 @@
 package test;
 
 import cezeri.image_processing.RasterToVector;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import java.awt.image.BufferedImage;
 
 /**

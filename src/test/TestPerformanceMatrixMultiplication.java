@@ -5,8 +5,8 @@
  */
 package test;
 
-import cezeri.classifiers.deeplearning_blas.Matrix;
-import cezeri.matrix.CMatrix;
+import cezeri.machine_learning.classifiers.deeplearning_blas.Matrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.FactoryUtils;
 import no.uib.cipr.matrix.DenseMatrix;
 

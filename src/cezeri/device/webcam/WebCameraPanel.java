@@ -1,6 +1,6 @@
 package cezeri.device.webcam;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.TimeWatch;
 import com.lti.civil.*;
 import com.lti.civil.awt.AWTImageConverter;

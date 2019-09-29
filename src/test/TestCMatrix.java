@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.FactoryUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;

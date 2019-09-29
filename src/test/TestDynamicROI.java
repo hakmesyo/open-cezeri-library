@@ -6,8 +6,8 @@
 package test;
 
 import cezeri.gui.FrameImage;
-import cezeri.matrix.CMatrix;
-import cezeri.matrix.CPoint;
+import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix_processing.CPoint;
 import cezeri.utils.FactoryUtils;
 import java.awt.Rectangle;
 

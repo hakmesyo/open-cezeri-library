@@ -6,7 +6,7 @@
 package cezeri.machine_learning.evaluater;
 
 import cezeri.types.TFigureAttribute;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.FactoryInstance;
 import cezeri.utils.FactoryUtils;
 import java.util.Random;

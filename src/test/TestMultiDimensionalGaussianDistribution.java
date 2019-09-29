@@ -1,6 +1,6 @@
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 public class TestMultiDimensionalGaussianDistribution {
     public static void main(String[] args) {

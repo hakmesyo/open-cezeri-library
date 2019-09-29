@@ -36,7 +36,7 @@
  * https://blogs.oracle.com/tao/entry/set_netbeans_user_interface_language
  *
  */
-package cezeri.matrix;
+package cezeri.matrix_processing;
 
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;

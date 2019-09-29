@@ -1,6 +1,6 @@
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 public class TestResizeImage {
     public static void main(String[] args) {

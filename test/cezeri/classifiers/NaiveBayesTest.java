@@ -5,7 +5,8 @@
  */
 package cezeri.classifiers;
 
-import cezeri.classifiers.C_NaiveBayes.AttributeType;
+import cezeri.machine_learning.classifiers.C_NaiveBayes;
+import cezeri.machine_learning.classifiers.C_NaiveBayes.AttributeType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

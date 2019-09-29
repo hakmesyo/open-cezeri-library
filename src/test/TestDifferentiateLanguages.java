@@ -9,7 +9,7 @@ then we simply call CMatrix method
  */
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 /**
  *

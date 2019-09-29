@@ -1,7 +1,7 @@
 package test;
 
-import cezeri.classifiers.C_MLP;
-import cezeri.matrix.CMatrix;
+import cezeri.machine_learning.classifiers.C_MLP;
+import cezeri.matrix_processing.CMatrix;
 
 public class TestCezeriMLP {
 

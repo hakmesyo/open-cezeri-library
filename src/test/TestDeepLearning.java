@@ -5,10 +5,10 @@
  */
 package test;
 
-import cezeri.classifiers.deeplearning_ocl.Matrix;
-import cezeri.classifiers.deeplearning_ocl.MatrixUtils;
-import cezeri.classifiers.deeplearning_ocl.DeepNeuralNetwork;
-import cezeri.classifiers.deeplearning_ocl.NNParams;
+import cezeri.machine_learning.classifiers.deeplearning_ocl.Matrix;
+import cezeri.machine_learning.classifiers.deeplearning_ocl.MatrixUtils;
+import cezeri.machine_learning.classifiers.deeplearning_ocl.DeepNeuralNetwork;
+import cezeri.machine_learning.classifiers.deeplearning_ocl.NNParams;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

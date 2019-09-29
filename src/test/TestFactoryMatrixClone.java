@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.matrix.FactoryMatrix;
+import cezeri.matrix_processing.FactoryMatrix;
 
 /**
  *

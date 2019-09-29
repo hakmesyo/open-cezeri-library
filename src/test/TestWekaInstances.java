@@ -6,7 +6,7 @@
 package test;
 
 import cezeri.types.TLearningType;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 /**
  *

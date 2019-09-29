@@ -1,7 +1,7 @@
 package test;
 
-import cezeri.matrix.CMatrix;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix_processing.FactoryMatrix;
 
 public class TestQuantizedImage {
     public static void main(String[] args) {

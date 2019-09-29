@@ -5,7 +5,7 @@
  */
 package cezeri.gui;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.LineNumberTableRowHeader;
 import java.awt.Color;
 import java.security.SecureRandom;

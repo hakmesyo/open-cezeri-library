@@ -1,6 +1,6 @@
 package cezeri.image_processing;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.util.Vector;

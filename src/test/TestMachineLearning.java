@@ -6,7 +6,7 @@
 package test;
 
 import cezeri.machine_learning.evaluater.FactoryEvaluation;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.types.TFigureAttribute;
 import java.awt.BasicStroke;
 import weka.classifiers.Classifier;

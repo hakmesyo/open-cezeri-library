@@ -5,7 +5,7 @@
  */
 package cezeri.types;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.FactoryUtils;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;

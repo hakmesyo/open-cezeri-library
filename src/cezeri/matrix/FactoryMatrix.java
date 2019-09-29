@@ -1,4 +1,4 @@
-package cezeri.matrix;
+package cezeri.matrix_processing;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;

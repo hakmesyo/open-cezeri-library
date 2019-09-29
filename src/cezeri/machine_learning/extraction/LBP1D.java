@@ -6,8 +6,8 @@
 package cezeri.machine_learning.feature_extraction;
 
 import cezeri.machine_learning.evaluater.FactoryEvaluation;
-import cezeri.matrix.CMatrix;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix_processing.FactoryMatrix;
 import cezeri.types.TLearningType;
 import cezeri.types.TMatrixOperator;
 import cezeri.utils.FactoryUtils;

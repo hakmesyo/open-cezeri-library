@@ -5,7 +5,7 @@
  */
 package cezeri.gui;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import java.awt.Color;
 
 /**

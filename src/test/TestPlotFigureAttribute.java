@@ -6,7 +6,7 @@
 package test;
 
 import cezeri.types.TFigureAttribute;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.types.TPointType;
 import cezeri.utils.FactoryStroke;
 import java.awt.BasicStroke;

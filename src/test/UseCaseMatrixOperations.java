@@ -9,7 +9,7 @@
 
  */
 package test;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 public class UseCaseMatrixOperations {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance().rand(3840,2160,0,255).transpose().round()

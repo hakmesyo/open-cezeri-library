@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 /**
  * This test deals with imnoise or addNoise methods

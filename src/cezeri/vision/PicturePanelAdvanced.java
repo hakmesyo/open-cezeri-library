@@ -6,7 +6,7 @@ import cezeri.gui.FrameImage;
 import cezeri.gui.FrameImageAdvanced;
 import cezeri.image_processing.ImageProcess;
 import cezeri.types.TStatistics;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 import cezeri.utils.FactoryUtils;
 import cezeri.utils.TimeWatch;
 import java.awt.Color;

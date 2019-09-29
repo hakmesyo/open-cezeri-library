@@ -7,8 +7,8 @@ package cezeri.gui;
 
 import cezeri.types.TFigureAttribute;
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix.CMatrix;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.matrix_processing.CMatrix;
+import cezeri.matrix_processing.FactoryMatrix;
 import cezeri.utils.FactoryUtils;
 import java.io.File;
 

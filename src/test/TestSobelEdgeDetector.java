@@ -6,7 +6,7 @@
 package test;
 
 import cezeri.image_processing.SobelEdgeDetector;
-import cezeri.matrix.CMatrix;
+import cezeri.matrix_processing.CMatrix;
 
 /**
  *

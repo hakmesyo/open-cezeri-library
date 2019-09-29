@@ -1,4 +1,4 @@
-package cezeri.matrix;
+package cezeri.matrix_processing;
 
 /*
  * This library is free software;use it to get the Moore-Penrose
