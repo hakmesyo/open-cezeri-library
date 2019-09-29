@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.evaluater.FactoryEvaluation;
+import cezeri.machine_learning.evaluater.FactoryEvaluation;
 import cezeri.matrix.CMatrix;
 import cezeri.types.TFigureAttribute;
 import java.awt.BasicStroke;

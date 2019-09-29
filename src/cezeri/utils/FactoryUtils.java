@@ -12,7 +12,6 @@ import cezeri.gui.FramePlot;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
 import cezeri.matrix.FactoryMatrix;
-import cezeri.reader.ReaderCSV;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;

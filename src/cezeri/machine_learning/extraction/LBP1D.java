@@ -5,7 +5,7 @@
  */
 package cezeri.machine_learning.feature_extraction;
 
-import cezeri.evaluater.FactoryEvaluation;
+import cezeri.machine_learning.evaluater.FactoryEvaluation;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.FactoryMatrix;
 import cezeri.types.TLearningType;

@@ -55,7 +55,7 @@ import cezeri.types.TFigureAttribute;
 import cezeri.image_processing.GrayScale;
 import cezeri.image_processing.ImageProcess;
 import cezeri.image_processing.SobelEdgeDetector;
-import cezeri.reader.ReaderCSV;
+import cezeri.utils.ReaderCSV;
 import cezeri.utils.FactoryNormalization;
 import cezeri.utils.FactoryUtils;
 import java.awt.Color;
