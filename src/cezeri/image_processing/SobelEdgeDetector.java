@@ -5,7 +5,7 @@
  */
 package cezeri.image_processing;
 
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 
 public class SobelEdgeDetector {
     int[][] img;

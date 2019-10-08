@@ -38,6 +38,7 @@
  */
 package cezeri.matrix;
 
+import cezeri.factory.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;
 import cezeri.machine_learning.extraction.FeatureExtractionLBP;
@@ -56,8 +57,8 @@ import cezeri.image_processing.GrayScale;
 import cezeri.image_processing.ImageProcess;
 import cezeri.image_processing.SobelEdgeDetector;
 import cezeri.utils.ReaderCSV;
-import cezeri.utils.FactoryNormalization;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryUtils;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -87,11 +88,9 @@ import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
+import java.security.SecureRandom;
 
-enum Dimension {
 
-    row, column
-}
 
 /**
  *
@@ -116,7 +115,10 @@ public final class CMatrix implements Serializable {
     private List<String> columnNames = new ArrayList();
     private List classLabels = new ArrayList();
     private double[] xData4FX;
-    private static Random random = new SecureRandom();
+//    private static Random random = new SecureRandom();
+    private Random random = new SecureRandom();
+    private List classLabelValues = new ArrayList();
+    private List classLabelNames = new ArrayList();
 
     public CMatrix buildFrameImage() {
         if (frameImage == null) {
@@ -7265,8 +7267,25 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix make_blobs(int n_samples, int n_features, int centers) {
-        int a=1;
         return make_blobs(n_samples, n_features, centers, 100, 5);
+    }
+
+    public List getClassLabelValues() {
+        return classLabelValues;
+    }
+
+    public CMatrix setClassLabelValues(List classLabels) {
+        this.classLabelValues = classLabels;
+        return this;
+    }
+
+    public List getClassLabelNames() {
+        return classLabelNames;
+    }
+
+    public CMatrix setClassLabelNames(List classLabelNames) {
+        this.classLabelNames = classLabelNames;
+        return this;
     }
 
     /**
@@ -7278,35 +7297,27 @@ public final class CMatrix implements Serializable {
      *
      * @param n_samples
      * @param n_features
-     * @param centers
+     * @param n_groups
      * @param mean_scale
      * @param var_scale
      * @return
      */
-    public CMatrix make_blobs(int n_samples, int n_features, int centers, int mean_scale, int var_scale) {
-        int a=1;
-        if (n_samples < centers) {
-            return this;
+    public CMatrix make_blobs(int n_samples, int n_features, int n_groups, int mean_scale, int var_scale) {
+        float[][] f=FactoryMatrix.make_blobs(n_samples, n_features, n_groups, mean_scale, var_scale,random);
+        setArray(f);
+        float[] cl = FactoryMatrix.getLastColumn(f);
+        setClassLabelValues(Arrays.asList(cl));
+        String[] gr_names = new String[n_groups];
+        for (int i = 0; i < n_groups; i++) {
+            gr_names[0] = "group " + (i + 1);
         }
-        CMatrix ret = this.clone(this);
-        int nRows = n_samples / centers;
-        ret = ret.zeros(nRows, n_features + 1);
-        Random r = new SecureRandom();
-        for (int i = 0; i < centers; i++) {
-            CMatrix cm = CMatrix.getInstance().zeros(nRows, 1);
-            double var = Math.sqrt(var_scale) + Math.random() * var_scale;
-            for (int j = 0; j < n_features; j++) {
-                cm = cm.cat(1, CMatrix.getInstance().randnMeanVariance(nRows, 1, r.nextDouble() * mean_scale - mean_scale / 2, var));
-            }
-            cm = cm.deleteColumn(0);
-            cm = cm.cat(1, CMatrix.getInstance().ones(nRows, 1).multiplyScalar(i));
-            ret = ret.cat(2, cm);
-        }
-        ret = ret.cmd("100:end", ":");
-        ret = ret.shuffleRows();
-        double[] cl = ret.getLastColumn();
-        ret.setClassLabels(Arrays.asList(cl));
-        return ret;
+        setClassLabelNames(Arrays.asList(gr_names));
+        return this;
+    }
+    
+    public CMatrix setArray(float[][] f) {
+        array = FactoryUtils.toDoubleArray2D(f);
+        return this;
     }
 
     /**

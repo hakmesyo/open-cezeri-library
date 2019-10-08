@@ -4,7 +4,7 @@
 package cezeri.vision.template.frame;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.vision.PanelPicture;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;

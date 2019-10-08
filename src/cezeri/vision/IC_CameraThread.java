@@ -8,7 +8,7 @@ package cezeri.vision;
 import cezeri.device.ic_camera.IC_CameraControlPanel;
 import cezeri.device.ic_camera.IC_CameraDLL;
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import com.sun.jna.Pointer;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

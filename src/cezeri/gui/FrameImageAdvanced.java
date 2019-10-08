@@ -7,7 +7,7 @@ package cezeri.gui;
 
 import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.vision.PanelPicture;
 import cezeri.vision.PicturePanelAdvanced;
 import java.awt.image.BufferedImage;

@@ -7,8 +7,8 @@ package cezeri.machine_learning.evaluater;
 
 import cezeri.types.TFigureAttribute;
 import cezeri.matrix.CMatrix;
-import cezeri.utils.FactoryInstance;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryInstance;
+import cezeri.factory.FactoryUtils;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;

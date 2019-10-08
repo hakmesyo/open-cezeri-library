@@ -8,7 +8,7 @@ package cezeri.machine_learning.extraction;
 import cezeri.machine_learning.evaluater.FactoryEvaluation;
 import cezeri.matrix.CMatrix;
 import cezeri.types.TLearningType;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import java.util.ArrayList;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.SMO;

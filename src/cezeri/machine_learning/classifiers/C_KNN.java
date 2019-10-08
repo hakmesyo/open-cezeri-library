@@ -6,7 +6,7 @@
 package cezeri.machine_learning.classifiers;
 
 import cezeri.matrix.CMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 

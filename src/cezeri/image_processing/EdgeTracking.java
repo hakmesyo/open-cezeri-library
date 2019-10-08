@@ -6,7 +6,7 @@
 package cezeri.image_processing;
 
 import static cezeri.image_processing.ImageProcess.getWindowEdgePixelPositions;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.utils.GCode;
 import cezeri.utils.GCodeList;
 import cezeri.utils.GCodeWorkList;

@@ -5,8 +5,8 @@
 package cezeri.machine_learning.extraction;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.matrix.FactoryMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryMatrix;
+import cezeri.factory.FactoryUtils;
 import java.awt.image.BufferedImage;
 
 /**

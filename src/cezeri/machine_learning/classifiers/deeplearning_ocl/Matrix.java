@@ -2,7 +2,7 @@ package cezeri.machine_learning.classifiers.deeplearning_ocl;
 
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.factory.FactoryMatrix;
 import java.io.IOException;
 import java.io.Serializable;
 

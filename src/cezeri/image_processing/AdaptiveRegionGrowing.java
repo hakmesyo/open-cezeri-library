@@ -7,8 +7,8 @@ package cezeri.image_processing;
 
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
-import cezeri.matrix.FactoryMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryMatrix;
+import cezeri.factory.FactoryUtils;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;

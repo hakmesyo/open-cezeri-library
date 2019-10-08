@@ -6,7 +6,7 @@
 package cezeri.types;
 
 import cezeri.matrix.CMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.util.logging.Level;

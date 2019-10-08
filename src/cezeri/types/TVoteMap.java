@@ -6,7 +6,7 @@
 
 package cezeri.types;
 
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import java.io.Serializable;
 
 /**

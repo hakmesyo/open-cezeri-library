@@ -6,7 +6,7 @@
 package cezeri.machine_learning.selection;
 
 import cezeri.utils.CustomComparatorForVoteMap;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.types.TVoteMap;
 import java.util.ArrayList;
 import java.util.Collections;

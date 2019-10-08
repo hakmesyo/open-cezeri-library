@@ -6,8 +6,8 @@
 
 package cezeri.types;
 
-import cezeri.matrix.FactoryMatrix;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryMatrix;
+import cezeri.factory.FactoryUtils;
 import java.awt.Stroke;
 import java.util.ArrayList;
 

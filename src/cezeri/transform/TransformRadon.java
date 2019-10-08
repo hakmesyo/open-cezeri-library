@@ -6,8 +6,8 @@
 package cezeri.transform;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryNormalization;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryUtils;
 import java.awt.image.BufferedImage;
 
 public class TransformRadon {

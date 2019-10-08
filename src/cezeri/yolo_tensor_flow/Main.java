@@ -32,7 +32,7 @@ import javax.swing.JLabel;
 public class Main implements Classifier {
 
     private static final int BLOCK_SIZE = 32;
-    private static final int MAX_RESULTS = 10;
+    private static final int MAX_RESULTS = 50;
     private static final int NUM_CLASSES = 20;
     private static final int NUM_BOXES_PER_BLOCK = 5;
 //    private static final int INPUT_SIZE = 416;

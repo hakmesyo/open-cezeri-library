@@ -5,7 +5,7 @@
  */
 package cezeri.device.ic_camera;
 
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;

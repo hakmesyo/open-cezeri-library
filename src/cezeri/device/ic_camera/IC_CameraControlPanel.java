@@ -6,7 +6,7 @@
 package cezeri.device.ic_camera;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.vision.PanelPicture;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;

@@ -6,11 +6,11 @@
 package cezeri.gui;
 
 import cezeri.matrix.CMatrix;
-import cezeri.utils.FactoryNormalization;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryUtils;
 import cezeri.types.TVoteMap;
-import cezeri.utils.FactoryColorMap;
-import cezeri.utils.FactoryStatistic;
+import cezeri.factory.FactoryColorMap;
+import cezeri.factory.FactoryStatistic;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;

@@ -10,6 +10,10 @@
  */
 package cezeri.image_processing;
 
+import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryStatistic;
+import cezeri.factory.FactorySimilarityDistance;
+import cezeri.factory.FactoryUtils;
 import cezeri.types.TRoi;
 import cezeri.types.TGrayPixel;
 import cezeri.types.TWord;
@@ -17,7 +21,7 @@ import cezeri.machine_learning.extraction.FeatureExtractionLBP;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
 import cezeri.matrix.CRectangle;
-import cezeri.matrix.FactoryMatrix;
+import cezeri.factory.FactoryMatrix;
 import cezeri.utils.*;
 import com.jhlabs.composite.ColorDodgeComposite;
 import com.jhlabs.image.GaussianFilter;

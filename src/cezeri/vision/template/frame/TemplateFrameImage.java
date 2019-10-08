@@ -3,7 +3,7 @@
  */
 package cezeri.vision.template.frame;
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import cezeri.vision.PanelPicture;
 import java.awt.image.BufferedImage;
 import java.io.File;

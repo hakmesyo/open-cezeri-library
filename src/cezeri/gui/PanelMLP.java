@@ -1,6 +1,6 @@
 package cezeri.gui;
 
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -10,7 +10,7 @@
 package cezeri.device.webcam;
 
 import cezeri.image_processing.ImageProcess;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryUtils;
 import com.lti.civil.CaptureDeviceInfo;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;

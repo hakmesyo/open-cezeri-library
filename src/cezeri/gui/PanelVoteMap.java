@@ -5,8 +5,8 @@
  */
 package cezeri.gui;
 
-import cezeri.utils.FactoryNormalization;
-import cezeri.utils.FactoryUtils;
+import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryUtils;
 import cezeri.types.TVoteMap;
 import java.awt.Color;
 import java.awt.Font;
