@@ -18,8 +18,8 @@ public class NeuralNetworkTest {
         // Read data from CSV-file
         int headerRows = 1;
         char separator = ';';
-        Matrix data = MatrixUtils.readCSV("data/Kaggle_Digits_1000.csv", separator, headerRows);
-//        Matrix data = MatrixUtils.readCSV("data/mnist_train_100.csv", separator, headerRows);
+//        Matrix data = MatrixUtils.readCSV("data/Kaggle_Digits_1000.csv", separator, headerRows);
+        Matrix data = MatrixUtils.readCSV("data/mnist_train_100.csv", separator, headerRows);
 //        Matrix data = MatrixUtils.readCSV("C:\\Users\\BAP1\\Downloads\\mnist_train.csv", separator, headerRows);
 
         // Split data into training set and crossvalidation set.
@@ -41,7 +41,7 @@ public class NeuralNetworkTest {
             new NNParams.NNLayerParams(50, 5, 5, 2, 2) , 
             new NNParams.NNLayerParams(200, 5, 5, 2, 2) };
         params.learningRate = 1E-2;
-        params.maxIterations = 10;
+        params.maxIterations = 20;
         params.numThreads=0;
 
         long startTime = System.currentTimeMillis();

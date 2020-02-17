@@ -86,8 +86,8 @@ public class TestRailrod {
         int nBolted=61;
         int nFastened=205;
         double nTotal=266;
-        int errorBolted=getErrorForBoltedClass("C:\\Users\\BAP1\\Downloads\\RailDataSet\\ds\\bolted\\",61,thr);
-        int errorFastened=getErrorForFastenedClass("C:\\Users\\BAP1\\Downloads\\RailDataSet\\ds\\fastened\\",205,thr);
+        int errorFastened=getErrorForFastenedClass("C:/Users\\elcezerilab\\Downloads\\ds\\fastened\\",205,thr);
+        int errorBolted=getErrorForBoltedClass("C:\\Users\\elcezerilab\\Downloads\\ds\\bolted\\",61,thr);
         double errorRate=(errorBolted+errorFastened)/nTotal*100;
         System.out.println("errorRate = " + errorRate);
     }
@@ -117,17 +117,17 @@ public class TestRailrod {
     private static double calculateWhitePixelCount(String path, int i) {
             CMatrix cm = CMatrix.getInstance()
                     .imread(path + i + ".jpg")
-                    //.imshow("original")
+                    .imshow("original")
                     .rgb2gray()
-                    //.imshow("gray")
+                    .imshow("gray")
                     .threshold(10)
-                    //.imshow("thresholded")
+                    .imshow("thresholded")
                     .imcomplement()
-                    //.imshow("negative")
+                    .imshow("negative")
                     .cmd("0:125",":")
-                    //.imshow("negative cropped")
+                    .imshow("negative cropped")
                     .sum()
-                    //.plot()
+                    .plot()
                     ;
             return cm.sumTotal();
     }

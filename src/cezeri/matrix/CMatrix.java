@@ -38,6 +38,7 @@
  */
 package cezeri.matrix;
 
+import cezeri.deep_learning.CDL;
 import cezeri.factory.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;
@@ -7754,5 +7755,9 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|convolve";
         ret.setArray(FactoryMatrix.convolve(ret.array,kernel.array));
         return ret;
+    }
+    
+    public CDL switchToDeepLearning(){
+        return CDL.getInstance(this);
     }
 }

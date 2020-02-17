@@ -5,6 +5,7 @@
  */
 package cezeri.yolo_tensor_flow;
 
+import cezeri.factory.FactoryUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -80,8 +81,9 @@ public class Main implements Classifier {
 
         //String modelDir = "/home/user/JavaProjects/TensorFlowJavaProject"; // Ubuntu
 //        String modelAndTestImagesDir = "D:\\JavaProjects\\TensorFlowJavaProject"; // Windows
-        String modelAndTestImagesDir = "E:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
-        String imageFile = modelAndTestImagesDir + File.separator + "images\\test_2.jpg"; // 416x416 test image
+        String modelAndTestImagesDir = "D:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
+//        String imageFile = modelAndTestImagesDir + File.separator + "images\\test_2.jpg"; // 416x416 test image
+        String imageFile = "images\\yuzler.jpg"; // 416x416 test image
 
         outputNames = outputName.split(",");
 //        floatValues = new float[INPUT_SIZE * INPUT_SIZE * 3];
@@ -103,7 +105,9 @@ public class Main implements Classifier {
             intValues = ((DataBufferInt) convertedImg.getRaster().getDataBuffer()).getData() ;
             floatValues = new float[convertedImg.getWidth() * convertedImg.getHeight() * 3];
 
+            long t1=FactoryUtils.tic();
             List<Classifier.Recognition> recognitions = recognizeImage();
+            t1=FactoryUtils.toc(t1);
 
             System.out.println("Result length " + recognitions.size());
 

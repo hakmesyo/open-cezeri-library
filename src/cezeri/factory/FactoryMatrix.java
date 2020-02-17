@@ -1026,16 +1026,15 @@ public final class FactoryMatrix implements Serializable {
     public static <T> T[][] deepCopy(T[][] matrix) {
         return java.util.Arrays.stream(matrix).map(el -> el.clone()).toArray($ -> matrix.clone());
     }
-        
+
     public static <T> T[][] deepClone(T[][] matrix) {
         return java.util.Arrays.stream(matrix).map(el -> el.clone()).toArray($ -> matrix.clone());
     }
-    
 
     public static Object[][] transpose(Object[][] d) {
         int nr = d.length;
         int nc = d[0].length;
-        Object[][] dc=deepCopy(d);
+        Object[][] dc = deepCopy(d);
         Object[][] ret = new Object[nc][nr];
         for (int i = 0; i < nc; i++) {
             for (int j = 0; j < nr; j++) {
@@ -1181,7 +1180,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
-    
+
     public static float[][] shuffleRows(float[][] ds) {
         float[][] ret = clone(ds);
         int[] d = randPermInt(ds.length);
@@ -1641,6 +1640,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return corr;
     }
+
     /**
      * Calculates pseudo inverse of the given matrix (2D double array)
      *
@@ -2130,137 +2130,137 @@ public final class FactoryMatrix implements Serializable {
     public static double[] concatenateColumns(double[][] d) {
         return concatenateRows(FactoryMatrix.transpose(d));
     }
-    
-    public static float[][] cat(String type,float[][] f1,float[] f2){
-        float[][] ret=null;
+
+    public static float[][] cat(String type, float[][] f1, float[] f2) {
+        float[][] ret = null;
         if (type.equals("horizontal")) {
-            if (f1.length!=f2.length) {
+            if (f1.length != f2.length) {
                 FactoryUtils.showMessage("number of rows of both matrices should be same for horizontal concatenation");
                 return f1;
-            }else{
-                int nr=f1.length;
-                int nc=f1[0].length;
-                ret=new float[nr][nc+1];
+            } else {
+                int nr = f1.length;
+                int nc = f1[0].length;
+                ret = new float[nr][nc + 1];
                 for (int i = 0; i < nr; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[i][j]=f1[i][j];
+                        ret[i][j] = f1[i][j];
                     }
-                    ret[i][nc]=f2[i];
+                    ret[i][nc] = f2[i];
                 }
             }
-        }else if(type.equals("vertical")){
-            if (f1[0].length!=f2.length) {
+        } else if (type.equals("vertical")) {
+            if (f1[0].length != f2.length) {
                 FactoryUtils.showMessage("number of columns of first matrix should be the same as number of rows of the seconf array for vertical concatenation");
                 return f1;
-            }else{
-                int nr=f1.length;
-                int nc=f1[0].length;
-                ret=new float[nr+1][nc];
+            } else {
+                int nr = f1.length;
+                int nc = f1[0].length;
+                ret = new float[nr + 1][nc];
                 for (int i = 0; i < nr; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[i][j]=f1[i][j];
+                        ret[i][j] = f1[i][j];
                     }
-                }                
+                }
                 for (int j = 0; j < nc; j++) {
-                    ret[nr][j]=f2[j];
+                    ret[nr][j] = f2[j];
                 }
             }
         }
         return ret;
     }
-    
-    public static float[][] cat(String type,float[][] f1,float[][] f2){
-        float[][] ret=null;
+
+    public static float[][] cat(String type, float[][] f1, float[][] f2) {
+        float[][] ret = null;
         if (type.equals("horizontal")) {
-            if (f1.length!=f2.length) {
+            if (f1.length != f2.length) {
                 FactoryUtils.showMessage("number of rows of both matrices should be same for horizontal concatenation");
                 return f1;
-            }else{
-                int nr=f1.length;
-                int nc=f1[0].length;
-                int ncc=f2[0].length;
-                ret=new float[nr][nc+ncc];
+            } else {
+                int nr = f1.length;
+                int nc = f1[0].length;
+                int ncc = f2[0].length;
+                ret = new float[nr][nc + ncc];
                 for (int i = 0; i < nr; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[i][j]=f1[i][j];
+                        ret[i][j] = f1[i][j];
                     }
                     for (int j = 0; j < ncc; j++) {
-                       ret[i][nc+j]=f2[i][j]; 
-                    }                    
+                        ret[i][nc + j] = f2[i][j];
+                    }
                 }
             }
-        }else if(type.equals("vertical")){
-            if (f1[0].length!=f2[0].length) {
+        } else if (type.equals("vertical")) {
+            if (f1[0].length != f2[0].length) {
                 FactoryUtils.showMessage("number of columns of first matrix should be the same as number of rows of the seconf array for vertical concatenation");
                 return f1;
-            }else{
-                int nr=f1.length;
-                int nrr=f2.length;
-                int nc=f1[0].length;
-                ret=new float[nr+nrr][nc];
+            } else {
+                int nr = f1.length;
+                int nrr = f2.length;
+                int nc = f1[0].length;
+                ret = new float[nr + nrr][nc];
                 for (int i = 0; i < nr; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[i][j]=f1[i][j];
+                        ret[i][j] = f1[i][j];
                     }
-                }                
+                }
                 for (int i = 0; i < nrr; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[i+nr][j]=f2[i][j];
+                        ret[i + nr][j] = f2[i][j];
                     }
-                }                
+                }
             }
         }
         return ret;
     }
-    
-    public static float[][] deleteColumn(float[][] f1,int index){
-        float[][] ret=null;
-        if (index<0 || index>=f1[0].length) {
+
+    public static float[][] deleteColumn(float[][] f1, int index) {
+        float[][] ret = null;
+        if (index < 0 || index >= f1[0].length) {
             FactoryUtils.showMessage("erroneous column index");
             return f1;
-        }else{
-            float[][] f2=transpose(f1);
-            ret=new float[f1[0].length-1][f1.length];
+        } else {
+            float[][] f2 = transpose(f1);
+            ret = new float[f1[0].length - 1][f1.length];
             for (int i = 0; i < index; i++) {
-                ret[i]=clone(f2[i]);
+                ret[i] = clone(f2[i]);
             }
             for (int i = index; i < ret.length; i++) {
-                ret[i]=clone(f2[i+1]);
+                ret[i] = clone(f2[i + 1]);
             }
         }
         return transpose(ret);
     }
-    
-    public static float[][] deleteRow(float[][] f1,int index){
-        float[][] ret=null;
-        if (index<0 || index>=f1.length) {
+
+    public static float[][] deleteRow(float[][] f1, int index) {
+        float[][] ret = null;
+        if (index < 0 || index >= f1.length) {
             FactoryUtils.showMessage("erroneous column index");
             return f1;
-        }else{
-            ret=new float[f1.length][f1[0].length-1];
+        } else {
+            ret = new float[f1.length][f1[0].length - 1];
             for (int i = 0; i < index; i++) {
-                ret[i]=clone(f1[i]);
+                ret[i] = clone(f1[i]);
             }
             for (int i = index; i < f1.length; i++) {
-                ret[i]=clone(f1[i+1]);
+                ret[i] = clone(f1[i + 1]);
             }
         }
         return ret;
     }
-    
-    public static float[][] deleteRows(float[][] f1,int from,int to){
-        float[][] ret=null;
-        if (from<0 || from>=f1.length || from>=to || to<0 || to>=f1.length) {
+
+    public static float[][] deleteRows(float[][] f1, int from, int to) {
+        float[][] ret = null;
+        if (from < 0 || from >= f1.length || from >= to || to < 0 || to >= f1.length) {
             FactoryUtils.showMessage("erroneous column index");
             return f1;
-        }else{
-            int delta=to-from;
-            List lst1=FactoryUtils.toListFrom2DArray(f1);
-            List lst2=FactoryUtils.toListFrom2DArray(f1);
+        } else {
+            int delta = to - from;
+            List lst1 = FactoryUtils.toListFrom2DArray(f1);
+            List lst2 = FactoryUtils.toListFrom2DArray(f1);
             for (int i = from; i < to; i++) {
                 lst1.remove(lst2.get(i));
             }
-            ret=FactoryUtils.to2DArrayFromList(lst1);
+            ret = FactoryUtils.to2DArrayFromList(lst1);
         }
         return ret;
     }
@@ -2755,55 +2755,55 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-    
+
     public static float[] fillRandNormal(float[] d, double mean, double var, Random rnd) {
-        int nr=d.length;
+        int nr = d.length;
         for (int i = 0; i < nr; i++) {
-            d[i] = (float)(mean + rnd.nextGaussian() * var);
+            d[i] = (float) (mean + rnd.nextGaussian() * var);
         }
         return d;
     }
-    
+
     public static float[] fillRandNormal(int nr, double mean, double var, Random rnd) {
-        float[] d=new float[nr];
+        float[] d = new float[nr];
         for (int i = 0; i < nr; i++) {
-            d[i] = (float)(mean + rnd.nextGaussian() * var);
+            d[i] = (float) (mean + rnd.nextGaussian() * var);
         }
         return d;
     }
-    
-    public static float[] zeros(int nr){
-        float[] ret=new float[nr];
+
+    public static float[] zeros(int nr) {
+        float[] ret = new float[nr];
         return ret;
     }
 
-    public static float[] ones(int nr){
-        return values(nr,1);
+    public static float[] ones(int nr) {
+        return values(nr, 1);
     }
-    
-    public static float[] values(int nr,float val){
-        float[] ret=new float[nr];
+
+    public static float[] values(int nr, float val) {
+        float[] ret = new float[nr];
         for (int i = 0; i < nr; i++) {
-            ret[i]=val;
+            ret[i] = val;
         }
         return ret;
     }
-    
-    public static float[][] zeros(int nr,int nc){
-        float[][] ret=new float[nr][nc];
+
+    public static float[][] zeros(int nr, int nc) {
+        float[][] ret = new float[nr][nc];
         return ret;
     }
 
-    public static float[][] ones(int nr,int nc){
-        return values(nr,nc,1);
+    public static float[][] ones(int nr, int nc) {
+        return values(nr, nc, 1);
     }
-    
-    public static float[][] values(int nr,int nc,float val){
-        float[][] ret=new float[nr][nc];
+
+    public static float[][] values(int nr, int nc, float val) {
+        float[][] ret = new float[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=val;
-            }            
+                ret[i][j] = val;
+            }
         }
         return ret;
     }
@@ -2838,7 +2838,7 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] meshGridX(double from, double to, int numberOf) {
         double[][] ret = new double[numberOf][numberOf];
 //        double incr = (to - from + 1) / numberOf;
-        double incr = (to - from) / (numberOf-1);
+        double incr = (to - from) / (numberOf - 1);
         for (int i = 0; i < numberOf; i++) {
             for (int j = 0; j < numberOf; j++) {
                 ret[i][j] = from + j * incr;
@@ -2854,7 +2854,7 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] meshGridX(double[][] array, double from, double to) {
         int nr = array.length;
         int nc = array[0].length;
-        double incr = (to - from) / (nc-1);
+        double incr = (to - from) / (nc - 1);
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 array[i][j] = from + j * incr;
@@ -2868,68 +2868,69 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] meshGridIterateForward(double[][] array) {
-        int nr=array.length;
-        int nc=array[0].length;
-        double[][] ret=clone(array);
-        int mid=nc/2;
-        double[] left=new double[mid];
-        double[] right=new double[mid];
+        int nr = array.length;
+        int nc = array[0].length;
+        double[][] ret = clone(array);
+        int mid = nc / 2;
+        double[] left = new double[mid];
+        double[] right = new double[mid];
         for (int i = 0; i < nr; i++) {
-            for (int j = 0; j < mid-1; j++) {
-                ret[i][j]=array[i][j+1];
+            for (int j = 0; j < mid - 1; j++) {
+                ret[i][j] = array[i][j + 1];
             }
-            ret[i][mid-1]=array[i][0];
+            ret[i][mid - 1] = array[i][0];
             //ret[i][mid]=array[i][1];
-            ret[i][mid]=0;
-            ret[i][mid+1]=array[i][nc-1];
-            
-            for (int j = mid+2; j < nc; j++) {
-                ret[i][j]=array[i][j-1];
+            ret[i][mid] = 0;
+            ret[i][mid + 1] = array[i][nc - 1];
+
+            for (int j = mid + 2; j < nc; j++) {
+                ret[i][j] = array[i][j - 1];
             }
         }
         return ret;
     }
 
     public static float[][] randMatrix(int dim) {
-        float[][] ret=new float[dim][dim];
+        float[][] ret = new float[dim][dim];
         SplittableRandom rnd = new SplittableRandom();
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                ret[i][j] = (float)rnd.nextDouble();
+                ret[i][j] = (float) rnd.nextDouble();
             }
-        }        
-        return ret;
-    }
-    
-    public static float[][] randMatrix(int nr,int nc) {
-        float[][] ret=new float[nr][nc];
-        SplittableRandom rnd = new SplittableRandom();
-        for (int i = 0; i < nr; i++) {
-            for (int j = 0; j < nc; j++) {
-                ret[i][j] = (float)rnd.nextDouble();
-            }
-        }        
+        }
         return ret;
     }
 
-    public static float[][] randMatrix(int nr,int nc,double bound) {
-        float[][] ret=new float[nr][nc];
+    public static float[][] randMatrix(int nr, int nc) {
+        float[][] ret = new float[nr][nc];
         SplittableRandom rnd = new SplittableRandom();
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j] = (float)rnd.nextDouble(bound);
+                ret[i][j] = (float) rnd.nextDouble();
             }
-        }        
+        }
         return ret;
     }
-    public static float[][] randMatrix(int nr,int nc,double from,double to) {
-        float[][] ret=new float[nr][nc];
+
+    public static float[][] randMatrix(int nr, int nc, double bound) {
+        float[][] ret = new float[nr][nc];
         SplittableRandom rnd = new SplittableRandom();
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j] = (float)rnd.nextDouble(from,to);
+                ret[i][j] = (float) rnd.nextDouble(bound);
             }
-        }        
+        }
+        return ret;
+    }
+
+    public static float[][] randMatrix(int nr, int nc, double from, double to) {
+        float[][] ret = new float[nr][nc];
+        SplittableRandom rnd = new SplittableRandom();
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j] = (float) rnd.nextDouble(from, to);
+            }
+        }
         return ret;
     }
 
@@ -2941,51 +2942,51 @@ public final class FactoryMatrix implements Serializable {
         float[][] ret = new float[n_samples][n_features + 1];
         for (int i = 0; i < n_groups; i++) {
             float[][] cm = new float[n_samples][1];
-                       
+
             for (int j = 0; j < n_features; j++) {
-                double mean=Math.random() * mean_scale - mean_scale / 2;
-                double var = Math.sqrt(var_scale) + Math.random() * var_scale; 
-                float[] f=fillRandNormal(n_samples, mean, var, random);
-                cm=cat("horizontal", cm, f);
+                double mean = Math.random() * mean_scale - mean_scale / 2;
+                double var = Math.sqrt(var_scale) + Math.random() * var_scale;
+                float[] f = fillRandNormal(n_samples, mean, var, random);
+                cm = cat("horizontal", cm, f);
             }
-            
-            cm = deleteColumn(cm,0);
-            cm = cat("horizontal",cm, values(n_samples, i));
+
+            cm = deleteColumn(cm, 0);
+            cm = cat("horizontal", cm, values(n_samples, i));
             ret = cat("vertical", ret, cm);
         }
-        ret=deleteRows(ret, 0, n_samples);
+        ret = deleteRows(ret, 0, n_samples);
         ret = shuffleRows(ret);
         return ret;
     }
 
     public static float[] getLastColumn(float[][] f) {
-        float[] ret=new float[f.length];
-        int nr=f.length;
-        int nc=f[0].length;
+        float[] ret = new float[f.length];
+        int nr = f.length;
+        int nc = f[0].length;
         for (int i = 0; i < nr; i++) {
-            ret[i]=f[i][nc-1];
+            ret[i] = f[i][nc - 1];
         }
         return ret;
     }
-    
+
     public static float[] getFirstColumn(float[][] f) {
-        float[] ret=new float[f.length];
-        int nr=f.length;
-        int nc=f[0].length;
+        float[] ret = new float[f.length];
+        int nr = f.length;
+        int nc = f[0].length;
         for (int i = 0; i < nr; i++) {
-            ret[i]=f[i][0];
+            ret[i] = f[i][0];
         }
         return ret;
     }
-    
+
     public static float[] getLastRow(float[][] f) {
-        return f[f.length-1];
+        return f[f.length - 1];
     }
-    
+
     public static float[] getFirstRow(float[][] f) {
         return f[0];
     }
-    
+
     public static double[][] inverseLog(double[][] d) {
         int nr = d.length;
         int nc = d[0].length;
@@ -3009,6 +3010,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
+
     public static double[][] addClassLabel(double[][] cm, double cl) {
         int nr = cm.length;
         int nc = cm[0].length;
@@ -3068,7 +3070,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
-    
+
     public static Object[][] reshape(Object[] d, int r, int c) {
         Object[][] ret = new Object[r][c];
         if (d.length != r * c) {
@@ -3083,52 +3085,52 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
-    
-    public static double[][] perlinNoise(double[][] d){
-        int nr=d.length;
-        int nc=d[0].length;
-        
-        double[][] ret=new double[nr][nc];
+
+    public static double[][] perlinNoise(double[][] d) {
+        int nr = d.length;
+        int nc = d[0].length;
+
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=PerlinNoise.noise(i*0.1,j*0.1,0);
+                ret[i][j] = PerlinNoise.noise(i * 0.1, j * 0.1, 0);
             }
         }
         return ret;
     }
-    
-    public static double[][] perlinNoise(double[][] d,double scale){
-        int nr=d.length;
-        int nc=d[0].length;
-        
-        double[][] ret=new double[nr][nc];
+
+    public static double[][] perlinNoise(double[][] d, double scale) {
+        int nr = d.length;
+        int nc = d[0].length;
+
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=PerlinNoise.noise(i*scale,j*scale,1.44);
+                ret[i][j] = PerlinNoise.noise(i * scale, j * scale, 1.44);
             }
         }
         return ret;
     }
 
     public static double[][] convolve(double[][] d, double[][] kernel) {
-        int mid=kernel.length/2;
-        int nr=d.length;
-        int nc=d[0].length;        
-        double[][] ret=new double[nr-2*mid][nc-2*mid];
-        for (int i = mid; i < nr-mid; i++) {
-            for (int j = mid; j < nc-mid; j++) {
-                double t=0;
+        int mid = kernel.length / 2;
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr - 2 * mid][nc - 2 * mid];
+        for (int i = mid; i < nr - mid; i++) {
+            for (int j = mid; j < nc - mid; j++) {
+                double t = 0;
                 for (int k = 0; k < kernel.length; k++) {
                     for (int l = 0; l < kernel[0].length; l++) {
-                        t+=kernel[k][l]*d[i-mid+k][j-mid+l];
+                        t += kernel[k][l] * d[i - mid + k][j - mid + l];
                     }
-                    ret[i-mid][j-mid]=t/(kernel.length*kernel[0].length);
+                    ret[i - mid][j - mid] = t / (kernel.length * kernel[0].length);
                 }
             }
         }
         return ret;
     }
-    
+
     public static double[][] applyFunction(double[][] d, double[] f) {
         int nr = d.length;
         int nc = d[0].length;
@@ -3144,3 +3146,4 @@ public final class FactoryMatrix implements Serializable {
     }
 
 }
+
