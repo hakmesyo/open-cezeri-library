@@ -1956,11 +1956,13 @@ public final class FactoryUtils {
     }
 
     public static double[] sortArrayDescend(double[] a) {
-        Double[] d = new Double[1];
-        d = Arrays.asList(a).toArray(d);
-        Arrays.sort(d, Collections.reverseOrder());
-        double[] unboxed = Stream.of(d).mapToDouble(Double::doubleValue).toArray();
-        return unboxed;
+        double[] d=new double[a.length];
+        Arrays.sort(a);
+        int n=a.length;
+        for (int i = 0; i < n; i++) {
+            d[i]=a[n-1-i];
+        }
+        return d;
     }
 
     public static double[] sortArray(double[] a, int[] index) {

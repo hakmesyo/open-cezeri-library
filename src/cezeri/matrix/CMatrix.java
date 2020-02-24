@@ -90,6 +90,7 @@ import weka.core.converters.ConverterUtils;
 import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
+import java.util.stream.DoubleStream;
 
 
 
@@ -1046,7 +1047,24 @@ public final class CMatrix implements Serializable {
         }
         return p;
     }
-
+    
+    public CMatrix range(double from_inclusive, double to_exclusive){
+        return vector(from_inclusive,to_exclusive-1);
+    }
+    
+    public CMatrix range(int from_inclusive, int to_exclusive){
+        return vector(from_inclusive,to_exclusive-1);
+    }
+    
+    public CMatrix range(int to_exclusive){
+        return vector(0,to_exclusive-1);
+    }
+    
+    public CMatrix range(int from_inclusive, int to_exclusive, int step){
+        return vector(0,step,to_exclusive-1);
+    }
+    
+    
     /**
      * executes as Matlab command of a=1:10;
      *
@@ -2463,32 +2481,38 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix matrix(int[]... p) {
-        double[][] d;
+        double[] ret=new double[1];
         if (p.length == 0) {
             return null;
         } else if (p.length == 1) {
             int[] rows = p[0];
-            d = new double[rows.length][this.getColumnNumber()];
+            ret = new double[rows.length];
+            double[] one_d=this.toDoubleArray1D();
             for (int i = 0; i < rows.length; i++) {
-                d[i] = this.array[rows[i]];
+                try {
+                   ret[i] = one_d[rows[i]]; 
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                
             }
         } else {
-            int[] rows = p[0];
-            int[] cols = p[1];
-            d = new double[rows.length][this.getColumnNumber()];
-            for (int i = 0; i < rows.length; i++) {
-                d[i] = this.array[rows[i]];
-            }
-            d = new CMatrix(d).transpose().array;
-            double[][] d2 = new double[cols.length][d[0].length];
-            for (int i = 0; i < cols.length; i++) {
-                d2[i] = d[cols[i]];
-            }
-            d = new CMatrix(d2).transpose().array;;
+//            int[] rows = p[0];
+//            int[] cols = p[1];
+//            d = new double[rows.length][this.getColumnNumber()];
+//            for (int i = 0; i < rows.length; i++) {
+//                d[i] = this.array[rows[i]];
+//            }
+//            d = new CMatrix(d).transpose().array;
+//            double[][] d2 = new double[cols.length][d[0].length];
+//            for (int i = 0; i < cols.length; i++) {
+//                d2[i] = d[cols[i]];
+//            }
+//            d = new CMatrix(d2).transpose().array;
         }
-        CMatrix ret = new CMatrix(d);
-        ret.name = this.name + "|submatrix";
-        return ret;
+        CMatrix ret_matrix = new CMatrix(ret);
+        ret_matrix.name = this.name + "|submatrix";
+        return ret_matrix;
     }
 
     public CMatrix row(CMatrix prev, int[] rows) {
@@ -5127,6 +5151,9 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix cat(int dim, CMatrix cm) {
+//        String[] both = Arrays.copyOf(first, first.length + second.length);
+//        System.arraycopy(second, 0, both, first.length, second.length);
+        
         CMatrix ret = this.clone(this);
 
         if (dim == 1) {
@@ -7759,5 +7786,13 @@ public final class CMatrix implements Serializable {
     
     public CDL switchToDeepLearning(){
         return CDL.getInstance(this);
+    }
+
+    public CMatrix distinct() {
+        CMatrix ret = this.clone(this);
+        double[] d=ret.toDoubleArray1D();
+        d=Arrays.stream(d).distinct().toArray();
+        ret.setArray(d);
+        return ret;
     }
 }

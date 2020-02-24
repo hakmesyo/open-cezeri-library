@@ -74,6 +74,87 @@ public final class ImageProcess {
 //    }
 
     /**
+     * Conversion from RGB space to LAB space (CIE)
+     * @param R
+     * @param G
+     * @param B
+     * @return
+     */
+
+    
+    public static double[] rgbToLab(int R, int G, int B) {
+
+        double r, g, b, X, Y, Z, xr, yr, zr;
+
+        // D65/2°
+        double Xr = 95.047;
+        double Yr = 100.0;
+        double Zr = 108.883;
+
+        // --------- RGB to XYZ ---------//
+        r = R / 255.0;
+        g = G / 255.0;
+        b = B / 255.0;
+
+        if (r > 0.04045) {
+            r = Math.pow((r + 0.055) / 1.055, 2.4);
+        } else {
+            r = r / 12.92;
+        }
+
+        if (g > 0.04045) {
+            g = Math.pow((g + 0.055) / 1.055, 2.4);
+        } else {
+            g = g / 12.92;
+        }
+
+        if (b > 0.04045) {
+            b = Math.pow((b + 0.055) / 1.055, 2.4);
+        } else {
+            b = b / 12.92;
+        }
+
+        r *= 100;
+        g *= 100;
+        b *= 100;
+
+        X = 0.4124 * r + 0.3576 * g + 0.1805 * b;
+        Y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        Z = 0.0193 * r + 0.1192 * g + 0.9505 * b;
+
+        // --------- XYZ to Lab --------- //
+        xr = X / Xr;
+        yr = Y / Yr;
+        zr = Z / Zr;
+
+        if (xr > 0.008856) {
+            xr = (float) Math.pow(xr, 1 / 3.);
+        } else {
+            xr = (float) ((7.787 * xr) + 16 / 116.0);
+        }
+
+        if (yr > 0.008856) {
+            yr = (float) Math.pow(yr, 1 / 3.);
+        } else {
+            yr = (float) ((7.787 * yr) + 16 / 116.0);
+        }
+
+        if (zr > 0.008856) {
+            zr = (float) Math.pow(zr, 1 / 3.);
+        } else {
+            zr = (float) ((7.787 * zr) + 16 / 116.0);
+        }
+
+        double[] lab = new double[3];
+
+        lab[0] = (116 * yr) - 16;
+        lab[1] = 500 * (xr - yr);
+        lab[2] = 200 * (yr - zr);
+        return lab;
+
+    }
+
+    /**
      * Canny Edge Detector
      *
      * @param d : inputImage
@@ -131,7 +212,7 @@ public final class ImageProcess {
         Core.addWeighted(img1, 0.5, img2, 0.5, 0.0, dst);
         return dst;
     }
-    
+
     public static Mat ocv_blendImagesMat(BufferedImage img1, BufferedImage img2) {
         Mat src1 = ImageProcess.ocv_img2Mat(img1);
         Mat src2 = ImageProcess.ocv_img2Mat(img2);
@@ -1335,10 +1416,10 @@ public final class ImageProcess {
         g2.dispose();
         return img;
     }
-    
+
     public static BufferedImage resizeSmooth(BufferedImage src, int w, int h) {
-        Image img = src.getScaledInstance(w, h ,BufferedImage.SCALE_SMOOTH);
-        BufferedImage ret=toBufferedImage(img);
+        Image img = src.getScaledInstance(w, h, BufferedImage.SCALE_SMOOTH);
+        BufferedImage ret = toBufferedImage(img);
         return ret;
     }
 
@@ -2365,8 +2446,8 @@ public final class ImageProcess {
     public static BufferedImage getRedChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
         int[][][] ret = new int[d.length][d[0].length][4];
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 ret[i][j][0] = d[i][j][0];
@@ -2379,8 +2460,8 @@ public final class ImageProcess {
     public static BufferedImage getGreenChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
         int[][][] ret = new int[d.length][d[0].length][4];
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 ret[i][j][0] = d[i][j][0];
@@ -2393,8 +2474,8 @@ public final class ImageProcess {
     public static BufferedImage getBlueChannelColor(BufferedImage bf) {
         int[][][] d = imageToPixelsColorInt(bf);
         int[][][] ret = new int[d.length][d[0].length][4];
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 ret[i][j][0] = d[i][j][0];
