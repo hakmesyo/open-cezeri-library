@@ -1060,8 +1060,8 @@ public final class CMatrix implements Serializable {
         return vector(0,to_exclusive-1);
     }
     
-    public CMatrix range(int from_inclusive, int to_exclusive, int step){
-        return vector(0,step,to_exclusive-1);
+    public CMatrix range(int from_inclusive, int to_exclusive, double step){
+        return vector(from_inclusive,step,to_exclusive-1);
     }
     
     
@@ -2829,6 +2829,19 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    public CMatrix asin() {
+        CMatrix ret = this.clone(this);
+
+        ret.image = null;
+        for (int i = 0; i < ret.getRowNumber(); i++) {
+            for (int j = 0; j < ret.getColumnNumber(); j++) {
+                ret.array[i][j] = Math.asin(ret.array[i][j]);
+            }
+        }
+        ret.name = this.name + "|asin";
+        return ret;
+    }
+
     /**
      * sinc(x) is a partial function normalized with pi which is defined as |1,
      * t=0 sinc(x) =| |sin(pi*x)/(pi*x) t != 0
@@ -2867,6 +2880,19 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    public CMatrix acos() {
+        CMatrix ret = this.clone(this);
+
+        ret.image = null;
+        for (int i = 0; i < ret.getRowNumber(); i++) {
+            for (int j = 0; j < ret.getColumnNumber(); j++) {
+                ret.array[i][j] = Math.acos(ret.array[i][j]);
+            }
+        }
+        ret.name = this.name + "|acos";
+        return ret;
+    }
+
     public CMatrix tan() {
         CMatrix ret = this.clone(this);
 
@@ -2877,6 +2903,45 @@ public final class CMatrix implements Serializable {
             }
         }
         ret.name = this.name + "|tan";
+        return ret;
+    }
+    
+    public CMatrix cot() {
+        CMatrix ret = this.clone(this);
+
+        ret.image = null;
+        for (int i = 0; i < ret.getRowNumber(); i++) {
+            for (int j = 0; j < ret.getColumnNumber(); j++) {
+                ret.array[i][j] = 1/Math.tan(ret.array[i][j]);
+            }
+        }
+        ret.name = this.name + "|cot";
+        return ret;
+    }
+    
+    public CMatrix acot() {
+        CMatrix ret = this.clone(this);
+
+        ret.image = null;
+        for (int i = 0; i < ret.getRowNumber(); i++) {
+            for (int j = 0; j < ret.getColumnNumber(); j++) {
+                ret.array[i][j] = 1/Math.atan(ret.array[i][j]);
+            }
+        }
+        ret.name = this.name + "|atan";
+        return ret;
+    }
+    
+    public CMatrix atan() {
+        CMatrix ret = this.clone(this);
+
+        ret.image = null;
+        for (int i = 0; i < ret.getRowNumber(); i++) {
+            for (int j = 0; j < ret.getColumnNumber(); j++) {
+                ret.array[i][j] = Math.atan(ret.array[i][j]);
+            }
+        }
+        ret.name = this.name + "|atan";
         return ret;
     }
 
@@ -7794,5 +7859,9 @@ public final class CMatrix implements Serializable {
         d=Arrays.stream(d).distinct().toArray();
         ret.setArray(d);
         return ret;
+    }
+
+    public CMatrix negate() {
+        return this.multiplyScalar(-1);
     }
 }

@@ -2562,8 +2562,8 @@ public final class FactoryMatrix implements Serializable {
         int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                d[i][j] = rnd.nextDouble();
-//                d[i][j] = Math.random();
+//                d[i][j] = rnd.nextDouble();
+                d[i][j] = Math.random();
             }
         }
         return d;
