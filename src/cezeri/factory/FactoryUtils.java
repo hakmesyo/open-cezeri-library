@@ -4860,6 +4860,13 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static float[] toFloatArray1D(Float[] f) {
+        float[] ret=new float[f.length];
+        for (int i = 0; i < f.length; i++) {
+            ret[i]=(float)f[i];
+        }
+        return ret;
+    }
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {

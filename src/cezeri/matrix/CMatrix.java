@@ -1077,7 +1077,6 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix vector(double from, double to) {
         CMatrix ret = this.clone(this);
-
         if (from > to) {
             throw new UnsupportedOperationException("from should be smaller than to, other wise use other constructor");
         }
@@ -1101,7 +1100,6 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix vector(double from, double incr, double to) {
         CMatrix ret = this.clone(this);
-
         if (from < to && incr < 0) {
             throw new UnsupportedOperationException("incr should be positive");
         }
@@ -1120,7 +1118,6 @@ public final class CMatrix implements Serializable {
 
     public CMatrix linspace(double from, double to, int n) {
         CMatrix ret = this.clone(this);
-
         if (n < 0) {
             throw new UnsupportedOperationException("n should be positive");
         }
@@ -1144,7 +1141,6 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix vector(int from, int to) {
         CMatrix ret = this.clone(this);
-
         if (from > to) {
             throw new UnsupportedOperationException("'from' should be smaller than 'to' other wise use another constructor");
         }
@@ -1217,7 +1213,6 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix vector(int from, double incr, int to) {
         CMatrix ret = this.clone(this);
-
         if (from < to && incr < 0) {
             throw new UnsupportedOperationException("incr should be positive");
         }
@@ -1236,7 +1231,6 @@ public final class CMatrix implements Serializable {
 
     public CMatrix linspace(int from, int to, int n) {
         CMatrix ret = this.clone(this);
-
         if (n < 0) {
             throw new UnsupportedOperationException("n should be positive");
         }
@@ -1274,7 +1268,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix zeros(int r, int c) {
         CMatrix ret = new CMatrix(r, c);
-//        ret.fillMatrix(0);
+        ret.fillMatrix(0);
         ret.name = this.name + "|zeros";
         return ret.clone(this);
     }
@@ -1561,6 +1555,22 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
+    public CMatrix plotRefresh(double[] x) {
+        if (framePlot == null) {
+            framePlot = new FramePlot(this);
+            framePlot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
+        framePlot.setMatrix(this);
+        framePlot.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * By using single plot frame, this command try to redraw updated matrix
+     * it is useful if you make animation or moving simulation within the loop
+     *
+     * @return CMatrix
+     */
     public CMatrix plotOn() {
         if (framePlot == null) {
             framePlot = new FramePlot(this);
@@ -1592,7 +1602,7 @@ public final class CMatrix implements Serializable {
         FramePlot frm = new FramePlot(this, x);
         frm.setVisible(true);
         return this;
-    }
+    }    
 
     public CMatrix plot(TFigureAttribute attr) {
         FramePlot frm = new FramePlot(this, attr);
@@ -4890,6 +4900,26 @@ public final class CMatrix implements Serializable {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
                 ret.array[i][j] = this.array[i][j] + cmx.array[i][j];
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * row numbers should be identical
+     * added matrix should have single column
+     * addition takes place on each column of original matrix
+     *
+     * @param cmx : added matrix
+     *
+     * @return CMatrix
+     */
+    public CMatrix addSignal(CMatrix cmx) {
+        CMatrix ret = this.clone(this);
+
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                ret.array[i][j] = this.array[i][j] + cmx.array[i][0];
             }
         }
         return ret;
