@@ -81,9 +81,9 @@ public class Main implements Classifier {
 
         //String modelDir = "/home/user/JavaProjects/TensorFlowJavaProject"; // Ubuntu
 //        String modelAndTestImagesDir = "D:\\JavaProjects\\TensorFlowJavaProject"; // Windows
-        String modelAndTestImagesDir = "D:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
-//        String imageFile = modelAndTestImagesDir + File.separator + "images\\test_2.jpg"; // 416x416 test image
-        String imageFile = "images\\yuzler.jpg"; // 416x416 test image
+        String modelAndTestImagesDir = "E:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
+        String imageFile = modelAndTestImagesDir + File.separator + "images\\test_2.jpg"; // 416x416 test image
+//        String imageFile = "images\\yuzler.jpg"; // 416x416 test image
 
         outputNames = outputName.split(",");
 //        floatValues = new float[INPUT_SIZE * INPUT_SIZE * 3];
@@ -92,7 +92,7 @@ public class Main implements Classifier {
         inferenceInterface = new TensorFlowInferenceInterface(Paths.get(modelAndTestImagesDir, "tiny-yolo-voc.pb"));
 
         // tiny yolo voc
-        //inferenceInterface = new TensorFlowInferenceInterface(Paths.get(modelAndTestImagesDir, "graph-tiny-yolo-voc.pb"));
+//        inferenceInterface = new TensorFlowInferenceInterface(Paths.get(modelAndTestImagesDir, "graph-tiny-yolo-voc.pb"));
 
         BufferedImage img;
 

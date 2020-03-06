@@ -64,14 +64,14 @@ public class ChatServer extends WebSocketServer {
 	public void onMessage( WebSocket conn, String message ) {
 //		broadcast( message );
                 long t2=System.currentTimeMillis()-t;
-		System.out.println( conn + " : " + message + " zaman:"+t2 +"ms" );
+		System.out.println( conn + " : " + message + " t:"+t2 +"ms" );
                 t=System.currentTimeMillis();
                 
 	}
 	@Override
 	public void onMessage( WebSocket conn, ByteBuffer message ) {
 		broadcast( message.array() );
-		System.out.println( conn + " bak hele: " + message );
+		System.out.println( conn + " gelen: " + message );
 	}
 
 
