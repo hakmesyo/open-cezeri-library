@@ -11,6 +11,7 @@ import cezeri.matrix.CPoint;
 import cezeri.factory.FactoryUtils;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -42,7 +43,8 @@ public class TestObjectRecognition {
         for (Webcam wbc : lst) {
             System.out.println("wbc = " + wbc.getName());
 //            if (wbc.getName().equals("A4 TECH HD PC Camera 1")) {
-            if (wbc.getName().equals("HD Pro Webcam C920 1")) {
+//            if (wbc.getName().equals("HD Pro Webcam C920 1")) {
+            if (wbc.getName().equals("TOSHIBA Web Camera - HD 0")) {
                 index = counter;
                 break;
             }
@@ -55,7 +57,7 @@ public class TestObjectRecognition {
             new Dimension(2000, 1000),
             new Dimension(1000, 500),};
         
-        index=1;
+//        index=1;
         Webcam webcam = lst.get(index);
         
         webcam.setCustomViewSizes(nonStandardResolutions);
@@ -63,9 +65,10 @@ public class TestObjectRecognition {
         for (Dimension dim : webcam.getCustomViewSizes()) {
             System.out.println("dim = " + dim);
         }
+        webcam.setViewSize(new Dimension(640,480));
 //        webcam.setCustomViewSizes(nonStandardResolutions);
 //        webcam.setViewSize(new Dimension(800,600));
-        webcam.setViewSize(WebcamResolution.HD720.getSize());
+//        webcam.setViewSize(WebcamResolution.HD720.getSize());
 //        webcam.setViewSize(WebcamResolution.VGA.getSize());
 //        Webcam webcam = Webcam.getDefault();
 //        webcam.setViewSize(new Dimension(176, 144));
@@ -78,19 +81,20 @@ public class TestObjectRecognition {
         long t2 = FactoryUtils.tic();
         while (true) {
             bf = webcam.getImage();
-////            t2=FactoryUtils.toc("image acquisition:",t2);
+//            t2=FactoryUtils.toc("image acquisition:",t2);
 //            bf=ImageProcess.toBGR(bf);
-////            t2=FactoryUtils.toc("toBGR:",t2);
-//            bf = q.doOCL(bf);
-////            bf = q.doOpenCV(bf);
-////            bf = q.doOpenCV_via_OCL(bf);
+//            t2=FactoryUtils.toc("toBGR:",t2);
+            bf = q.doOCL(bf);
+//            bf = q.doOpenCV(bf);
+//            bf = q.doOpenCV_via_OCL(bf);
             frm.setImage(bf);
         }
     }
 
     public BufferedImage doOpenCV_via_OCL(BufferedImage img) {
         t = FactoryUtils.toc("enterance:", t);
-        BufferedImage out = ImageProcess.ocv_hsvThreshold(img, 14, 70, 150, 255, 150, 255);
+//        BufferedImage out = ImageProcess.ocv_hsvThreshold(img, 14, 70, 150, 255, 150, 255);
+        BufferedImage out = ImageProcess.ocv_2_hsv(img);
         t = FactoryUtils.toc("hsv threshold:", t);
 
         System.out.println("--------------------------------");
@@ -151,12 +155,12 @@ public class TestObjectRecognition {
     }
 
     private BufferedImage doOCL(BufferedImage bf) {
-//        t = FactoryUtils.toc("entrance:", t);
+        t = FactoryUtils.toc("entrance:", t);
 //        bf = ImageProcess.flipVertical(bf);
 //        t = FactoryUtils.toc("flip:", t);
-
+//
 //        bf=ImageProcess.rgb2hsv(bf);
-//        bf=ImageProcess.ocv_img2hsv(bf);
+        bf=ImageProcess.ocv_img2hsv(bf);
 //        t = FactoryUtils.toc("hsv conv:", t);
         /**
          * turuncu pinpon topu için en iyi değerler hue : 14-50 saturation:
@@ -166,12 +170,13 @@ public class TestObjectRecognition {
         
 //        bf=ImageProcess.ocv_medianFilter(bf);
 //        t = FactoryUtils.toc("medain filter:", t);
-        bf = ImageProcess.ocv_hsvThreshold(bf, 14, 50, 150, 255, 150, 255);
-//        t = FactoryUtils.toc("hsvThreshold:", t);
-        CPoint cp = ImageProcess.getCenterOfGravityGray(bf);
+//        bf = ImageProcess.ocv_hsvThreshold(bf, 14, 50, 150, 255, 150, 255);
+        bf = ImageProcess.ocv_2_hsv(bf);
+        t = FactoryUtils.toc("hsvThreshold:", t);
+//        CPoint cp = ImageProcess.getCenterOfGravityGray(bf);
 //        t = FactoryUtils.toc("center:", t);
-        System.out.println("cp = " + cp);
-        
+//        System.out.println("cp = " + cp);
+//        
 //        bf = ImageProcess.fillOval(bf, cp.row - 5, cp.column - 5, 10, 10, Color.red);
 //        t = FactoryUtils.toc("fill_oval:", t);
 

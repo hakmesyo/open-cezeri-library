@@ -3511,15 +3511,17 @@ public final class ImageProcess {
 //        Imgproc.cvtColor(frame, hsvImage, Imgproc.COLOR_BGR2HSV);
 //        BufferedImage img = ocv_mat2Img(hsvImage);
 //        return img;
-        return ocv_rgb2hsv(bf);
+//        return ocv_rgb2hsv(bf);
+        return ocv_2_hsv(bf);
     }
 
     public static BufferedImage ocv_rgb2hsv(BufferedImage bf) {
-        Mat frame = ImageProcess.ocv_img2Mat(bf);
-        Mat hsvImage = new Mat();
-        // convert the frame to HSV
-        Imgproc.cvtColor(frame, hsvImage, Imgproc.COLOR_BGR2HSV);
-        BufferedImage img = ocv_mat2Img(hsvImage);
+//        Mat frame = ImageProcess.ocv_img2Mat(bf);
+//        Mat hsvImage = new Mat();
+//        // convert the frame to HSV
+//        Imgproc.cvtColor(frame, hsvImage, Imgproc.COLOR_BGR2HSV);
+//        BufferedImage img = ocv_mat2Img(hsvImage);
+        BufferedImage img=ocv_2_hsv(bf);
         return img;
     }
 
@@ -3537,6 +3539,35 @@ public final class ImageProcess {
         Core.inRange(frame, minValues, maxValues, mask);
         BufferedImage img = ocv_mat2Img(mask);
         return img;
+    }
+    
+    public static BufferedImage ocv_2_hsv(BufferedImage img){
+        Mat blurredImage = new Mat();
+        Mat hsvImage = new Mat();
+        Mat mask = new Mat();
+        Mat morphOutput = new Mat();
+        Mat frame = ImageProcess.ocv_img2Mat(img);
+
+        // remove some noise
+        Imgproc.blur(frame, blurredImage, new Size(7, 7));
+
+        // convert the frame to HSV
+        Imgproc.cvtColor(blurredImage, hsvImage, Imgproc.COLOR_BGR2HSV);
+
+        // get thresholding values from the UI
+        // remember: H ranges 0-180, S and V range 0-255
+        Scalar minValues = new Scalar(0, 150, 150);
+        Scalar maxValues = new Scalar(50, 255, 255);
+
+        // show the current selected HSV range
+//        String valuesToPrint = "Hue range: " + minValues.val[0] + "-" + maxValues.val[0]
+//                + "\tSaturation range: " + minValues.val[1] + "-" + maxValues.val[1] + "\tValue range: "
+//                + minValues.val[2] + "-" + maxValues.val[2];
+
+        // threshold HSV image to select tennis balls
+        Core.inRange(hsvImage, minValues, maxValues, mask);
+        BufferedImage bf = ImageProcess.ocv_mat2Img(hsvImage);
+        return bf;
     }
 
     public static BufferedImage ocv_medianFilter(BufferedImage bf) {

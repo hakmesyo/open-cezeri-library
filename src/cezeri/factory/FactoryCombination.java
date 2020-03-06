@@ -159,8 +159,8 @@ public class FactoryCombination {
         ,"24","25","26"};
         String[] lst=getCombination(elements,5);
         System.out.println("length:"+lst.length);
-//        String[] lst=getAllCombinations(elements);
-        String[] lst2=getAllCombinations(3);
+        String[] lst2=getAllCombinations(elements);
+//        String[] lst2=getAllCombinations(9);
         toString(lst2);
     }
     
