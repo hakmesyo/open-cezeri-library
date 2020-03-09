@@ -39,6 +39,7 @@
 package cezeri.matrix;
 
 import cezeri.deep_learning.CDL;
+import cezeri.factory.FactoryCombination;
 import cezeri.factory.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
 import cezeri.types.TMatrixCell;
@@ -59,6 +60,7 @@ import cezeri.image_processing.ImageProcess;
 import cezeri.image_processing.SobelEdgeDetector;
 import cezeri.utils.ReaderCSV;
 import cezeri.factory.FactoryNormalization;
+import cezeri.factory.FactoryPermutation;
 import cezeri.factory.FactoryUtils;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -92,8 +94,6 @@ import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
 import java.util.stream.DoubleStream;
 
-
-
 /**
  *
  * @author BAP1
@@ -121,6 +121,8 @@ public final class CMatrix implements Serializable {
     private Random random = new SecureRandom();
     private List classLabelValues = new ArrayList();
     private List classLabelNames = new ArrayList();
+    public String[] combinationPairs;
+    public String[] permutationPairs;
 
     public CMatrix buildFrameImage() {
         if (frameImage == null) {
@@ -726,8 +728,6 @@ public final class CMatrix implements Serializable {
         this.array = FactoryUtils.transpose(m);
         this.returnedValue = new CReturn();
     }
-    
-    
 
     private CMatrix(byte[] d) {
         double[][] m = new double[1][d.length];
@@ -923,7 +923,7 @@ public final class CMatrix implements Serializable {
         this.array = array;
         return this;
     }
-    
+
     /**
      * set the array of current matrix note that clone is not calling anymore,
      * current matrix structure will be changed
@@ -1047,36 +1047,35 @@ public final class CMatrix implements Serializable {
         }
         return p;
     }
-    
-    public CMatrix range2D(double from_inclusive, double to_exclusive){
-        CMatrix ret=new CMatrix();
-        ret.setArray(FactoryMatrix.range2D(from_inclusive,to_exclusive,1));
+
+    public CMatrix range2D(double from_inclusive, double to_exclusive) {
+        CMatrix ret = new CMatrix();
+        ret.setArray(FactoryMatrix.range2D(from_inclusive, to_exclusive, 1));
         return ret;
     }
-    
-    public CMatrix range2D(double from_inclusive, double to_exclusive, double step){
-        CMatrix ret=new CMatrix();
-        ret.setArray(FactoryMatrix.range2D(from_inclusive,to_exclusive,step));
+
+    public CMatrix range2D(double from_inclusive, double to_exclusive, double step) {
+        CMatrix ret = new CMatrix();
+        ret.setArray(FactoryMatrix.range2D(from_inclusive, to_exclusive, step));
         return ret;
     }
-    
-    public CMatrix range(double from_inclusive, double to_exclusive){
-        return vector(from_inclusive,to_exclusive-1);
+
+    public CMatrix range(double from_inclusive, double to_exclusive) {
+        return vector(from_inclusive, to_exclusive - 1);
     }
-    
-    public CMatrix range(int from_inclusive, int to_exclusive){
-        return vector(from_inclusive,to_exclusive-1);
+
+    public CMatrix range(int from_inclusive, int to_exclusive) {
+        return vector(from_inclusive, to_exclusive - 1);
     }
-    
-    public CMatrix range(int to_exclusive){
-        return vector(0,to_exclusive-1);
+
+    public CMatrix range(int to_exclusive) {
+        return vector(0, to_exclusive - 1);
     }
-    
-    public CMatrix range(int from_inclusive, int to_exclusive, double step){
-        return vector(from_inclusive,step,to_exclusive-1);
+
+    public CMatrix range(int from_inclusive, int to_exclusive, double step) {
+        return vector(from_inclusive, step, to_exclusive - 1);
     }
-    
-    
+
     /**
      * executes as Matlab command of a=1:10;
      *
@@ -1305,7 +1304,7 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|rand";
         return ret.clone(this);
     }
-    
+
     public CMatrix rand(int n) {
         CMatrix ret = new CMatrix(n);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, random));
@@ -1361,7 +1360,7 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|randn";
         return ret.clone(this);
     }
-    
+
     /**
      * Generates nxn square matrix with normal distribution
      *
@@ -1546,8 +1545,8 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * By using single plot frame, this command try to redraw updated matrix
-     * it is useful if you make animation or moving simulation within the loop
+     * By using single plot frame, this command try to redraw updated matrix it
+     * is useful if you make animation or moving simulation within the loop
      *
      * @return CMatrix
      */
@@ -1560,10 +1559,10 @@ public final class CMatrix implements Serializable {
         framePlot.setVisible(true);
         return this;
     }
-    
+
     /**
-     * By using single plot frame, this command try to redraw updated matrix
-     * it is useful if you make animation or moving simulation within the loop
+     * By using single plot frame, this command try to redraw updated matrix it
+     * is useful if you make animation or moving simulation within the loop
      *
      * @return CMatrix
      */
@@ -1576,10 +1575,10 @@ public final class CMatrix implements Serializable {
         framePlot.setVisible(true);
         return this;
     }
-    
+
     /**
-     * By using single plot frame, this command try to redraw updated matrix
-     * it is useful if you make animation or moving simulation within the loop
+     * By using single plot frame, this command try to redraw updated matrix it
+     * is useful if you make animation or moving simulation within the loop
      *
      * @return CMatrix
      */
@@ -1614,7 +1613,7 @@ public final class CMatrix implements Serializable {
         FramePlot frm = new FramePlot(this, x);
         frm.setVisible(true);
         return this;
-    }    
+    }
 
     public CMatrix plot(TFigureAttribute attr) {
         FramePlot frm = new FramePlot(this, attr);
@@ -2503,20 +2502,20 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix matrix(int[]... p) {
-        double[] ret=new double[1];
+        double[] ret = new double[1];
         if (p.length == 0) {
             return null;
         } else if (p.length == 1) {
             int[] rows = p[0];
             ret = new double[rows.length];
-            double[] one_d=this.toDoubleArray1D();
+            double[] one_d = this.toDoubleArray1D();
             for (int i = 0; i < rows.length; i++) {
                 try {
-                   ret[i] = one_d[rows[i]]; 
+                    ret[i] = one_d[rows[i]];
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                
+
             }
         } else {
 //            int[] rows = p[0];
@@ -2552,7 +2551,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix column(CMatrix prev, int[] cols) {
-        double[][] yedek = new CMatrix(array).transpose().array;
+        double[][] yedek = new CMatrix(prev.array).transpose().array;
         double[][] d = new double[cols.length][yedek[0].length];
         for (int i = 0; i < cols.length; i++) {
             d[i] = yedek[cols[i]];
@@ -2652,6 +2651,13 @@ public final class CMatrix implements Serializable {
                 int[] p = checkParam(p1, this.getRowNumber());
                 ret = row(ret, p);
             }
+        } //her iki parametre de birer matris aralığı belirtiyor ise
+        //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
+        else if (p1.contains(":") && p2.contains(":")) {
+            int[] pr = checkParam(p1, this.getRowNumber());
+            ret = row(ret, pr);
+            int[] pc = checkParam(p2, this.getColumnNumber());
+            ret = column(ret, pc);
         } //        else if (p1.contains(":") & p2.contains(":")) {
         //            
         //        } else if (p1.contains(":")) {
@@ -2927,33 +2933,33 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|tan";
         return ret;
     }
-    
+
     public CMatrix cot() {
         CMatrix ret = this.clone(this);
 
         ret.image = null;
         for (int i = 0; i < ret.getRowNumber(); i++) {
             for (int j = 0; j < ret.getColumnNumber(); j++) {
-                ret.array[i][j] = 1/Math.tan(ret.array[i][j]);
+                ret.array[i][j] = 1 / Math.tan(ret.array[i][j]);
             }
         }
         ret.name = this.name + "|cot";
         return ret;
     }
-    
+
     public CMatrix acot() {
         CMatrix ret = this.clone(this);
 
         ret.image = null;
         for (int i = 0; i < ret.getRowNumber(); i++) {
             for (int j = 0; j < ret.getColumnNumber(); j++) {
-                ret.array[i][j] = 1/Math.atan(ret.array[i][j]);
+                ret.array[i][j] = 1 / Math.atan(ret.array[i][j]);
             }
         }
         ret.name = this.name + "|atan";
         return ret;
     }
-    
+
     public CMatrix atan() {
         CMatrix ret = this.clone(this);
 
@@ -3050,16 +3056,17 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|round";
         return ret;
     }
-    
+
     /**
      * format double values with provided precision
+     *
      * @param precision
      * @return
      */
     public CMatrix round(int precision) {
         CMatrix ret = this.clone(this);
         ret.image = null;
-        ret.array=FactoryUtils.formatDouble(ret.array,precision);
+        ret.array = FactoryUtils.formatDouble(ret.array, precision);
         ret.name = this.name + "|round";
         return ret;
     }
@@ -3497,9 +3504,9 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix head() {
         System.out.println("Matrix of [" + array.length + "x" + array[0].length + "]");
-        int max=5;
-        if (this.getRowNumber()<max) {
-            max=this.getRowNumber();
+        int max = 5;
+        if (this.getRowNumber() < max) {
+            max = this.getRowNumber();
         }
         if (columnNames != null && !columnNames.isEmpty()) {
             for (String columnName : columnNames) {
@@ -3518,7 +3525,7 @@ public final class CMatrix implements Serializable {
             for (int i = 0; i < max; i++) {
                 for (int j = 0; j < array[0].length; j++) {
                     System.out.print(array[i][j] + "\t");
-                    
+
                 }
                 System.out.println("");
             }
@@ -3867,7 +3874,7 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|covariance";
         return ret;
     }
-    
+
     /**
      * Matrix covariance
      *
@@ -3875,13 +3882,13 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix covValue() {
         CMatrix ret = this.clone(this);
-        double[][] cov_d=FactoryMatrix.cov(ret.array);
-        double[] d={cov_d[0][1]};
+        double[][] cov_d = FactoryMatrix.cov(ret.array);
+        double[] d = {cov_d[0][1]};
         ret = ret.setArray(d);
         ret.name = this.name + "|covariance value";
         return ret;
     }
-    
+
     /**
      * Matrix correlation coefficient
      *
@@ -3889,12 +3896,12 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix corrcoef() {
         CMatrix ret = this.clone(this);
-        double[][] corr=FactoryMatrix.corrcoef(ret.array);
+        double[][] corr = FactoryMatrix.corrcoef(ret.array);
         ret = ret.setArray(corr);
         ret.name = this.name + "|correlation coefficient";
         return ret;
     }
-    
+
     /**
      * Matrix correlation coefficient value
      *
@@ -3902,8 +3909,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix corrcoefValue() {
         CMatrix ret = this.clone(this);
-        double[][] corr=FactoryMatrix.corrcoef(ret.array);
-        double[] d={corr[0][1]};
+        double[][] corr = FactoryMatrix.corrcoef(ret.array);
+        double[] d = {corr[0][1]};
         ret = ret.setArray(d);
         ret.name = this.name + "|correlation coefficient value";
         return ret;
@@ -4086,28 +4093,28 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix getAlphaChannelColor() {
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getAlphaChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
     }
 
     public CMatrix getRedChannelColor() {
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getRedChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
     }
 
     public CMatrix getGreenChannelColor() {
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getGreenChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
     }
 
     public CMatrix getBlueChannelColor() {
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getBlueChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
@@ -4180,6 +4187,7 @@ public final class CMatrix implements Serializable {
     public CMatrix noise(double range) {
         return jitter(range);
     }
+
     /**
      * add certain noise on the matrix elements
      *
@@ -4311,14 +4319,14 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
-    public CMatrix imread(String path) {        
+    public CMatrix imread(String path) {
         return readImage(path);
     }
 
     public CMatrix readImage() {
         File fl = ImageProcess.readImage();
         BufferedImage bf = ImageProcess.readImageFromFile(fl);
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         if (bf != null) {
             ret.image = bf;
 //            this.array = FactoryUtils.toDoubleArray(ImageProcess.imageToPixels255(image));
@@ -4339,7 +4347,7 @@ public final class CMatrix implements Serializable {
 //            this.array = ImageProcess.imageToDoublePixels255(this.image);
             this.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
             this.imagePath = path;
-        }else{
+        } else {
             System.err.println("null pointer exception, image could not be loaded properly");
         }
         return this;
@@ -4545,9 +4553,8 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * signum is a sign function which satisfies three conditions |-1 :x less than 0
-     * signum(x)=| 0 :x=0
-     *           |+1 :x greater than 0
+     * signum is a sign function which satisfies three conditions |-1 :x less
+     * than 0 signum(x)=| 0 :x=0 |+1 :x greater than 0
      *
      * @return
      */
@@ -4705,17 +4712,18 @@ public final class CMatrix implements Serializable {
 
     /**
      * calculate entropy values of each columns
+     *
      * @return double[]
      */
     public double[] getColumnEntropy() {
-        int nc=this.getColumnNumber();
+        int nc = this.getColumnNumber();
         double[] entropies = new double[nc];
         for (int i = 0; i < nc; i++) {
-            entropies[i]=this.cmd(":",""+i).getEntropy();
+            entropies[i] = this.cmd(":", "" + i).getEntropy();
         }
         return entropies;
     }
-    
+
     public double getEntropy() {
         double entropy = 0.0d;
         double[] pdfArray = getPDFData().toDoubleArray1D();
@@ -4740,20 +4748,21 @@ public final class CMatrix implements Serializable {
         ret.returnedValue.str = "" + getEnergy();
         return ret;
     }
-    
+
     /**
      * calculate energy values of each columns
+     *
      * @return double[]
      */
     public double[] getColumnEnergy() {
-        int nc=this.getColumnNumber();
+        int nc = this.getColumnNumber();
         double[] energies = new double[nc];
         for (int i = 0; i < nc; i++) {
-            energies[i]=this.cmd(":",""+i).getEnergy();
+            energies[i] = this.cmd(":", "" + i).getEnergy();
         }
         return energies;
     }
-    
+
     public double getEnergy() {
         double energy = 0.0d;
         for (int i = 0; i < getRowNumber(); i++) {
@@ -4775,20 +4784,21 @@ public final class CMatrix implements Serializable {
         ret.returnedValue.str = "" + getKurtosis();
         return ret;
     }
-    
+
     /**
      * calculate energy values of each columns
+     *
      * @return double[]
      */
     public double[] getColumnKurtosis() {
-        int nc=this.getColumnNumber();
+        int nc = this.getColumnNumber();
         double[] kurtosis = new double[nc];
         for (int j = 0; j < nc; j++) {
-            kurtosis[j]=this.cmd(":",""+j).getKurtosis();
+            kurtosis[j] = this.cmd(":", "" + j).getKurtosis();
         }
         return kurtosis;
     }
-    
+
     public double getKurtosis() {
         int[] nums = toIntArray1D();
         int n = nums.length;
@@ -4830,20 +4840,21 @@ public final class CMatrix implements Serializable {
         ret.returnedValue.str = "" + getSkewness();
         return ret;
     }
-    
+
     /**
      * calculate skewness values of each columns
+     *
      * @return double[]
      */
     public double[] getColumnSkewness() {
-        int nc=this.getColumnNumber();
+        int nc = this.getColumnNumber();
         double[] skewness = new double[nc];
         for (int j = 0; j < nc; j++) {
-            skewness[j]=this.cmd(":",""+j).getSkewness();
+            skewness[j] = this.cmd(":", "" + j).getSkewness();
         }
         return skewness;
     }
-    
+
     public double getSkewness() {
         int[] nums = toIntArray1D();
         int n = nums.length;
@@ -4926,10 +4937,9 @@ public final class CMatrix implements Serializable {
         }
         return ret;
     }
-    
+
     /**
-     * row numbers should be identical
-     * added matrix should have single column
+     * row numbers should be identical added matrix should have single column
      * addition takes place on each column of original matrix
      *
      * @param cmx : added matrix
@@ -5178,6 +5188,66 @@ public final class CMatrix implements Serializable {
     }
 
     /**
+     * compute combination of n subset of the string array you can get the
+     * result by means of combinationPairs array defined in CMatrix as public
+     * access modifier
+     *
+     * @param lst
+     * @param n
+     * @return
+     */
+    public CMatrix combinationPairs(String[] lst, int n) {
+        CMatrix ret = this.clone(this);
+        String[] s = FactoryCombination.getCombination(lst, n);
+        ret.combinationPairs = s;
+        return ret;
+    }
+
+    /**
+     * compute combination of n subset of the char array you can get the result
+     * by means of combinationPairs array defined in CMatrix as public access
+     * modifier
+     *
+     * @param lst
+     * @param n
+     * @return
+     */
+    public CMatrix combinationPairs(char[] lst, int n) {
+        CMatrix ret = this.clone(this);
+        String[] s = FactoryCombination.getCombination(FactoryMatrix.toStringArray(lst), n);
+        ret.combinationPairs = s;
+        return ret;
+    }
+
+    /**
+     * compute permutation of n subset of the string array you can get the
+     * result by means of permutationPairs array defined in CMatrix as public
+     * access modifier
+     *
+     * @param lst
+     * @param n
+     * @return
+     */
+    public CMatrix permutationPairs(char[] lst, int n) {
+        CMatrix ret = this.clone(this);
+
+        List<String> list = new ArrayList();
+        String[] ss = FactoryCombination.getCombination(FactoryMatrix.toStringArray(lst), n);
+        int k = 0;
+        for (int i = 0; i < ss.length; i++) {
+            String[] s = FactoryPermutation.getPermutation(ss[i].replace(",", "").toCharArray());
+            for (int j = 0; j < s.length; j++) {
+                list.add(s[j]);
+            }
+        }
+        ret.permutationPairs = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            ret.permutationPairs[i] = list.get(i);
+        }
+        return ret;
+    }
+
+    /**
      * Matlab compatible command: calculate C(n,k) value
      *
      * @param n : size of the superset
@@ -5192,7 +5262,8 @@ public final class CMatrix implements Serializable {
             ret.returnedValue.str = -1 + "";
         }
 
-        ret.returnedValue.str = "" + (int) (FactoryUtils.fact(n) / (FactoryUtils.fact(n - k) * FactoryUtils.fact(k)));
+//        ret.returnedValue.str = "" + (int) (FactoryUtils.fact(n) / (FactoryUtils.fact(n - k) * FactoryUtils.fact(k)));
+        ret.returnedValue.str = "" + FactoryUtils.combination(n, k);
         return ret;
     }
 
@@ -5270,7 +5341,7 @@ public final class CMatrix implements Serializable {
     public CMatrix cat(int dim, CMatrix cm) {
 //        String[] both = Arrays.copyOf(first, first.length + second.length);
 //        System.arraycopy(second, 0, both, first.length, second.length);
-        
+
         CMatrix ret = this.clone(this);
 
         if (dim == 1) {
@@ -6331,7 +6402,7 @@ public final class CMatrix implements Serializable {
      * %75 train için , %25 test için ayırır. Geriye CMatrix[0] train, ve
      * CMatrix[1] ise test set olarak gönderir.
      *
-      * @return array of CMatrix
+     * @return array of CMatrix
      */
     public CMatrix[] splitTestAndTrain(int ntrain, int ntest) {
         CMatrix ds = this.clone(this);
@@ -6563,7 +6634,7 @@ public final class CMatrix implements Serializable {
      *
      * @param cm1 : checked matrix
      * @param cm2 : checked matrix
-     * @return 
+     * @return
      */
     public boolean isIdentical(CMatrix cm1, CMatrix cm2) {
         return cm1.getRowNumber() == cm2.getRowNumber() && cm1.getColumnNumber() == cm2.getColumnNumber();
@@ -6779,17 +6850,17 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix im2QuantizationLevel(int n) {
-        if (n >= 256 || n<=0) {
+        if (n >= 256 || n <= 0) {
             return this;
         }
-        double t=1;
-        n=n-1;
-        if (n==0) {
-            t=255;
-        }else{            
+        double t = 1;
+        n = n - 1;
+        if (n == 0) {
+            t = 255;
+        } else {
             t = 255.0 / n;
         }
-        
+
         CMatrix ret = this.clone(this);
 
         ret = map(0, n).round().timesScalar(t);
@@ -7095,7 +7166,6 @@ public final class CMatrix implements Serializable {
         t1 = FactoryUtils.toc("cost of building new CMatrix:", t1);
         return ret;
     }
-
 
     /**
      * improved version of plot, based on javafx charts
@@ -7448,7 +7518,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix make_blobs(int n_samples, int n_features, int n_groups, int mean_scale, int var_scale) {
-        float[][] f=FactoryMatrix.make_blobs(n_samples, n_features, n_groups, mean_scale, var_scale,random);
+        float[][] f = FactoryMatrix.make_blobs(n_samples, n_features, n_groups, mean_scale, var_scale, random);
         setArray(f);
         float[] cl = FactoryMatrix.getLastColumn(f);
         setClassLabelValues(Arrays.asList(cl));
@@ -7459,7 +7529,7 @@ public final class CMatrix implements Serializable {
         setClassLabelNames(Arrays.asList(gr_names));
         return this;
     }
-    
+
     public CMatrix setArray(float[][] f) {
         array = FactoryUtils.toDoubleArray2D(f);
         return this;
@@ -7477,7 +7547,7 @@ public final class CMatrix implements Serializable {
         random.setSeed(n);
         return this;
     }
-    
+
     /**
      * set SecureRandom seed in order to guarantee the same results for each
      * draw
@@ -7514,8 +7584,8 @@ public final class CMatrix implements Serializable {
 
     /**
      * select n random sample from the matrix mxn, if mxn is normal matrix it
-     * selects random n rows, if mxn is column vector it selects random n rows, if
-     * mxn is row vector it selects random n column
+     * selects random n rows, if mxn is column vector it selects random n rows,
+     * if mxn is row vector it selects random n column
      *
      * @param n
      * @return
@@ -7525,20 +7595,20 @@ public final class CMatrix implements Serializable {
         int nr = ret.getRowNumber();
         int nc = ret.getColumnNumber();
         int[] index = FactoryMatrix.rand(n, nr, random);
-        if (nr > 1 && nc >= 1) {            
+        if (nr > 1 && nc >= 1) {
             double[][] d = new double[n][nc];
             for (int i = 0; i < n; i++) {
                 d[i] = ret.array[index[i]];
             }
-            ret=ret.setArray(d);
+            ret = ret.setArray(d);
         } else if (nr == 1) {
-            double[] d=new double[n];
-            double[] ref=ret.toDoubleArray1D();
+            double[] d = new double[n];
+            double[] ref = ret.toDoubleArray1D();
             for (int i = 0; i < n; i++) {
-                d[i]=ref[index[i]];
+                d[i] = ref[index[i]];
             }
-            ret=ret.setArray(d);
-        } 
+            ret = ret.setArray(d);
+        }
         return ret;
     }
 
@@ -7554,45 +7624,47 @@ public final class CMatrix implements Serializable {
         int nr = ret.getRowNumber();
         int nc = ret.getColumnNumber();
         int mid = nr / 2;
-        CMatrix cmx=CMatrix.getInstance().linspace(-mid, mid, nr).replicateColumn(nc).transpose();//.dump();
-        CMatrix cmy=cmx.transpose();//.dump();
-        double std2=sigma*sigma;
-        double std4=std2*std2;
-        CMatrix arg=cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).multiplyScalar(-1).divideScalar(2*std2);
-        CMatrix h=arg.exp();
-        double sumh=h.sumTotal();
-        if (sumh!=0) {
-            h=h.divideScalar(sumh);
+        CMatrix cmx = CMatrix.getInstance().linspace(-mid, mid, nr).replicateColumn(nc).transpose();//.dump();
+        CMatrix cmy = cmx.transpose();//.dump();
+        double std2 = sigma * sigma;
+        double std4 = std2 * std2;
+        CMatrix arg = cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).multiplyScalar(-1).divideScalar(2 * std2);
+        CMatrix h = arg.exp();
+        double sumh = h.sumTotal();
+        if (sumh != 0) {
+            h = h.divideScalar(sumh);
         }
-        CMatrix arg2=cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).minusScalar(2*std2).divideScalar(std4);
-        CMatrix h1=h.multiplyElement(arg2);
-        h=h1.minusScalar(h1.sumTotal()/(ret.getMatrixVolume()));
-        
+        CMatrix arg2 = cmx.multiplyElement(cmx).add(cmy.multiplyElement(cmy)).minusScalar(2 * std2).divideScalar(std4);
+        CMatrix h1 = h.multiplyElement(arg2);
+        h = h1.minusScalar(h1.sumTotal() / (ret.getMatrixVolume()));
+
         return h;
     }
-    
-    public double getMatrixVolume(){
-        return this.getRowNumber()*this.getColumnNumber();
+
+    public double getMatrixVolume() {
+        return this.getRowNumber() * this.getColumnNumber();
     }
 
     /**
-     * generate mesh grid matrix along x axes
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along x axes it is used for applying 2D
+     * functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @return CMatrix
      */
     public CMatrix meshGridX(double from, double to) {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.meshGridX(ret.array,from,to);
+        ret.array = FactoryMatrix.meshGridX(ret.array, from, to);
         return ret;
     }
-    
+
     /**
-     * generate mesh grid matrix along x axes in default
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along x axes in default it is used for applying
+     * 2D functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @return CMatrix
@@ -7600,78 +7672,83 @@ public final class CMatrix implements Serializable {
     public CMatrix meshGrid(double from, double to) {
         return meshGridX(from, to);
     }
+
     /**
-     * generate mesh grid matrix along x axes 
-     * yields square matrix of numberOf x numberOf
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along x axes yields square matrix of numberOf x
+     * numberOf it is used for applying 2D functions on the plane in a loop-less
+     * manner resembles to the Matlab meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @param numberOf:# of elements
      * @return CMatrix
      */
-    public CMatrix meshGridX(double from, double to,int numberOf) {
+    public CMatrix meshGridX(double from, double to, int numberOf) {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.meshGridX(from,to,numberOf);
+        ret.array = FactoryMatrix.meshGridX(from, to, numberOf);
         return ret;
     }
+
     /**
-     * generate mesh grid matrix along x axes in default
-     * yields square matrix of numberOf x numberOf
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along x axes in default yields square matrix of
+     * numberOf x numberOf it is used for applying 2D functions on the plane in
+     * a loop-less manner resembles to the Matlab meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @param numberOf:# of elements
      * @return CMatrix
      */
-    public CMatrix meshGrid(double from, double to,int numberOf) {
+    public CMatrix meshGrid(double from, double to, int numberOf) {
         return meshGridX(from, to, numberOf);
     }
+
     /**
-     * generate mesh grid matrix along y axes
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along y axes it is used for applying 2D
+     * functions on the plane in a loop-less manner resembles to the Matlab
+     * meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @return CMatrix
      */
     public CMatrix meshGridY(double from, double to) {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.meshGridY(ret.array,from,to);
+        ret.array = FactoryMatrix.meshGridY(ret.array, from, to);
         return ret;
     }
+
     /**
-     * generate mesh grid matrix along y axes 
-     * yields square matrix of numberOf x numberOf
-     * it is used for applying 2D functions on the plane in a loop-less manner
-     * resembles to the Matlab meshgrid command
+     * generate mesh grid matrix along y axes yields square matrix of numberOf x
+     * numberOf it is used for applying 2D functions on the plane in a loop-less
+     * manner resembles to the Matlab meshgrid command
+     *
      * @param from:initial point
      * @param to:end point
      * @param numberOf:# of elements
      * @return CMatrix
      */
-    public CMatrix meshGridY(double from, double to,int numberOf) {
+    public CMatrix meshGridY(double from, double to, int numberOf) {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.meshGridY(from,to,numberOf);
+        ret.array = FactoryMatrix.meshGridY(from, to, numberOf);
         return ret;
     }
-    
-    public CMatrix meshGridIterateForward(){
+
+    public CMatrix meshGridIterateForward() {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.meshGridIterateForward(ret.array);
+        ret.array = FactoryMatrix.meshGridIterateForward(ret.array);
         return ret;
     }
 
     public CMatrix inverseLog() {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.inverseLog(ret.array);
+        ret.array = FactoryMatrix.inverseLog(ret.array);
         return ret;
     }
 
     public CMatrix inversePower(double x) {
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.inversePower(x,ret.array);
+        ret.array = FactoryMatrix.inversePower(x, ret.array);
         return ret;
     }
 
@@ -7681,30 +7758,31 @@ public final class CMatrix implements Serializable {
 
     public CMatrix imWeightCenter(boolean isShow) {
         CMatrix ret = this.clone(this);
-        CPoint cp=ImageProcess.getCenterOfGravityColor(ret.image, isShow);
-        double[] d=new double[2];
-        d[0]=cp.row;
-        d[1]=cp.column;
+        CPoint cp = ImageProcess.getCenterOfGravityColor(ret.image, isShow);
+        double[] d = new double[2];
+        d[0] = cp.row;
+        d[1] = cp.column;
         ret.setArray(d);
         return ret;
     }
 
     public CMatrix applyFunction(CMatrix f) {
         CMatrix ret = this.clone(this);
-        ret=ret.rgb2gray();
-        ret.array=FactoryMatrix.applyFunction(ret.array,f.toDoubleArray1D());
-        ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        ret = ret.rgb2gray();
+        ret.array = FactoryMatrix.applyFunction(ret.array, f.toDoubleArray1D());
+        ret.image = ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
-    
+
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix as cells from blue to red in default
-     * or user can give the color range 
-     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
-     * @return 
+     * compatible with Matlab's heatmap function try to colorize the matrix as
+     * cells from blue to red in default or user can give the color range or
+     * user can specify the center point (value) in the matrix and remaining
+     * cells are colored around this point
+     *
+     * @return
      */
-    public CMatrix heatmap(){
+    public CMatrix heatmap() {
         if (!hold_on) {
             frameHeatMap = new FrameHeatMap(this);
         } else {
@@ -7718,33 +7796,35 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix as cells from blue to red in default
-     * or user can give the color range 
-     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
+     * compatible with Matlab's heatmap function try to colorize the matrix as
+     * cells from blue to red in default or user can give the color range or
+     * user can specify the center point (value) in the matrix and remaining
+     * cells are colored around this point
+     *
      * @param showValue : write the value of the cell et the center
-     * @return 
+     * @return
      */
-    public CMatrix heatmap(boolean showValue){
+    public CMatrix heatmap(boolean showValue) {
         if (!hold_on) {
             frameHeatMap = new FrameHeatMap(this);
         } else {
             if (frameHeatMap == null) {
                 frameHeatMap = new FrameHeatMap(this);
             }
-            frameHeatMap.setMatrix(this);            
+            frameHeatMap.setMatrix(this);
         }
         frameHeatMap.setVisible(true);
         return this;
     }
 
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix around the center color
+     * compatible with Matlab's heatmap function try to colorize the matrix
+     * around the center color
+     *
      * @param centerColor cells are colored around this color
      * @return original CMatrix
      */
-    public CMatrix heatmap(Color centerColor){
+    public CMatrix heatmap(Color centerColor) {
         if (!hold_on) {
             frameHeatMap = new FrameHeatMap(this);
         } else {
@@ -7757,21 +7837,22 @@ public final class CMatrix implements Serializable {
         frameHeatMap.setVisible(true);
         return this;
     }
-    
+
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix around center color
+     * compatible with Matlab's heatmap function try to colorize the matrix
+     * around center color
+     *
      * @param centerColor cells are colored around this color
      * @param width :width of the frame
      * @param height:height of the frame
      * @return original CMatrix
      */
-    public CMatrix heatmap(Color centerColor,int width,int height){
+    public CMatrix heatmap(Color centerColor, int width, int height) {
         if (!hold_on) {
-            frameHeatMap = new FrameHeatMap(this,width,height);
+            frameHeatMap = new FrameHeatMap(this, width, height);
         } else {
             if (frameHeatMap == null) {
-                frameHeatMap = new FrameHeatMap(this,width,height);
+                frameHeatMap = new FrameHeatMap(this, width, height);
             }
             frameHeatMap.setMatrix(this);
         }
@@ -7779,45 +7860,23 @@ public final class CMatrix implements Serializable {
         frameHeatMap.setVisible(true);
         return this;
     }
-    
+
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix around center color
-     * @param centerColor cells are colored around this color
-     * @param width :width of the frame
-     * @param height:height of the frame
-     * @param showCellEdge : cell's edge visible or not
-     * @return original CMatrix
-     */
-    public CMatrix heatmap(Color centerColor,int width,int height,boolean showCellEdge){
-        if (!hold_on) {
-            frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge);
-        } else {
-            if (frameHeatMap == null) {
-                frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge);
-            }
-            frameHeatMap.setMatrix(this);
-        }
-        frameHeatMap.setCenterColor(centerColor);
-        frameHeatMap.setVisible(true);
-        return this;
-    }
-    
-    /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix around center color
+     * compatible with Matlab's heatmap function try to colorize the matrix
+     * around center color
+     *
      * @param centerColor cells are colored around this color
      * @param width :width of the frame
      * @param height:height of the frame
      * @param showCellEdge : cell's edge visible or not
      * @return original CMatrix
      */
-    public CMatrix heatmap(Color centerColor,int width,int height,boolean showCellEdge,boolean showValue){
+    public CMatrix heatmap(Color centerColor, int width, int height, boolean showCellEdge) {
         if (!hold_on) {
-            frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge,showValue);
+            frameHeatMap = new FrameHeatMap(this, width, height, showCellEdge);
         } else {
             if (frameHeatMap == null) {
-                frameHeatMap = new FrameHeatMap(this,width,height,showCellEdge,showValue);
+                frameHeatMap = new FrameHeatMap(this, width, height, showCellEdge);
             }
             frameHeatMap.setMatrix(this);
         }
@@ -7825,17 +7884,43 @@ public final class CMatrix implements Serializable {
         frameHeatMap.setVisible(true);
         return this;
     }
+
     /**
-     * compatible with Matlab's heatmap function
-     * try to colorize the matrix as cells from blue to red in default
-     * or user can give the color range 
-     * or user can specify the center point (value) in the matrix and remaining cells are colored around this point
-     * @param fromColor  start color
+     * compatible with Matlab's heatmap function try to colorize the matrix
+     * around center color
+     *
+     * @param centerColor cells are colored around this color
+     * @param width :width of the frame
+     * @param height:height of the frame
+     * @param showCellEdge : cell's edge visible or not
+     * @return original CMatrix
+     */
+    public CMatrix heatmap(Color centerColor, int width, int height, boolean showCellEdge, boolean showValue) {
+        if (!hold_on) {
+            frameHeatMap = new FrameHeatMap(this, width, height, showCellEdge, showValue);
+        } else {
+            if (frameHeatMap == null) {
+                frameHeatMap = new FrameHeatMap(this, width, height, showCellEdge, showValue);
+            }
+            frameHeatMap.setMatrix(this);
+        }
+        frameHeatMap.setCenterColor(centerColor);
+        frameHeatMap.setVisible(true);
+        return this;
+    }
+
+    /**
+     * compatible with Matlab's heatmap function try to colorize the matrix as
+     * cells from blue to red in default or user can give the color range or
+     * user can specify the center point (value) in the matrix and remaining
+     * cells are colored around this point
+     *
+     * @param fromColor start color
      * @param centerColor center color
      * @param toColor final color
-     * @return 
+     * @return
      */
-    public CMatrix heatmap(Color fromColor, Color centerColor, Color toColor){
+    public CMatrix heatmap(Color fromColor, Color centerColor, Color toColor) {
         if (!hold_on) {
             frameHeatMap = new FrameHeatMap(this);
         } else {
@@ -7853,62 +7938,66 @@ public final class CMatrix implements Serializable {
 
     public CMatrix addClassLabel(String scl) {
         CMatrix ret = this.clone(this);
-        double cl=Double.parseDouble(scl);
-        ret.setArray(FactoryMatrix.addClassLabel(ret.array,cl));
+        double cl = Double.parseDouble(scl);
+        ret.setArray(FactoryMatrix.addClassLabel(ret.array, cl));
         return ret;
     }
-    
+
     /**
      * perlin noise generator with scale equals to 0.1 by default
+     *
      * @return
      */
-    public CMatrix perlinNoise(){
+    public CMatrix perlinNoise() {
         CMatrix ret = this.clone(this);
         ret.setArray(FactoryMatrix.perlinNoise(ret.array));
         ret.name = this.name + "|perlinNoise";
         return ret;
     }
-    
+
     /**
      * perlin noise generator with scale 0.01 to 10
-     * @param scale 0.01 to 10 hint: you should decrease scale if your matrix become larger
+     *
+     * @param scale 0.01 to 10 hint: you should decrease scale if your matrix
+     * become larger
      * @return
      */
-    public CMatrix perlinNoise(double scale){
+    public CMatrix perlinNoise(double scale) {
         CMatrix ret = this.clone(this);
-        ret.setArray(FactoryMatrix.perlinNoise(ret.array,scale));
+        ret.setArray(FactoryMatrix.perlinNoise(ret.array, scale));
         ret.name = this.name + "|perlinNoise";
         return ret;
     }
-    
+
     /**
      * Convolution operation
+     *
      * @param kernel : kernel should be smaller than the original matrix
      * @return cloned CMatrix object
      */
-    public CMatrix convolve(CMatrix kernel){
-        if (kernel.getRowNumber()!=kernel.getColumnNumber()
-                || kernel.getRowNumber()%2==0
-                || kernel.getColumnNumber()%2==0
-                || kernel.getRowNumber()>=this.getRowNumber() 
-                || kernel.getColumnNumber()>=this.getColumnNumber()) {
+    public CMatrix convolve(CMatrix kernel) {
+        if (kernel.getRowNumber() != kernel.getColumnNumber()
+                || kernel.getRowNumber() % 2 == 0
+                || kernel.getColumnNumber() % 2 == 0
+                || kernel.getRowNumber() >= this.getRowNumber()
+                || kernel.getColumnNumber() >= this.getColumnNumber()) {
             System.err.println("kernel mismatch");
             return this;
         }
-        CMatrix ret=this.clone(this);
+        CMatrix ret = this.clone(this);
         ret.name = this.name + "|convolve";
-        ret.setArray(FactoryMatrix.convolve(ret.array,kernel.array));
+        ret.setArray(FactoryMatrix.convolve(ret.array, kernel.array));
         return ret;
     }
-    
-    public CDL switchToDeepLearning(){
+
+    public CDL switchToDeepLearning() {
         return CDL.getInstance(this);
     }
 
     public CMatrix distinct() {
         CMatrix ret = this.clone(this);
-        double[] d=ret.toDoubleArray1D();
-        d=Arrays.stream(d).distinct().toArray();
+        double[] d = ret.toDoubleArray1D();
+        d = Arrays.stream(d).distinct().toArray();
         ret.setArray(d);
         return ret;
     }

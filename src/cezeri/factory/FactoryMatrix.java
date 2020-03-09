@@ -3158,5 +3158,13 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
+    public static String[] toStringArray(char[] lst) {
+        String[] st=new String[lst.length];
+        for (int i = 0; i < lst.length; i++) {
+            st[i]=String.valueOf(lst[i]);
+        }
+        return st;
+    }
+
 }
 

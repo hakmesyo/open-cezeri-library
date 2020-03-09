@@ -2,6 +2,7 @@ package cezeri.factory;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FactoryCombination {
 
@@ -158,10 +159,11 @@ public class FactoryCombination {
             "11","12","13","14","15","16","17","18","19","20","21","22","23"
         ,"24","25","26"};
         String[] lst=getCombination(elements,5);
-        System.out.println("length:"+lst.length);
-        String[] lst2=getAllCombinations(elements);
-//        String[] lst2=getAllCombinations(9);
-        toString(lst2);
+        Arrays.asList(lst).forEach(System.out::println);
+//        System.out.println("length:"+lst.length);
+//        String[] lst2=getAllCombinations(elements);
+////        String[] lst2=getAllCombinations(9);
+//        toString(lst2);
     }
     
     public static void toString(String[] lst){
