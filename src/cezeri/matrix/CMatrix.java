@@ -1048,6 +1048,18 @@ public final class CMatrix implements Serializable {
         return p;
     }
     
+    public CMatrix range2D(double from_inclusive, double to_exclusive){
+        CMatrix ret=new CMatrix();
+        ret.setArray(FactoryMatrix.range2D(from_inclusive,to_exclusive,1));
+        return ret;
+    }
+    
+    public CMatrix range2D(double from_inclusive, double to_exclusive, double step){
+        CMatrix ret=new CMatrix();
+        ret.setArray(FactoryMatrix.range2D(from_inclusive,to_exclusive,step));
+        return ret;
+    }
+    
     public CMatrix range(double from_inclusive, double to_exclusive){
         return vector(from_inclusive,to_exclusive-1);
     }
@@ -4158,6 +4170,16 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    /**
+     * add certain noise on the matrix elements
+     *
+     * @param range: how much noise
+     *
+     * @return CMatrix
+     */
+    public CMatrix noise(double range) {
+        return jitter(range);
+    }
     /**
      * add certain noise on the matrix elements
      *

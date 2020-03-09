@@ -188,7 +188,31 @@ public class FactoryNormalization {
         return ret;
     }
 
-    public static double[][] normalizeWithRange(double[][] param, double min, double max) {        
+    public static double[][] normalizeWithRange(double[][] d, double min, double max) {        
+        double[][] temp = d.clone();        
+        double range = max - min;
+        double mn=FactoryUtils.getMinimum(d);
+        double mx=FactoryUtils.getMaximum(d);
+        double r=mx-mn;
+        int nr=d.length,nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                temp[i][j] = min+range*((temp[i][j] - mn) / r);
+            }
+        }
+
+//        for (int i = 0; i < param.length; i++) {
+//            for (int j = 0; j < param[0].length; j++) {
+//                double tmp = ((param[i][j] * (double) max) / maximum);
+//                if (tmp < min) {
+//                    tmp = min;
+//                }
+//                temp[i][j] = tmp;
+//            }
+//        }
+        return temp;
+    }
+    public static double[][] normalizeWithRange_sorunlu(double[][] param, double min, double max) {        
         double[][] temp = param.clone();
         double[][] temp2=normalizeMinMax(param.clone());
         double range = max - min;

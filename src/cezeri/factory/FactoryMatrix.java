@@ -3145,5 +3145,18 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
+    public static double[][] range2D(double from_inclusive, double to_exclusive,double step) {
+        int delta=(int)((to_exclusive-from_inclusive)/step);
+        double[][] ret=new double[delta][delta];
+        for (int i = 0; i < delta; i++) {
+            for (int j = 0; j < delta; j++) {
+                ret[i][j]=from_inclusive+j*step;
+            }
+            ret[i][0]=from_inclusive+i*step;
+        }
+        
+        return ret;
+    }
+
 }
 
