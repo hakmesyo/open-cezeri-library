@@ -86,6 +86,7 @@ import javax.swing.JFrame;
 import org.opencv.core.Mat;
 import cezeri.transform.TransformFFT;
 import cezeri.transform.TransformRadon;
+import cezeri.utils.BruteForce;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
@@ -8004,5 +8005,22 @@ public final class CMatrix implements Serializable {
 
     public CMatrix negate() {
         return this.multiplyScalar(-1);
+    }
+
+    public CMatrix bruteForceAttack(char[] pool, String pass, boolean isPrint) {
+        long t=FactoryUtils.tic();
+        BruteForce bf = new BruteForce(pool, 1);
+        String newPass = bf.toString();
+        while (true) {
+            if (newPass.equals(pass)) {
+                System.out.println("Password Found: " + newPass);
+                break;
+            }
+            newPass = bf.toString();
+            if (isPrint) System.out.println("" + newPass);
+            bf.increment();
+        }
+        FactoryUtils.toc(t);
+        return this;
     }
 }
