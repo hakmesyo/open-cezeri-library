@@ -124,6 +124,7 @@ public final class CMatrix implements Serializable {
     private List classLabelNames = new ArrayList();
     public String[] combinationPairs;
     public String[] permutationPairs;
+    public int[] shuffleIndexes;
 
     public CMatrix buildFrameImage() {
         if (frameImage == null) {
@@ -653,6 +654,7 @@ public final class CMatrix implements Serializable {
         ret.wekaInstance = this.wekaInstance;
         ret.columnNames = FactoryUtils.clone(this.columnNames);
         ret.classLabels = FactoryUtils.clone(this.classLabels);
+        if (this.shuffleIndexes!=null) ret.shuffleIndexes=FactoryUtils.clone(this.shuffleIndexes);
         return ret;
     }
 
@@ -1815,6 +1817,7 @@ public final class CMatrix implements Serializable {
 //        frm.setVisible(true);
 //        return this;
 //    }
+    
     public CMatrix toGrayLevel() {
         CMatrix ret = this.clone(this);
 
@@ -1822,6 +1825,7 @@ public final class CMatrix implements Serializable {
 //        returnedValue.image = ImageProcess.pixelsToBufferedImage255(returnedValue.array);
         if (ret.image == null) {
             ret.image = ImageProcess.pixelsToImageGray(FactoryUtils.toIntArray2D(ret.array));
+//            ret.image = GrayScale.luminosity();
         }
         ret.image = ImageProcess.toGrayLevel(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
@@ -8022,5 +8026,19 @@ public final class CMatrix implements Serializable {
         }
         FactoryUtils.toc(t);
         return this;
+    }
+    
+    public CMatrix shufflePixelImage(){
+        CMatrix ret = this.clone(this);
+        int[] indexes=new int[ret.array.length];
+        ret.array=FactoryMatrix.shuffle(ret.array,indexes);
+        ret.shuffleIndexes=indexes;
+        return ret;
+    }
+    
+    public CMatrix deShufllePixelImage(){
+        CMatrix ret = this.clone(this);
+        ret.array=FactoryMatrix.deShuffle(ret.array,ret.shuffleIndexes);
+        return ret;
     }
 }

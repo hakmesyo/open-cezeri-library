@@ -4,6 +4,8 @@ import Jama.Matrix;
 import Jama.SingularValueDecomposition;
 import static cezeri.factory.FactoryUtils.showMessage;
 import static cezeri.factory.FactoryUtils.toDoubleArray1D;
+import cezeri.matrix.CMatrix;
+import cezeri.matrix.CPoint;
 import cezeri.matrix.Dimension;
 import cezeri.utils.PerlinNoise;
 import java.io.Serializable;
@@ -3164,6 +3166,30 @@ public final class FactoryMatrix implements Serializable {
             st[i]=String.valueOf(lst[i]);
         }
         return st;
+    }
+
+    public static double[][] shuffle(double[][] d, int[] shuffleIndexes) {
+        int nr=d.length;
+        double[][] ret = new double[nr][d[0].length];
+        int[] ind = randPermInt(d.length);
+        for (int i = 0; i < ind.length; i++) {
+            shuffleIndexes[i]=ind[i];
+        }
+        for (int i = 0; i < nr; i++) {
+            ret[i] = d[shuffleIndexes[i]];
+        }
+        return ret;
+    }
+
+    public static double[][] deShuffle(double[][] d, int[] shuffleIndexes) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret = new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            ret[shuffleIndexes[i]] = FactoryUtils.clone(d[i]);
+        }
+        return ret;
+        
     }
 
 }
