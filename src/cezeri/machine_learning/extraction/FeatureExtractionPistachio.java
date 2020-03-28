@@ -76,7 +76,7 @@ public class FeatureExtractionPistachio {
         if (isShow) {
             cm.imshow();
         }
-        int total = cm.find(TMatrixOperator.EQUALS, 255).toDoubleArray1D().length;
+        int total = cm.findIndex(TMatrixOperator.EQUALS, 255).toDoubleArray1D().length;
         ret = FactoryUtils.formatDouble(total / Math.sqrt(pixelArea));
         return ret;
     }
@@ -107,7 +107,7 @@ public class FeatureExtractionPistachio {
         d = FactoryUtils.overlayIdenticalMatrix(d, dc);
         CMatrix cm = CMatrix.getInstance(d);
         //3.stage: get ridoff outer edge of the pistachio shell
-        CMatrix cm1 = cm.find(TMatrixOperator.EQUALS, 255);
+        CMatrix cm1 = cm.findIndex(TMatrixOperator.EQUALS, 255);
         double[][] dd = FactoryMatrix.clone(d);
         double[] lst = cm1.toDoubleArray1D();
         for (int i = 0; i < lst.length; i++) {
@@ -132,7 +132,7 @@ public class FeatureExtractionPistachio {
         }
         d = FactoryMatrix.clone(dd);
         CMatrix cm2 = CMatrix.getInstance(d);//.imshow(true);
-        lst = cm2.find(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
+        lst = cm2.findIndex(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
 
         //***********************************************
         if (showFigure) {
@@ -140,12 +140,12 @@ public class FeatureExtractionPistachio {
             frm2.setVisible(true);
             frm2.setTitle(index + ".Proposed Pistachio");
             double[][] rg = regionGrowingByBreadthFirst(frm2.getPicturePanel(), cm2.toDoubleArray2D(), lst, 15, otsuThr * 0.9);
-            double[] crackArray = CMatrix.getInstance(rg).find(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
+            double[] crackArray = CMatrix.getInstance(rg).findIndex(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
             ret = FactoryUtils.formatDouble(crackArray.length / (pixelArea) * 100);
             frm2.setTitle(index + ".fıstık CrackRatio:" + ret);
         }else{
             double[][] rg = regionGrowingByBreadthFirst(cm2.toDoubleArray2D(), lst, 15, otsuThr * 0.9);
-            double[] crackArray = CMatrix.getInstance(rg).find(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
+            double[] crackArray = CMatrix.getInstance(rg).findIndex(TMatrixOperator.EQUALS, 255).toDoubleArray1D();
             ret = FactoryUtils.formatDouble(crackArray.length / (pixelArea) * 100);
         }
         return ret;
@@ -237,7 +237,7 @@ public class FeatureExtractionPistachio {
     private static double[][] regionGrowing(double[][] d, CMatrix cm, double threshold, int size) {
         int r = d.length;
         int c = d[0].length;
-        CMatrix cm3 = cm.find(TMatrixOperator.EQUALS, 255);
+        CMatrix cm3 = cm.findIndex(TMatrixOperator.EQUALS, 255);
         double[] lst = cm3.toDoubleArray1D();
         if (lst.length == 1) {
             return d;
@@ -287,7 +287,7 @@ public class FeatureExtractionPistachio {
 //        d=regionGrowing(d,cm3,threshold);
 //        CMatrix cm4 = CMatrix.getInstance(d).imshow(true);
 //        //4.stage:  dropping inner edges that are not belong to cracked region
-//        CMatrix cm3 = cm2.find(TMatrixOperator.EQUALS, 255);
+//        CMatrix cm3 = cm2.findIndex(TMatrixOperator.EQUALS, 255);
 //        lst = cm3.get1DArrayDouble();
 //        double tMin=getMin(d,lst,r,c);
 //        System.out.println("tMin:"+tMin);

@@ -3145,26 +3145,121 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static double[][] range2D(double from_inclusive, double to_exclusive,double step) {
-        int delta=(int)((to_exclusive-from_inclusive)/step);
-        double[][] ret=new double[delta][delta];
+    public static double[][] range2D(double from_inclusive, double to_exclusive, double step) {
+        int delta = (int) ((to_exclusive - from_inclusive) / step);
+        double[][] ret = new double[delta][delta];
         for (int i = 0; i < delta; i++) {
             for (int j = 0; j < delta; j++) {
-                ret[i][j]=from_inclusive+j*step;
+                ret[i][j] = from_inclusive + j * step;
             }
-            ret[i][0]=from_inclusive+i*step;
+            ret[i][0] = from_inclusive + i * step;
         }
-        
+
         return ret;
     }
 
     public static String[] toStringArray(char[] lst) {
-        String[] st=new String[lst.length];
+        String[] st = new String[lst.length];
         for (int i = 0; i < lst.length; i++) {
-            st[i]=String.valueOf(lst[i]);
+            st[i] = String.valueOf(lst[i]);
         }
         return st;
     }
 
-}
+    public static double[][] eye(int n, double val) {
+        double[][] ret = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            ret[i][i] = val;
+        }
+        return ret;
+    }
 
+    public static double[][] setValue(double[][] d, String p1, String p2, double val) {
+        double[][] ret = clone(d);
+        p1 = p1.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
+        p2 = p2.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
+        int nr = d.length;
+        int nc = d[0].length;
+
+        //eğer komut tüm matrisi ilgilendir diyorsa
+        if (p1.equals(":") && p2.equals(":")) {
+            for (int i = 0; i < nr; i++) {
+                for (int j = 0; j < nc; j++) {
+                    ret[i][j] = val;
+                }
+            }
+            return ret;
+        }
+        //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
+        else if (p1.equals(":") && !p2.equals(":")) {
+            if (p2.length() == 1) {
+                int c = Integer.parseInt(p2);
+                if (c < nc) {
+                    for (int i = 0; i < nr; i++) {
+                        ret[i][c]=val; 
+                    }
+                    return ret;
+                }
+            } else {
+                int[] p = FactoryUtils.resolveParam(p2,nc);
+                for (int i = 0; i < nr; i++) {
+                    for (int j = 0; j < p.length; j++) {
+                        ret[i][p[j]]=val;
+                    }
+                }
+            }
+        //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
+        } else if (p2.equals(":") && !p1.equals(":")) {
+            if (p1.length() == 1) {
+                int r = Integer.parseInt(p2);
+                if (r<nr) {
+                    for (int i = 0; i < nc; i++) {
+                        ret[r][i]=val;
+                    }
+                    return ret;
+                }
+            } else {
+                int[] p = FactoryUtils.resolveParam(p1,nr);
+                for (int i = 0; i < p.length; i++) {
+                    for (int j = 0; j < nc; j++) {
+                        ret[p[i]][j]=val;
+                    }
+                }
+            }
+        } 
+        //her iki parametre de birer matris aralığı belirtiyor ise
+        //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
+        else if (p1.contains(":") && p2.contains(":")) {
+            int[] pr = FactoryUtils.resolveParam(p1, nr);
+            int[] pc = FactoryUtils.resolveParam(p2, nc);
+            for (int i = 0; i < pr.length; i++) {
+                for (int j = 0; j < pc.length; j++) {
+                    ret[pr[i]][pc[j]]=val;
+                }
+            }
+        }
+        //eğer birinci parametre ":" içeriyorsa ama ikinci parametre belirli bir index içeriyorsa mesela 0,2,3,5
+        return ret;
+    }
+
+    private static double[][] getColumns(double[][] d, int[] indices) {
+        int nr=d.length;
+        double[][] ret=new double[nr][indices.length];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < indices.length; j++) {
+                ret[i][j]=d[i][indices[j]];
+            }
+        }
+        return ret;
+    }
+
+    private static double[][] getRows(double[][] d, int[] indices) {
+        int nr=d.length;
+        double[][] ret=new double[indices.length][d[0].length];
+        for (int i = 0; i < indices.length; i++) {
+            ret[i]=d[indices[i]];
+        }
+        return ret;
+    }
+
+}

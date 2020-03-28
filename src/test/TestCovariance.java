@@ -18,7 +18,7 @@ public class TestCovariance {
 //        CMatrix cm = CMatrix.getInstance(d).println();
         CMatrix cmx = CMatrix.getInstanceFromFile("D:\\Google Drive\\LECTURE NOTES\\EEM533_Y.LİSANS_MACHINE_LEARNING\\homeworks\\homework_5\\data\\gender_train.txt", ",");
         int nc=cmx.getColumnNumber();
-        CMatrix cm=cmx.matrix(cmx.cmd(":",(nc-1)+"").find(TMatrixOperator.EQUALS,1).toIntArray1D());
+        CMatrix cm=cmx.matrix(cmx.cmd(":",(nc-1)+"").findIndex(TMatrixOperator.EQUALS,1).toIntArray1D());
         cm=cm.cmd(":","0:"+(nc-2)).println();
         cm.mean().println();
         cm.std().println();

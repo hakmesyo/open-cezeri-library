@@ -15,4 +15,12 @@ import java.awt.Point;
 public class TMatrixCell {
     public Point p=new Point();
     public double value;
+    
+    public String toString(){
+        return "value:"+value+" indices:"+p.x+":"+p.y;
+    }
+    
+    public void println(){
+        System.out.println(this.toString());
+    }
 }

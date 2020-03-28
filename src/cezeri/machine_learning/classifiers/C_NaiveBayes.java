@@ -47,8 +47,8 @@ public class C_NaiveBayes {
         CMatrix negatives = CMatrix.getInstance();
 
         int class_label_index = train.getColumnNumber() - 1;
-        CMatrix positive_indexes = train.find(TMatrixOperator.EQUALS, 1, ":", "" + class_label_index);
-        CMatrix negative_indexes = train.find(TMatrixOperator.EQUALS, -1, ":", "" + class_label_index);
+        CMatrix positive_indexes = train.findIndex(TMatrixOperator.EQUALS, 1, ":", "" + class_label_index);
+        CMatrix negative_indexes = train.findIndex(TMatrixOperator.EQUALS, -1, ":", "" + class_label_index);
 
         if (positive_indexes.getSize().column == 1) {
             positives = train.matrix(positive_indexes.toIntArray1D());
@@ -70,23 +70,23 @@ public class C_NaiveBayes {
 
         for (int i = 0; i < num_columns - 1; i++) {
             CMatrix a = train.commandParser(":", "" + i);
-            evidence[i][0] = a.find(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / num_rows;
-            evidence[i][1] = a.find(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / num_rows;
-            evidence[i][2] = a.find(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / num_rows;
+            evidence[i][0] = a.findIndex(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / num_rows;
+            evidence[i][1] = a.findIndex(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / num_rows;
+            evidence[i][2] = a.findIndex(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / num_rows;
 
             CMatrix p = positives.commandParser(":", "" + i);
             CMatrix n = negatives.commandParser(":", "" + i);
 
             //frequency of x in positive and negative for each attribute  
             //lines below computes likelihood probability
-            likelihood[i][0][0] = p.find(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / numr_positive;
-            likelihood[i][0][1] = n.find(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / numr_negative;
+            likelihood[i][0][0] = p.findIndex(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / numr_positive;
+            likelihood[i][0][1] = n.findIndex(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / numr_negative;
 
-            likelihood[i][1][0] = p.find(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / numr_positive;
-            likelihood[i][1][1] = n.find(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / numr_negative;
+            likelihood[i][1][0] = p.findIndex(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / numr_positive;
+            likelihood[i][1][1] = n.findIndex(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / numr_negative;
 
-            likelihood[i][2][0] = p.find(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / numr_positive;
-            likelihood[i][2][1] = n.find(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / numr_negative;
+            likelihood[i][2][0] = p.findIndex(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / numr_positive;
+            likelihood[i][2][1] = n.findIndex(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / numr_negative;
         }
 
         // conditional probality calculation from the naive bayes formula
@@ -144,8 +144,8 @@ public class C_NaiveBayes {
         CMatrix positives = CMatrix.getInstance();
         CMatrix negatives = CMatrix.getInstance();
         int class_label_index = train.getColumnNumber() - 1;
-        CMatrix positive_indexes = train.find(TMatrixOperator.EQUALS, 1, ":", "" + class_label_index);
-        CMatrix negative_indexes = train.find(TMatrixOperator.EQUALS, -1, ":", "" + class_label_index);
+        CMatrix positive_indexes = train.findIndex(TMatrixOperator.EQUALS, 1, ":", "" + class_label_index);
+        CMatrix negative_indexes = train.findIndex(TMatrixOperator.EQUALS, -1, ":", "" + class_label_index);
         positives = train.matrix(positive_indexes.toIntArray1D());
         negatives = train.matrix(negative_indexes.toIntArray1D());
         int num_rows = train.getRowNumber();
@@ -209,8 +209,8 @@ public class C_NaiveBayes {
             CMatrix test = cv[k][1];
 
             int class_label_index = train.getColumnNumber() - 1;
-            CMatrix positive_indexes = train.find(TMatrixOperator.EQUALS, class_labels[0], ":", "" + class_label_index);
-            CMatrix negative_indexes = train.find(TMatrixOperator.EQUALS, class_labels[1], ":", "" + class_label_index);
+            CMatrix positive_indexes = train.findIndex(TMatrixOperator.EQUALS, class_labels[0], ":", "" + class_label_index);
+            CMatrix negative_indexes = train.findIndex(TMatrixOperator.EQUALS, class_labels[1], ":", "" + class_label_index);
 
             if (positive_indexes.getSize().column == 1) {
                 positives = train.matrix(positive_indexes.toIntArray1D());
@@ -233,23 +233,23 @@ public class C_NaiveBayes {
             for (int i = 0; i < num_columns - 1; i++) {
                 CMatrix a = train.commandParser(":", "" + i);
 
-                evidence[i][0] = a.find(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / num_rows;
-                evidence[i][1] = a.find(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / num_rows;
-                evidence[i][2] = a.find(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / num_rows;
+                evidence[i][0] = a.findIndex(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / num_rows;
+                evidence[i][1] = a.findIndex(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / num_rows;
+                evidence[i][2] = a.findIndex(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / num_rows;
 
                 CMatrix p = positives.commandParser(":", "" + i);
                 CMatrix n = negatives.commandParser(":", "" + i);
 
                 //frequency of x in positive and negative for each attribute  
                 //lines below computes likelihood probability
-                likelihood[i][0][0] = p.find(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / numr_positive;
-                likelihood[i][0][1] = n.find(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / numr_negative;
+                likelihood[i][0][0] = p.findIndex(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / numr_positive;
+                likelihood[i][0][1] = n.findIndex(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / numr_negative;
 
-                likelihood[i][1][0] = p.find(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / numr_positive;
-                likelihood[i][1][1] = n.find(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / numr_negative;
+                likelihood[i][1][0] = p.findIndex(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / numr_positive;
+                likelihood[i][1][1] = n.findIndex(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / numr_negative;
 
-                likelihood[i][2][0] = p.find(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / numr_positive;
-                likelihood[i][2][1] = n.find(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / numr_negative;
+                likelihood[i][2][0] = p.findIndex(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / numr_positive;
+                likelihood[i][2][1] = n.findIndex(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / numr_negative;
             }
 
             // conditional probality calculation from the naive bayes formula
@@ -316,8 +316,8 @@ public class C_NaiveBayes {
             CMatrix train = cv[k][0];
             CMatrix test = cv[k][1];
             int class_label_index = train.getColumnNumber() - 1;
-            CMatrix positive_indexes = train.find(TMatrixOperator.EQUALS, class_labels[0], ":", "" + class_label_index);
-            CMatrix negative_indexes = train.find(TMatrixOperator.EQUALS, class_labels[1], ":", "" + class_label_index);
+            CMatrix positive_indexes = train.findIndex(TMatrixOperator.EQUALS, class_labels[0], ":", "" + class_label_index);
+            CMatrix negative_indexes = train.findIndex(TMatrixOperator.EQUALS, class_labels[1], ":", "" + class_label_index);
             positives = train.matrix(positive_indexes.toIntArray1D());
             negatives = train.matrix(negative_indexes.toIntArray1D());
             int num_rows = train.getRowNumber();

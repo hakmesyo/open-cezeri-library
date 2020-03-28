@@ -124,6 +124,11 @@ public final class CMatrix implements Serializable {
     private List classLabelNames = new ArrayList();
     public String[] combinationPairs;
     public String[] permutationPairs;
+    public static CMatrix currentMatrix = null;
+
+    public CMatrix getCurrentMatrix() {
+        return currentMatrix;
+    }
 
     public CMatrix buildFrameImage() {
         if (frameImage == null) {
@@ -653,6 +658,7 @@ public final class CMatrix implements Serializable {
         ret.wekaInstance = this.wekaInstance;
         ret.columnNames = FactoryUtils.clone(this.columnNames);
         ret.classLabels = FactoryUtils.clone(this.classLabels);
+        currentMatrix = ret;
         return ret;
     }
 
@@ -936,6 +942,13 @@ public final class CMatrix implements Serializable {
         return fromARGB(array);
     }
 
+    public CMatrix setValue(String p1,String p2,double val){
+        CMatrix ret=this.clone(this);
+        double[][] d=FactoryMatrix.setValue(ret.array,p1,p2,val);
+        ret.setArray(d);
+        return ret;
+    }
+
     /**
      * Try to update the value of the matrix which is specified by 1D index
      * array Note that this method can be used after calling the find method
@@ -971,6 +984,22 @@ public final class CMatrix implements Serializable {
             return this;
         }
         array[cp.row][cp.column] = val;
+        return this;
+    }
+
+    /**
+     * change the value of the matrix at specified row and column
+     *
+     * @param row
+     * @param column
+     * @param value
+     * @return
+     */
+    public CMatrix setValue(int row, int column, double value) {
+        if (row > this.getRowNumber() || row < 0 || column < 0 || column > this.getColumnNumber()) {
+            return this;
+        }
+        array[row][column] = value;
         return this;
     }
 
@@ -1073,8 +1102,16 @@ public final class CMatrix implements Serializable {
         return vector(0, to_exclusive - 1);
     }
 
-    public CMatrix range(int from_inclusive, int to_exclusive, double step) {
-        return vector(from_inclusive, step, to_exclusive - 1);
+    public CMatrix range(double from_inclusive, double to_exclusive, double step) {
+        if (step > 0) {
+            return vector(from_inclusive, step, to_exclusive - 1);
+        } else {
+            return vector(from_inclusive, step, to_exclusive + 1);
+        }
+    }
+
+    public CMatrix rangeWithSampleNumber(double from_inclusive, double to_exclusive, int nSample) {
+        return linspace(from_inclusive, to_exclusive - 1, nSample);
     }
 
     /**
@@ -1119,7 +1156,7 @@ public final class CMatrix implements Serializable {
             throw new UnsupportedOperationException("incr should be negative");
         }
         double delta = Math.abs(to - from);
-        int n = (int) (delta / incr);
+        int n = Math.abs((int) (delta / incr));
         ret.array = new double[1][n];
         for (int i = 0; i < n; i++) {
             ret.array[0][i] = from + i * incr;
@@ -1143,29 +1180,28 @@ public final class CMatrix implements Serializable {
         return ret.transpose();
     }
 
-    /**
-     * Matlab de a=1:10 denildiğinde nasıl ki 1 den 10 a kadar artan sayılardan
-     * bir row matrisi yapar vector de bu işe yarar.
-     *
-     * @param from
-     * @param to
-     * @return
-     */
-    public CMatrix vector(int from, int to) {
-        CMatrix ret = this.clone(this);
-        if (from > to) {
-            throw new UnsupportedOperationException("'from' should be smaller than 'to' other wise use another constructor");
-        }
-        int n = (int) (Math.abs(to - from) + 1);
-        ret.array = new double[1][n];
-        for (int i = 0; i < n; i++) {
-            ret.array[0][i] = from + i;
-        }
-        ret.name = this.name + "|vector";
-        return ret.transpose();
-    }
-
-    public CMatrix vector2D(int from, int to, int nrows) {
+//    /**
+//     * Matlab de a=1:10 denildiğinde nasıl ki 1 den 10 a kadar artan sayılardan
+//     * bir row matrisi yapar vector de bu işe yarar.
+//     *
+//     * @param from
+//     * @param to
+//     * @return
+//     */
+//    public CMatrix vector(int from, int to) {
+//        CMatrix ret = this.clone(this);
+//        if (from > to) {
+//            throw new UnsupportedOperationException("'from' should be smaller than 'to' other wise use another constructor");
+//        }
+//        int n = (int) (Math.abs(to - from) + 1);
+//        ret.array = new double[1][n];
+//        for (int i = 0; i < n; i++) {
+//            ret.array[0][i] = from + i;
+//        }
+//        ret.name = this.name + "|vector";
+//        return ret.transpose();
+//    }
+    public CMatrix vector2D(double from, double to, int nrows) {
         CMatrix ret = this.clone(this);
 
         if (from > to) {
@@ -1182,7 +1218,7 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
-    public CMatrix vector2D(int from, int to, int nrows, int ncols) {
+    public CMatrix vector2D(double from, double to, int nrows, int ncols) {
         CMatrix ret = this.clone(this);
 
         int n = ncols;
@@ -1214,46 +1250,68 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+//    /**
+//     * matlab deki gibi başlangıçtan sona kadar incr artarak bir row matris
+//     * yapar
+//     *
+//     * @param from
+//     * @param incr
+//     * @param to
+//     * @return
+//     */
+//    public CMatrix vector(int from, double incr, int to) {
+//        CMatrix ret = this.clone(this);
+//        if (from < to && incr < 0) {
+//            throw new UnsupportedOperationException("incr should be positive");
+//        }
+//        if (from > to && incr > 0) {
+//            throw new UnsupportedOperationException("incr should be negative");
+//        }
+//        double delta = Math.abs(to - from);
+//        int n = Math.abs((int) (delta / incr));
+//        ret.array = new double[1][n + 1];
+//        for (int i = 0; i <= n; i++) {
+//            ret.array[0][i] = from + i * incr;
+//        }
+//        ret.name = this.name + "|vector";
+//        return ret.transpose();
+//    }
+//    public CMatrix linspace(int from, int to, int n) {
+//        CMatrix ret = this.clone(this);
+//        if (n < 0) {
+//            throw new UnsupportedOperationException("n should be positive");
+//        }
+//        double delta = to - from;
+//        double incr = delta / (n - 1);
+//        ret.array = new double[1][n];
+//        for (int i = 0; i < n; i++) {
+//            ret.array[0][i] = from + i * incr;
+//        }
+//        ret.name = this.name + "|linspace";
+//        return ret.transpose();
+//    }
     /**
-     * matlab deki gibi başlangıçtan sona kadar incr artarak bir row matris
-     * yapar
+     * Build nxn identity matrix
      *
-     * @param from
-     * @param incr
-     * @param to
+     * @param n
      * @return
      */
-    public CMatrix vector(int from, double incr, int to) {
-        CMatrix ret = this.clone(this);
-        if (from < to && incr < 0) {
-            throw new UnsupportedOperationException("incr should be positive");
-        }
-        if (from > to && incr > 0) {
-            throw new UnsupportedOperationException("incr should be negative");
-        }
-        double delta = Math.abs(to - from);
-        int n = (int) (delta / incr);
-        ret.array = new double[1][n + 1];
-        for (int i = 0; i <= n; i++) {
-            ret.array[0][i] = from + i * incr;
-        }
-        ret.name = this.name + "|vector";
-        return ret.transpose();
+    public CMatrix eye(int n, double val) {
+        CMatrix ret = new CMatrix(n);
+        double[][] eye_array = FactoryMatrix.eye(n, val);
+        ret.setArray(eye_array);
+        ret.name = this.name + "|eye";
+        return ret.clone(this);
     }
 
-    public CMatrix linspace(int from, int to, int n) {
-        CMatrix ret = this.clone(this);
-        if (n < 0) {
-            throw new UnsupportedOperationException("n should be positive");
-        }
-        double delta = to - from;
-        double incr = delta / (n - 1);
-        ret.array = new double[1][n];
-        for (int i = 0; i < n; i++) {
-            ret.array[0][i] = from + i * incr;
-        }
-        ret.name = this.name + "|linspace";
-        return ret.transpose();
+    /**
+     * Build nxn identity matrix
+     *
+     * @param n
+     * @return
+     */
+    public CMatrix eye(int n) {
+        return eye(n, 1);
     }
 
     public CMatrix zeros(int n) {
@@ -2502,12 +2560,12 @@ public final class CMatrix implements Serializable {
      * @param p
      * @return
      */
-    public CMatrix matrix(int[]... p) {
+    public CMatrix matrix(int[] p) {
         double[] ret = new double[1];
         if (p.length == 0) {
             return null;
-        } else if (p.length == 1) {
-            int[] rows = p[0];
+        } else if (p.length > 0) {
+            int[] rows = p;
             ret = new double[rows.length];
             double[] one_d = this.toDoubleArray1D();
             for (int i = 0; i < rows.length; i++) {
@@ -2586,7 +2644,7 @@ public final class CMatrix implements Serializable {
      * @param p
      * @return
      */
-    public CMatrix cmd(int[]... p) {
+    public CMatrix cmd(int[] p) {
         return matrix(p);
     }
 
@@ -2666,7 +2724,7 @@ public final class CMatrix implements Serializable {
         else {
             int[] pp1 = checkParam(p1, this.getRowNumber());
             int[] pp2 = checkParam(p2, this.getColumnNumber());
-            ret = matrix(pp1, pp2);
+            ret = matrix(pp1);
         }
 //        ret=ret.transpose();
         ret.name = this.name + "|submatrix";
@@ -3686,11 +3744,27 @@ public final class CMatrix implements Serializable {
             if (ss.length <= 2) {
                 if (ss[1].indexOf("end") != -1) {
                     ss[1] = ss[1].replace("end", (n - 1) + "");
+                } else {
+                    try {
+                        int q = Integer.parseInt(ss[1]);
+                        if (q < 0) {
+                            ss[1] = (n + q) + "";
+                        }
+                    } catch (Exception e) {
+                    }
                 }
                 ret = FactoryUtils.toIntArray1D(vector(Integer.parseInt(ss[0]) * 1.0, Integer.parseInt(ss[1]) * 1.0).toDoubleArray1D());
             } else {
                 if (ss[2].indexOf("end") != -1) {
                     ss[2] = ss[2].replace("end", (n - 1) + "");
+                }else{
+                    try {
+                        int q = Integer.parseInt(ss[1]);
+                        if (q < 0) {
+                            ss[2] = (n + q) + "";
+                        }
+                    } catch (Exception e) {
+                    }
                 }
                 ret = FactoryUtils.toIntArray1D(CMatrix.this.vector(Integer.parseInt(ss[0]) * 1.0, Integer.parseInt(ss[1]) * 1.0, Integer.parseInt(ss[2]) * 1.0).toDoubleArray1D());
             }
@@ -3735,7 +3809,7 @@ public final class CMatrix implements Serializable {
      * @return
      *
      */
-    public CMatrix find(TMatrixOperator op, CMatrix d, double x) {
+    public CMatrix findIndex(TMatrixOperator op, CMatrix d, double x) {
         return op.apply(d, x);
     }
 
@@ -3748,7 +3822,7 @@ public final class CMatrix implements Serializable {
      * @param x :Target value or matching constant number
      * @return
      */
-    public CMatrix find(TMatrixOperator op, double x) {
+    public CMatrix findIndex(TMatrixOperator op, double x) {
         CMatrix ret = this.clone(this);
 
         ret = op.apply(ret, x);
@@ -3756,10 +3830,6 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * find metodu istenilen bir karşılaştırma işlemi ve karşılaştırmada
-     * kullanılacak x değerini matlab matris ifadeleri ile belirli bir sütun
-     * veya sub-matrix üzerinde işleyerek bulduğu row ların satır numaralarını
-     * 1D vektör olarak geri dönderir. Kullanıcı eğer isterse bu vektörü *
      * operates as Matlab's find method try to find 1D indexes of the matrix
      * based on the specified matrix operator logical conditions returns cloned
      * matrix indeed found indexes are provided in int[] d parameter object
@@ -3768,7 +3838,32 @@ public final class CMatrix implements Serializable {
      * @param x :Target value or matching constant number
      * @return
      */
-    public CMatrix find(TMatrixOperator op, double x, String p1, String p2) {
+    public CMatrix findItems(TMatrixOperator op, double x) {
+        CMatrix ret = this.clone(this);
+        ret = op.apply(ret, x);
+        CMatrix items = this.clone(this);
+        items = items.cmd(ret.toIntArray1D());
+        return items;
+    }
+
+    /**
+     * Find metodu istenilen bir karşılaştırma işlemi ve karşılaştırmada
+     * kullanılacak x değerini matlab matris ifadeleri ile belirli bir sütun
+     * veya sub-matrix üzerinde işleyerek bulduğu row ların satır numaralarını
+     * 1D vektör olarak geri dönderir. Kullanıcı eğer isterse bu vektörü yani
+     * cmatrix nesnesini cmd komutuna parametre olarak gönderip değerleri bir
+     * sutun dizisi olarak alabilir.
+     *
+     *
+     * operates as Matlab's find method try to find 1D indexes of the matrix
+     * based on the specified matrix operator logical conditions returns cloned
+     * matrix indeed found indexes are provided in int[] d parameter object
+     *
+     * @param op:logical criteria
+     * @param x :Target value or matching constant number
+     * @return
+     */
+    public CMatrix findIndex(TMatrixOperator op, double x, String p1, String p2) {
         CMatrix ret = this.clone(this);
 
         ret = op.apply(ret, x, p1, p2);
@@ -3784,7 +3879,7 @@ public final class CMatrix implements Serializable {
      * @param op:logical criteria
      * @return
      */
-    public CMatrix find(TMatrixOperator op, double t1, double t2) {
+    public CMatrix findIndex(TMatrixOperator op, double t1, double t2) {
         CMatrix ret = this.clone(this);
 
         ret = op.apply(ret, t1, t2);
@@ -8008,7 +8103,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix bruteForceAttack(char[] pool, String pass, boolean isPrint) {
-        long t=FactoryUtils.tic();
+        long t = FactoryUtils.tic();
         BruteForce bf = new BruteForce(pool, 1);
         String newPass = bf.toString();
         while (true) {
@@ -8017,7 +8112,9 @@ public final class CMatrix implements Serializable {
                 break;
             }
             newPass = bf.toString();
-            if (isPrint) System.out.println("" + newPass);
+            if (isPrint) {
+                System.out.println("" + newPass);
+            }
             bf.increment();
         }
         FactoryUtils.toc(t);

@@ -710,8 +710,8 @@ public final class FactoryUtils {
 
     public static ReaderCSV readFromCSVFile(String file_name) {
         ReaderCSV csv = new ReaderCSV();
-        List<String> columnNames=new ArrayList<>();
-        List<String> classLabels=new ArrayList<>();
+        List<String> columnNames = new ArrayList<>();
+        List<String> classLabels = new ArrayList<>();
         double[][] d = new double[1][1];
         ArrayList<double[]> lst = new ArrayList<>();
         File file = new File(file_name);
@@ -720,16 +720,16 @@ public final class FactoryUtils {
             return null;
         }
         try (BufferedReader br = new BufferedReader(new FileReader(file_name))) {
-            String s=br.readLine().replace("\"", "");
-            columnNames=Arrays.asList(s.split(","));
+            String s = br.readLine().replace("\"", "");
+            columnNames = Arrays.asList(s.split(","));
             while ((s = br.readLine()) != null) {
                 double[] row = null;
                 String[] sd = s.split(",");
                 row = new double[sd.length];
-                for (int i = 0; i < sd.length-1; i++) {
+                for (int i = 0; i < sd.length - 1; i++) {
                     row[i] = Double.parseDouble(sd[i]);
                 }
-                classLabels.add(sd[sd.length-1].replace("\"", ""));
+                classLabels.add(sd[sd.length - 1].replace("\"", ""));
                 lst.add(row);
 
             }
@@ -737,9 +737,9 @@ public final class FactoryUtils {
             e.printStackTrace();
             return null;
         }
-        csv.data=lst.toArray(d);
-        csv.columnNames=columnNames;
-        csv.classLabels=classLabels;
+        csv.data = lst.toArray(d);
+        csv.columnNames = columnNames;
+        csv.classLabels = classLabels;
         return csv;
     }
 
@@ -1280,7 +1280,7 @@ public final class FactoryUtils {
 
     public static double[][] toDoubleArray2D(int[][] m) {
         double[][] ret = new double[m.length][m[0].length];
-        for (int i = 0; i < m.length; i++) {
+        for (int i = 0; i < m[0].length; i++) {
             for (int j = 0; j < m[0].length; j++) {
                 ret[i][j] = m[i][j] * 1.0;
             }
@@ -1289,6 +1289,17 @@ public final class FactoryUtils {
     }
 
     public static double[] toDoubleArray1D(double[][] m) {
+        double[] ret = new double[m.length * m[0].length];
+        int k = 0;
+        for (int j = 0; j < m[0].length; j++) {
+            for (int i = 0; i < m.length; i++) {
+                ret[k++] = m[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static double[] toDoubleArray1D_eski(double[][] m) {
         double[] ret = new double[m.length * m[0].length];
         int k = 0;
         for (int i = 0; i < m.length; i++) {
@@ -1302,8 +1313,8 @@ public final class FactoryUtils {
     public static Object[] toDoubleArray1D(Object[][] m) {
         Object[] ret = new Object[m.length * m[0].length];
         int k = 0;
-        for (int i = 0; i < m.length; i++) {
-            for (int j = 0; j < m[0].length; j++) {
+        for (int j = 0; j < m[0].length; j++) {
+            for (int i = 0; i < m.length; i++) {
                 ret[k++] = m[i][j];
             }
         }
@@ -1583,18 +1594,18 @@ public final class FactoryUtils {
         }
         return q;
     }
-    
+
     /**
      * b.try to format double number with precision number
      *
      * @param num
      * @return
      */
-    public static double[][] formatDouble(double[][] num,int precision) {
+    public static double[][] formatDouble(double[][] num, int precision) {
         double[][] q = new double[num.length][num[0].length];
         for (int i = 0; i < num.length; i++) {
             for (int j = 0; j < num[0].length; j++) {
-                q[i][j] = formatDouble(num[i][j],precision);
+                q[i][j] = formatDouble(num[i][j], precision);
             }
         }
         return q;
@@ -1956,11 +1967,11 @@ public final class FactoryUtils {
     }
 
     public static double[] sortArrayDescend(double[] a) {
-        double[] d=new double[a.length];
+        double[] d = new double[a.length];
         Arrays.sort(a);
-        int n=a.length;
+        int n = a.length;
         for (int i = 0; i < n; i++) {
-            d[i]=a[n-1-i];
+            d[i] = a[n - 1 - i];
         }
         return d;
     }
@@ -2214,8 +2225,8 @@ public final class FactoryUtils {
     public static int[] toIntArray1D(double[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (int) d[i][j];
             }
         }
@@ -2225,8 +2236,8 @@ public final class FactoryUtils {
     public static int[] toIntArray1D(float[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (int) d[i][j];
             }
         }
@@ -2236,8 +2247,8 @@ public final class FactoryUtils {
     public static short[] toShortArray1D(double[][] d) {
         short[] ret = new short[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (short) d[i][j];
             }
         }
@@ -2247,8 +2258,8 @@ public final class FactoryUtils {
     public static float[] toFloatArray1D(double[][] d) {
         float[] ret = new float[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (float) d[i][j];
             }
         }
@@ -2258,8 +2269,8 @@ public final class FactoryUtils {
     public static long[] toLongArray1D(double[][] d) {
         long[] ret = new long[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (long) d[i][j];
             }
         }
@@ -2269,8 +2280,8 @@ public final class FactoryUtils {
     public static String[] toStringArray1D(double[][] d) {
         String[] ret = new String[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = String.valueOf(d[i][j]);
             }
         }
@@ -2280,8 +2291,8 @@ public final class FactoryUtils {
     public static short[] toShortArray1D(float[][] d) {
         short[] ret = new short[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (short) d[i][j];
             }
         }
@@ -2291,8 +2302,8 @@ public final class FactoryUtils {
     public static byte[] toByteArray1D(double[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (byte) d[i][j];
             }
         }
@@ -2302,8 +2313,8 @@ public final class FactoryUtils {
     public static byte[] toByteArray1D(float[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (byte) d[i][j];
             }
         }
@@ -2313,8 +2324,8 @@ public final class FactoryUtils {
     public static byte[] toByteArray1D(int[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = (byte) d[i][j];
             }
         }
@@ -2324,8 +2335,8 @@ public final class FactoryUtils {
     public static float[] toFloatArray1D(float[][] d) {
         float[] ret = new float[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -2335,8 +2346,8 @@ public final class FactoryUtils {
     public static int[] toIntArray1D(int[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -2346,8 +2357,8 @@ public final class FactoryUtils {
     public static byte[] toByteArray1D(byte[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -2357,8 +2368,8 @@ public final class FactoryUtils {
     public static short[] toShortArray1D(short[][] d) {
         short[] ret = new short[d.length * d[0].length];
         int k = 0;
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        for (int j = 0; j < d[0].length; j++) {
+            for (int i = 0; i < d.length; i++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -4485,12 +4496,11 @@ public final class FactoryUtils {
     }
 
     public static List clone(List lst) {
-        if (lst==null) {
+        if (lst == null) {
             return null;
         }
         return Arrays.asList(lst.toArray());
     }
-    
 
     public static double[] clone(double[] p) {
         double[] ret = new double[p.length];
@@ -4841,7 +4851,7 @@ public final class FactoryUtils {
         }
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
     }
-    
+
     public static List toListFrom2DArray(float[][] p) {
         List ret = new ArrayList<>();
         int nr = p.length;
@@ -4861,12 +4871,21 @@ public final class FactoryUtils {
     }
 
     public static float[] toFloatArray1D(Float[] f) {
-        float[] ret=new float[f.length];
+        float[] ret = new float[f.length];
         for (int i = 0; i < f.length; i++) {
-            ret[i]=(float)f[i];
+            ret[i] = (float) f[i];
         }
         return ret;
     }
+
+    public static int[] vector(int from, int to) {
+        int[] ret = new int[to - from + 1];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = from + i;
+        }
+        return ret;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -4875,11 +4894,101 @@ public final class FactoryUtils {
         return list;
     }
 
-    public static void renameFilesAsAscIndex(String path,String extension){
+    public static void renameFilesAsAscIndex(String path, String extension) {
         File[] files = FactoryUtils.getFileListInFolder(path);
         for (int j = 0; j < files.length; j++) {
-            files[j].renameTo(new File(path + "/" + j + "."+extension));
+            files[j].renameTo(new File(path + "/" + j + "." + extension));
         }
+    }
+
+    public static int[] resolveParam(String s, int max) {
+        int[] ret = null;
+        if (s.indexOf(":") != -1) {
+            String[] ss = s.split(":");
+            if (ss.length <= 2 && !s.contains(",")) {
+                if (ss.length==1) {
+                    s=ss[0]+":end";
+                    ss=s.split(":");
+                    ss[1] = ss[1].replace("end", (max - 1) + "");
+                }
+                else if (ss[1].indexOf("end") != -1) {
+                    ss[1] = ss[1].replace("end", (max - 1) + "");
+                } 
+//                else {
+                    try {
+                        if (ss[0].isEmpty() && ss[1].isEmpty()) {
+                            ss[0] = "0";
+                            ss[1] = (max - 1) + "";
+                        } else if (ss[0].isEmpty() ) {
+                            ss[0] = "0";
+                            int q = Integer.parseInt(ss[1]);
+                            if (q < 0) {
+                                ss[1] = (max - 1 + q) + "";
+                            }
+                        } else if (ss[1].isEmpty() ) {
+                            int q = Integer.parseInt(ss[0]);
+                            if (q < 0) {
+                                ss[0] = (max - 1 + q) + "";
+                            }
+                            ss[1] = (max - 1) + "";
+                        } else {
+                            int q = Integer.parseInt(ss[0]);
+                            if (q < 0) {
+                                ss[0] = (max - 1 + q) + "";
+                            }
+                            q = Integer.parseInt(ss[1]);
+                            if (q < 0) {
+                                ss[1] = (max - 1 + q) + "";
+                            }
+                        }
+                    } catch (Exception e) {
+                    }
+//                }
+                int from = Integer.parseInt(ss[0]);
+                int to = Integer.parseInt(ss[1]);
+                if (from >= max || to >= max) {
+                    System.out.println("range check error please correct from:to range index");
+                    ret = null;
+                } else if (from == to) {
+                    ret = new int[]{from, from};
+                } else if (from < to) {
+                    ret = FactoryUtils.vector(from, to);
+                } else if (from > to) {
+                    ret = FactoryUtils.vector(to, from);
+                }
+            } //belki de gelen parametre 1,3,7:13,15,-2 gibi bir şeydir
+            else {
+                String[] p = s.split(",");
+                //ilkönce negatif olanları işle
+                List<Integer> lst = new ArrayList();
+                for (int i = 0; i < p.length; i++) {
+                    if (!p[i].contains("-") && !p[i].contains(":")) {
+                        lst.add(Integer.parseInt(p[i]));
+                    } else if (p[i].contains("-") && !p[i].contains(":")) {
+                        lst.add((max - 1) + Integer.parseInt(p[i]));
+                    } else if (p[i].contains(":")) {
+                        String[] q = p[i].split(":");
+                        if (q[0].contains("-")) {
+                            q[0] = (max - 1 + Integer.parseInt(q[0])) + "";
+                        }
+                        if (q[1].contains("-")) {
+                            q[1] = (max - 1 + Integer.parseInt(q[1])) + "";
+                        }
+                        int from = Integer.parseInt(q[0]);
+                        int to = Integer.parseInt(q[1]);
+                        int[] d = FactoryUtils.vector(from, to);
+                        for (int j = 0; j < d.length; j++) {
+                            lst.add(d[j]);
+                        }
+                    }
+                }
+                ret = new int[lst.size()];
+                for (int i = 0; i < ret.length; i++) {
+                    ret[i] = lst.get(i);
+                }
+            }
+        }
+        return ret;
     }
 
 }
