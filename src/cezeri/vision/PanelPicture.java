@@ -298,6 +298,7 @@ public class PanelPicture extends JPanel {
             itemsGroup.add(items[i]);
             items[i].addActionListener(handler);
         }
+        setComponentPopupMenu(popupMenu);
 
         lbl = new JLabel("X:Y");
         this.add(lbl);
@@ -395,6 +396,7 @@ public class PanelPicture extends JPanel {
 
     private class ItemHandler implements ActionListener {
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             // determine which menu item was selected  
             setDefaultValues();
@@ -572,7 +574,7 @@ public class PanelPicture extends JPanel {
                 mousePosBottomRight.y -= fromTop;
 //                CMatrix cm = CMatrix.getInstance(currBufferedImage).subMatrix(mousePosTopLeft, mousePosBottomRight);
                 CRectangle cr = new CRectangle(mousePosTopLeft.y, mousePosTopLeft.x,
-                        Math.abs(mousePosBottomRight.y - mousePosTopLeft.y), Math.abs(mousePosBottomRight.x - mousePosTopLeft.x));
+                        Math.abs(mousePosBottomRight.x - mousePosTopLeft.x),Math.abs(mousePosBottomRight.y - mousePosTopLeft.y));
                 BufferedImage bf = ImageProcess.cropImage(currBufferedImage, cr);
 //                BufferedImage bf = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
                 new FrameImage(bf, obj.getText()).setVisible(true);
