@@ -69,13 +69,13 @@ public class C_NaiveBayes {
         double[][][] likelihood = new double[num_columns - 1][3][2];
 
         for (int i = 0; i < num_columns - 1; i++) {
-            CMatrix a = train.commandParser(":", "" + i);
+            CMatrix a = train.cmd(":", "" + i);
             evidence[i][0] = a.findIndex(TMatrixOperator.EQUALS, 2).getRowNumber() * 1.0 / num_rows;
             evidence[i][1] = a.findIndex(TMatrixOperator.EQUALS, 3).getRowNumber() * 1.0 / num_rows;
             evidence[i][2] = a.findIndex(TMatrixOperator.EQUALS, 4).getRowNumber() * 1.0 / num_rows;
 
-            CMatrix p = positives.commandParser(":", "" + i);
-            CMatrix n = negatives.commandParser(":", "" + i);
+            CMatrix p = positives.cmd(":", "" + i);
+            CMatrix n = negatives.cmd(":", "" + i);
 
             //frequency of x in positive and negative for each attribute  
             //lines below computes likelihood probability
@@ -104,7 +104,7 @@ public class C_NaiveBayes {
 
         for (int i = 0; i < test.getRowNumber(); i++) {
 
-            CMatrix row = test.commandParser("" + i, "0:8");
+            CMatrix row = test.cmd("" + i, "0:8");
 
             double[] likely_positive = new double[row.getRowNumber()];
             double[] likely_negative = new double[row.getRowNumber()];
@@ -159,7 +159,7 @@ public class C_NaiveBayes {
         double[] stdYes = new double[num_columns - 1];
         double[] stdNo = new double[num_columns - 1];
         for (int i = 0; i < num_columns - 1; i++) {
-            CMatrix a = train.commandParser(":", "" + i);
+            CMatrix a = train.cmd(":", "" + i);
             meanYes[i] = a.cmd(positive_indexes.toIntArray1D()).meanTotal();
             meanNo[i] = a.cmd(negative_indexes.toIntArray1D()).meanTotal();
             stdYes[i] = a.cmd(positive_indexes.toIntArray1D()).stdTotal();
@@ -167,7 +167,7 @@ public class C_NaiveBayes {
         }
         double accuracy = 0;
         for (int i = 0; i < test.getRowNumber(); i++) {
-            CMatrix row = test.commandParser("" + i, ":");
+            CMatrix row = test.cmd("" + i, ":");
             double p_yes = prior_positive;
             double p_no = prior_negative;
             for (int j = 0; j < row.getColumnNumber() - 1; j++) {
@@ -231,14 +231,14 @@ public class C_NaiveBayes {
             double[][][] likelihood = new double[num_columns - 1][3][2];
 
             for (int i = 0; i < num_columns - 1; i++) {
-                CMatrix a = train.commandParser(":", "" + i);
+                CMatrix a = train.cmd(":", "" + i);
 
                 evidence[i][0] = a.findIndex(TMatrixOperator.EQUALS, values[0]).getRowNumber() * 1.0 / num_rows;
                 evidence[i][1] = a.findIndex(TMatrixOperator.EQUALS, values[1]).getRowNumber() * 1.0 / num_rows;
                 evidence[i][2] = a.findIndex(TMatrixOperator.EQUALS, values[2]).getRowNumber() * 1.0 / num_rows;
 
-                CMatrix p = positives.commandParser(":", "" + i);
-                CMatrix n = negatives.commandParser(":", "" + i);
+                CMatrix p = positives.cmd(":", "" + i);
+                CMatrix n = negatives.cmd(":", "" + i);
 
                 //frequency of x in positive and negative for each attribute  
                 //lines below computes likelihood probability
@@ -267,7 +267,7 @@ public class C_NaiveBayes {
 
             for (int i = 0; i < test.getRowNumber(); i++) {
 
-                CMatrix row = test.commandParser("" + i, "0:8");
+                CMatrix row = test.cmd("" + i, "0:8");
 
                 double[] likely_positive = new double[row.getRowNumber()];
                 double[] likely_negative = new double[row.getRowNumber()];
@@ -331,7 +331,7 @@ public class C_NaiveBayes {
             double[] stdYes = new double[num_columns - 1];
             double[] stdNo = new double[num_columns - 1];
             for (int i = 0; i < num_columns - 1; i++) {
-                CMatrix a = train.commandParser(":", "" + i);
+                CMatrix a = train.cmd(":", "" + i);
                 meanYes[i] = a.cmd(positive_indexes.toIntArray1D()).meanTotal();
                 meanNo[i] = a.cmd(negative_indexes.toIntArray1D()).meanTotal();
                 stdYes[i] = a.cmd(positive_indexes.toIntArray1D()).stdTotal();
@@ -339,7 +339,7 @@ public class C_NaiveBayes {
             }
             double accuracy = 0;
             for (int i = 0; i < test.getRowNumber(); i++) {
-                CMatrix row = test.commandParser("" + i, ":");
+                CMatrix row = test.cmd("" + i, ":");
                 double p_yes = prior_positive;
                 double p_no = prior_negative;
                 for (int j = 0; j < row.getColumnNumber() - 1; j++) {

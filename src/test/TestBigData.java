@@ -15,8 +15,8 @@ import cezeri.types.TLearningType;
 public class TestBigData {
     public static void main(String[] args) {
         CMatrix cm=CMatrix.getInstanceFromFile("data\\Kaggle_Digits_1000.txt", ",");
-        CMatrix cm1=cm.commandParser(":","1:end");
-        CMatrix cm2=cm.commandParser(":","0");
+        CMatrix cm1=cm.cmd(":","1:end");
+        CMatrix cm2=cm.cmd(":","0");
         CMatrix cm3=cm1.cat(1, cm2).showDataGrid().toWekaArff("data\\digit.arff",TLearningType.CLASSIFICATION);
     }
 }

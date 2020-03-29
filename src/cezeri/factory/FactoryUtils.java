@@ -4903,7 +4903,7 @@ public final class FactoryUtils {
 
     public static int[] resolveParam(String s, int max) {
         int[] ret = null;
-        if (s.indexOf(":") != -1) {
+        if (s.contains(":")) {
             String[] ss = s.split(":");
             if (ss.length <= 2 && !s.contains(",")) {
                 if (ss.length==1) {
@@ -4986,6 +4986,12 @@ public final class FactoryUtils {
                 for (int i = 0; i < ret.length; i++) {
                     ret[i] = lst.get(i);
                 }
+            }
+        }else{
+            String[] p=s.split(",");
+            ret=new int[p.length];
+            for (int i = 0; i < p.length; i++) {
+                ret[i]=Integer.parseInt(p[i]);
             }
         }
         return ret;

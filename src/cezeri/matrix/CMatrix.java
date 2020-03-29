@@ -2660,74 +2660,16 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * Tries to interpret String parameter as Matlab vectorization commands like
-     * that interpret(d,"5:end","0:3") means get subset based on the specified
-     * criteria
+     * Tries to interpret String parameter as Matlab or Python slicing operations
+     * for example cmd("1:3,5:-1","-3:") 
      *
-     * @param p1 : integer bir sayi veya [x,y,z] veya [x;y;z] olabilir
-     * @param p2 : integer bir sayi veya [x,y,z] veya [x;y;z] olabilir
+     * @param p1 : 
+     * @param p2 : 
      * @return
      */
     public CMatrix cmd(String p1, String p2) {
-        return commandParser(p1, p2);
-    }
-
-    /**
-     * B. Matlab'deki matris işlemlerine banzer işlemleri bu parser üzerinden
-     * gerçekleştirmeye çalışır.
-     *
-     * Dikkat: " " içerisinde normal veya köşeli parantez kullanmanız gerekmez.
-     *
-     * @param p1 ": veya integer bir sayi veya [x,y,z] veya [x;y;z] olabilir"
-     * @param p2 ": veya integer bir sayi veya [x,y,z] veya [x;y;z] olabilir"
-     * @return
-     */
-    public CMatrix commandParser(String p1, String p2) {
-        p1 = p1.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
-        p2 = p2.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
-        CMatrix ret = this.clone(this);
-
-        if (p1.equals(":") && p2.equals(":")) {
-            return ret;
-        }
-        if (p1.equals(":")) {
-            if (p2.equals(":")) {
-                return this;
-            } else if (p2.length() == 1) {
-                int[] p = {Integer.parseInt(p2)};
-                ret = column(ret, p);
-            } else {
-                int[] p = checkParam(p2, this.getColumnNumber());
-                ret = column(ret, p);
-            }
-        } else if (p2.equals(":")) {
-            if (p1.equals(":")) {
-                return this;
-            } else if (p1.length() == 1) {
-                int[] p = {Integer.parseInt(p1)};
-                ret = row(ret, p);
-            } else {
-                int[] p = checkParam(p1, this.getRowNumber());
-                ret = row(ret, p);
-            }
-        } //her iki parametre de birer matris aralığı belirtiyor ise
-        //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
-        else if (p1.contains(":") && p2.contains(":")) {
-            int[] pr = checkParam(p1, this.getRowNumber());
-            ret = row(ret, pr);
-            int[] pc = checkParam(p2, this.getColumnNumber());
-            ret = column(ret, pc);
-        } //        else if (p1.contains(":") & p2.contains(":")) {
-        //            
-        //        } else if (p1.contains(":")) {
-        //        } else if (p2.contains(":")) {
-        else {
-            int[] pp1 = checkParam(p1, this.getRowNumber());
-            int[] pp2 = checkParam(p2, this.getColumnNumber());
-            ret = matrix(pp1);
-        }
-//        ret=ret.transpose();
-        ret.name = this.name + "|submatrix";
+        CMatrix ret=this.clone(this);
+        ret.setArray(FactoryMatrix.cmd(this.array,p1, p2));
         return ret;
     }
 
@@ -2787,6 +2729,14 @@ public final class CMatrix implements Serializable {
             v.remove(a);
         }
         return m;
+    }
+    
+    public CMatrix permute(int n){
+        return randPerm(n);
+    }
+
+    public CMatrix permute(int from,int to){
+        return randPerm(from,to);
     }
 
     public CMatrix minusScalar(double n) {
@@ -3734,69 +3684,6 @@ public final class CMatrix implements Serializable {
 //    public void toXMLPrintln() {
 //        System.out.println(FactoryUtils.toXML(this.clone(this)));
 //    }
-    private int[] checkParam(String p, int n) {
-//        String s = p.substring(1, p.length() - 1);
-        String s = p;
-        int[] ret = null;
-        char[] chr = s.toCharArray();
-        if (s.indexOf(":") != -1) {
-            String[] ss = s.split(":");
-            if (ss.length <= 2) {
-                if (ss[1].indexOf("end") != -1) {
-                    ss[1] = ss[1].replace("end", (n - 1) + "");
-                } else {
-                    try {
-                        int q = Integer.parseInt(ss[1]);
-                        if (q < 0) {
-                            ss[1] = (n + q) + "";
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-                ret = FactoryUtils.toIntArray1D(vector(Integer.parseInt(ss[0]) * 1.0, Integer.parseInt(ss[1]) * 1.0).toDoubleArray1D());
-            } else {
-                if (ss[2].indexOf("end") != -1) {
-                    ss[2] = ss[2].replace("end", (n - 1) + "");
-                }else{
-                    try {
-                        int q = Integer.parseInt(ss[1]);
-                        if (q < 0) {
-                            ss[2] = (n + q) + "";
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-                ret = FactoryUtils.toIntArray1D(CMatrix.this.vector(Integer.parseInt(ss[0]) * 1.0, Integer.parseInt(ss[1]) * 1.0, Integer.parseInt(ss[2]) * 1.0).toDoubleArray1D());
-            }
-        } else {
-            if (s.length() > 1) {
-//                String[] str = str = s.split(chr[1] + "");
-                String[] str;
-                if (s.contains(" ")) {
-                    str = s.split(" ");
-                } else if (s.contains(",")) {
-                    str = s.split(",");
-                } else if (s.contains(";")) {
-                    str = s.split(";");
-                } else {
-                    ret = new int[1];
-                    ret[0] = Integer.parseInt(s);
-                    return ret;
-                }
-                ret = new int[str.length];
-                for (int i = 0; i < str.length; i++) {
-                    ret[i] = Integer.parseInt(str[i]);
-                }
-            } else {
-//                ret = new int[s.length()];
-//                ret[0] = Integer.parseInt(s.charAt(0) + "");
-                ret = new int[1];
-                ret[0] = Integer.parseInt(s);
-                return ret;
-            }
-        }
-        return ret;
-    }
 
     /**
      * B. Matlab deki find komutuna banzer çalışmaktadır. find her zaman 1
@@ -6474,7 +6361,7 @@ public final class CMatrix implements Serializable {
         int nCols = randData.getColumnNumber();
         int delta = nRows / nFolds;
         for (int i = 0; i < nFolds - 1; i++) {
-            ret[i] = randData.commandParser(i * delta + ":" + ((i + 1) * delta - 1), ":");//.println((i + 1) + ".subset");
+            ret[i] = randData.cmd(i * delta + ":" + ((i + 1) * delta - 1), ":");//.println((i + 1) + ".subset");
         }
         CMatrix cm = CMatrix.getInstance().zeros(1, nCols);
         for (int i = (nFolds - 1) * delta; i < nRows; i++) {
@@ -6582,11 +6469,11 @@ public final class CMatrix implements Serializable {
         int delta = nRows / nFolds;
         for (int i = 0; i < nFolds - 1; i++) {
             if (i == 0) {
-                ret[i][0] = randData.commandParser(((i + 1) * delta) + ":end", ":");
+                ret[i][0] = randData.cmd(((i + 1) * delta) + ":end", ":");
             } else {
-                ret[i][0] = randData.commandParser("0:" + ((i * delta) - 1), ":").cat(2, randData.commandParser(((i + 1) * delta) + ":end", ":"));
+                ret[i][0] = randData.cmd("0:" + ((i * delta) - 1), ":").cat(2, randData.cmd(((i + 1) * delta) + ":end", ":"));
             }
-            ret[i][1] = randData.commandParser(i * delta + ":" + ((i + 1) * delta - 1), ":");//.println((i + 1) + ".subset");
+            ret[i][1] = randData.cmd(i * delta + ":" + ((i + 1) * delta - 1), ":");//.println((i + 1) + ".subset");
         }
         CMatrix cm = CMatrix.getInstance().zeros(1, nCols);
         for (int i = (nFolds - 1) * delta; i < nRows; i++) {
@@ -6595,7 +6482,7 @@ public final class CMatrix implements Serializable {
         }
         cm = cm.deleteRow(0);
         ret[nFolds - 1][1] = cm;
-        ret[nFolds - 1][0] = randData.commandParser("0:" + (((nFolds - 1) * delta) - 1), ":");
+        ret[nFolds - 1][0] = randData.cmd("0:" + (((nFolds - 1) * delta) - 1), ":");
         return ret;
 
 //        CMatrix cm=this.clone(this); lastCM=ret; 

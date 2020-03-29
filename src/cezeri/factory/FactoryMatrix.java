@@ -3227,9 +3227,7 @@ public final class FactoryMatrix implements Serializable {
                 }
             }
         } 
-        //her iki parametre de birer matris aralığı belirtiyor ise
-        //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
-        else if (p1.contains(":") && p2.contains(":")) {
+        else{
             int[] pr = FactoryUtils.resolveParam(p1, nr);
             int[] pc = FactoryUtils.resolveParam(p2, nc);
             for (int i = 0; i < pr.length; i++) {
@@ -3238,10 +3236,59 @@ public final class FactoryMatrix implements Serializable {
                 }
             }
         }
-        //eğer birinci parametre ":" içeriyorsa ama ikinci parametre belirli bir index içeriyorsa mesela 0,2,3,5
         return ret;
     }
 
+    public static double[][] cmd(double[][] d, String p1, String p2) {
+        double[][] ret = clone(d);
+        p1 = p1.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
+        p2 = p2.replace("[", "").replace("]", "").replace("(", "").replace(")", "");
+        int nr = d.length;
+        int nc = d[0].length;
+
+        //eğer komut tüm matrisi ilgilendir diyorsa tüm matrisi ger gönder
+        if (p1.equals(":") && p2.equals(":")) {
+            return ret;
+        }
+        //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
+        else if (p1.equals(":") && !p2.equals(":")) {
+            if (p2.length() == 1) {
+                int c = Integer.parseInt(p2);
+                if (c < nc) {
+                    ret=columns(ret, new int[]{c});
+                    return ret;
+                }
+            } else {
+                int[] p = FactoryUtils.resolveParam(p2,nc);
+                ret=columns(ret, p);
+                return ret;
+            }
+        //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
+        } else if (p2.equals(":") && !p1.equals(":")) {
+            if (p1.length() == 1) {
+                int r = Integer.parseInt(p2);
+                if (r<nr) {
+                    ret=rows(ret, new int[]{r});
+                    return ret;
+                }
+            } else {
+                int[] p = FactoryUtils.resolveParam(p1,nr);
+                ret=rows(ret, p);
+                return ret;
+            }
+        } 
+        //her iki parametre de birer matris aralığı belirtiyor ise
+        //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
+        else{
+            int[] pr = FactoryUtils.resolveParam(p1, nr);
+            int[] pc = FactoryUtils.resolveParam(p2, nc);
+            ret=rows(ret, pr);
+            ret=columns(ret, pc);
+            return ret;
+        }
+        return ret;
+    }
+    
     private static double[][] getColumns(double[][] d, int[] indices) {
         int nr=d.length;
         double[][] ret=new double[nr][indices.length];
