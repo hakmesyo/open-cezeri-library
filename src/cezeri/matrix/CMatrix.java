@@ -1095,6 +1095,26 @@ public final class CMatrix implements Serializable {
     public CMatrix range(double from_inclusive, double to_exclusive) {
         return vector(from_inclusive, to_exclusive - 1);
     }
+    
+    public CMatrix range(int[] p) {
+        CMatrix ret = CMatrix.getInstance(p);
+        return ret;
+    }
+
+    public CMatrix range(double[] p) {
+        CMatrix ret = CMatrix.getInstance(p);
+        return ret;
+    }
+    
+    public CMatrix range(String s) {
+        if (!s.contains(":")) {
+            System.out.println("should contain : range");
+            return this;
+        }        
+        double[] p=FactoryUtils.resolveParam(s, Integer.MAX_VALUE);
+        CMatrix ret = CMatrix.getInstance(p);
+        return ret;
+    }
 
     public CMatrix range(int from_inclusive, int to_exclusive) {
         return vector(from_inclusive, to_exclusive - 1);
@@ -3309,7 +3329,13 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix dotProduct(CMatrix cm) {
-        return dot(cm);
+        if(!FactoryUtils.canBeDotProduct(this.array,cm.array)){
+            System.out.println("two matrices size could not match so thet can not dot product");
+            return this;
+        }
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.dotProduct(this.array,cm.array));
+        return ret;
     }
 
     public CMatrix getMagnitude() {
@@ -3376,7 +3402,7 @@ public final class CMatrix implements Serializable {
     public CMatrix times(CMatrix cm) {
         if (this.getColumnNumber() != cm.getRowNumber()) {
 //            System.out.println("can not multiply please make sure two matrix obey the matrix multiplication rule i.e. column number of first matrix must equal to the coulmnumber of the second matrix");
-            throw new InputMismatchException("can not multiply please make sure two matrix obey the matrix multiplication rule i.e. column number of first matrix must equal to the coulmnumber of the second matrix");
+            throw new InputMismatchException("can not multiply these two matrices please make sure both matrices obey the matrix multiplication rule i.e. column number of first matrix must equal to the colum number of the second matrix");
 //            return null;
         }
         CMatrix ret = new CMatrix(this.getRowNumber(), cm.getColumnNumber());
@@ -5560,14 +5586,21 @@ public final class CMatrix implements Serializable {
      * @param w:width
      * @param h:height
      * @return CMatrix
-     */
-    public CMatrix resize(int w, int h) {
-        return imresize(w, h);
+//     */
+//    public CMatrix resize(int w, int h) {
+//        return imresize(w, h);
+//    }
+    
+    public CMatrix resize(int n) {
+        CMatrix ret = this.clone(this);
+        double[][] d=FactoryMatrix.resize(ret.array,n);
+        ret.setArray(d);
+        return ret;
     }
 
-    public CMatrix resize(CSize c) {
-        return imresize(c.width, c.height);
-    }
+//    public CMatrix resize(CSize c) {
+//        return imresize(c.width, c.height);
+//    }
 
     /**
      * Matlab compatible command: rotate image with desired theta angle
@@ -8025,4 +8058,114 @@ public final class CMatrix implements Serializable {
         ret.array=FactoryMatrix.deShuffle(ret.array,ret.shuffleIndexes);
         return ret;
     }
+    
+    public CMatrix diag(int n){
+        CMatrix ret = range(0,n).replicateColumn(n).multiplyElement(CMatrix.getInstance().eye(n));
+        return ret;
+    }
+    
+    public CMatrix diag(String s){
+        if (!s.contains(":")) {
+            System.out.println("command should contain : range");
+            return this;
+        }
+        double[] p=FactoryUtils.resolveParam(s, Integer.MAX_VALUE);
+        CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
+        return ret;
+    }
+    
+    public CMatrix diag(double[] p){
+        CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
+        return ret;
+    }
+    
+    public CMatrix shape(){
+        CMatrix ret = CMatrix.getInstance(this.getRowNumber(),this.getColumnNumber());
+        return ret;
+    }
+    
+    public CMatrix shape(CMatrix cm){
+        CMatrix ret = CMatrix.getInstance(cm.getRowNumber(),cm.getColumnNumber());
+        return ret;
+    }
+    
+    public boolean isVector(CMatrix cm){
+        if (cm.getRowNumber()==1 || cm.getColumnNumber()==1) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+        
+    public CMatrix diag(CMatrix cm){
+        if (!cm.isVector(cm)) {
+            System.out.println("input is not a vector or nx1 or 1xn matrix");
+            return this;
+        }
+        double[] p=cm.toDoubleArray1D();
+        CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
+        return ret;
+    }
+
+    public CMatrix negate(CMatrix indices) {
+        CMatrix ret = this.clone(this);
+        double[][] d=FactoryMatrix.clone(ret.array);
+        double[] index=indices.toDoubleArray1D();
+        double[] d2=FactoryUtils.toDoubleArray1D(d);
+        for (int i = 0; i < index.length; i++) {
+            d2[(int)index[i]]=-d2[(int)index[i]];
+        }
+        ret.setArray(d2).reshape(d.length,d[0].length);
+        return ret;
+    }
+
+    public CMatrix trunc() {
+        CMatrix ret = this.clone(this);
+        double[][] d=ret.array;
+        int[][] d2=FactoryUtils.trunc(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    public CMatrix trunc(CMatrix cm) {
+        CMatrix ret = cm.clone(cm);
+        double[][] d=ret.array;
+        int[][] d2=FactoryUtils.toIntArray2D(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    public CMatrix ceil() {
+        CMatrix ret = this.clone(this);
+        double[][] d=ret.array;
+        int[][] d2=FactoryMatrix.ceil(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    public CMatrix ceil(CMatrix cm) {
+        CMatrix ret = cm.clone(cm);
+        double[][] d=ret.array;
+        int[][] d2=FactoryMatrix.ceil(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    public CMatrix floor() {
+        CMatrix ret = this.clone(this);
+        double[][] d=ret.array;
+        int[][] d2=FactoryMatrix.floor(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    public CMatrix floor(CMatrix cm) {
+        CMatrix ret = cm.clone(cm);
+        double[][] d=ret.array;
+        int[][] d2=FactoryMatrix.floor(d);
+        ret.setArray(d2);
+        return ret;
+    }
+    
+    
 }

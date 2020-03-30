@@ -1415,6 +1415,16 @@ public final class FactoryUtils {
         }
         return ret;
     }
+    
+    public static int[][] trunc(double[][] m) {
+        int[][] ret = new int[m.length][m[0].length];
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                ret[i][j] = (int) m[i][j];
+            }
+        }
+        return ret;
+    }
 
     public static short[][] toShortArray2D(double[][] m) {
         short[][] ret = new short[m.length][m[0].length];
@@ -4878,12 +4888,32 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static int[] vector(int from, int to) {
-        int[] ret = new int[to - from + 1];
+    public static double[] vector(int from, int to) {
+        double[] ret = new double[to - from];
         for (int i = 0; i < ret.length; i++) {
             ret[i] = from + i;
         }
         return ret;
+    }
+
+    public static double[] vector(double from, double to, double incr) {
+        List<Double> lst=new ArrayList();
+        for (double i = from; i < to; i+=incr) {
+            lst.add(i);
+        }
+        double[] ret=new double[lst.size()];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i]=lst.get(i);
+        }
+        return ret;
+    }
+
+    public static boolean canBeDotProduct(double[][] p1, double[][] p2) {
+        if (p1[0].length==p2.length) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public <T> List<T> toArrayList(T[][] twoDArray) {
@@ -4901,48 +4931,52 @@ public final class FactoryUtils {
         }
     }
 
-    public static int[] resolveParam(String s, int max) {
-        int[] ret = null;
+    public static double[] resolveParam(String s, int max) {
+        double[] ret = null;
         if (s.contains(":")) {
             String[] ss = s.split(":");
-            if (ss.length <= 2 && !s.contains(",")) {
-                if (ss.length==1) {
-                    s=ss[0]+":end";
-                    ss=s.split(":");
+            if (ss.length == 3) {
+                double from = Double.parseDouble(ss[0]);
+                double to = Double.parseDouble(ss[1]);
+                double incr = Double.parseDouble(ss[2]);
+                ret = vector(from, to, incr);
+            } else if (ss.length <= 2 && !s.contains(",")) {
+                if (ss.length == 1) {
+                    s = ss[0] + ":end";
+                    ss = s.split(":");
+                    ss[1] = ss[1].replace("end", (max - 1) + "");
+                } else if (ss[1].indexOf("end") != -1) {
                     ss[1] = ss[1].replace("end", (max - 1) + "");
                 }
-                else if (ss[1].indexOf("end") != -1) {
-                    ss[1] = ss[1].replace("end", (max - 1) + "");
-                } 
 //                else {
-                    try {
-                        if (ss[0].isEmpty() && ss[1].isEmpty()) {
-                            ss[0] = "0";
-                            ss[1] = (max - 1) + "";
-                        } else if (ss[0].isEmpty() ) {
-                            ss[0] = "0";
-                            int q = Integer.parseInt(ss[1]);
-                            if (q < 0) {
-                                ss[1] = (max - 1 + q) + "";
-                            }
-                        } else if (ss[1].isEmpty() ) {
-                            int q = Integer.parseInt(ss[0]);
-                            if (q < 0) {
-                                ss[0] = (max - 1 + q) + "";
-                            }
-                            ss[1] = (max - 1) + "";
-                        } else {
-                            int q = Integer.parseInt(ss[0]);
-                            if (q < 0) {
-                                ss[0] = (max - 1 + q) + "";
-                            }
-                            q = Integer.parseInt(ss[1]);
-                            if (q < 0) {
-                                ss[1] = (max - 1 + q) + "";
-                            }
+                try {
+                    if (ss[0].isEmpty() && ss[1].isEmpty()) {
+                        ss[0] = "0";
+                        ss[1] = (max - 1) + "";
+                    } else if (ss[0].isEmpty()) {
+                        ss[0] = "0";
+                        int q = Integer.parseInt(ss[1]);
+                        if (q < 0) {
+                            ss[1] = (max  + q) + "";
                         }
-                    } catch (Exception e) {
+                    } else if (ss[1].isEmpty()) {
+                        int q = Integer.parseInt(ss[0]);
+                        if (q < 0) {
+                            ss[0] = (max  + q) + "";
+                        }
+                        ss[1] = (max - 1) + "";
+                    } else {
+                        int q = Integer.parseInt(ss[0]);
+                        if (q < 0) {
+                            ss[0] = (max  + q) + "";
+                        }
+                        q = Integer.parseInt(ss[1]);
+                        if (q < 0) {
+                            ss[1] = (max  + q) + "";
+                        }
                     }
+                } catch (Exception e) {
+                }
 //                }
                 int from = Integer.parseInt(ss[0]);
                 int to = Integer.parseInt(ss[1]);
@@ -4950,7 +4984,7 @@ public final class FactoryUtils {
                     System.out.println("range check error please correct from:to range index");
                     ret = null;
                 } else if (from == to) {
-                    ret = new int[]{from, from};
+                    ret = new double[]{from, from};
                 } else if (from < to) {
                     ret = FactoryUtils.vector(from, to);
                 } else if (from > to) {
@@ -4960,12 +4994,12 @@ public final class FactoryUtils {
             else {
                 String[] p = s.split(",");
                 //ilkönce negatif olanları işle
-                List<Integer> lst = new ArrayList();
+                List<Double> lst = new ArrayList();
                 for (int i = 0; i < p.length; i++) {
                     if (!p[i].contains("-") && !p[i].contains(":")) {
-                        lst.add(Integer.parseInt(p[i]));
+                        lst.add(Double.parseDouble(p[i]));
                     } else if (p[i].contains("-") && !p[i].contains(":")) {
-                        lst.add((max - 1) + Integer.parseInt(p[i]));
+                        lst.add((max - 1) + Double.parseDouble(p[i]));
                     } else if (p[i].contains(":")) {
                         String[] q = p[i].split(":");
                         if (q[0].contains("-")) {
@@ -4976,22 +5010,27 @@ public final class FactoryUtils {
                         }
                         int from = Integer.parseInt(q[0]);
                         int to = Integer.parseInt(q[1]);
-                        int[] d = FactoryUtils.vector(from, to);
+                        double[] d = FactoryUtils.vector(from, to);
                         for (int j = 0; j < d.length; j++) {
                             lst.add(d[j]);
                         }
                     }
                 }
-                ret = new int[lst.size()];
+                ret = new double[lst.size()];
                 for (int i = 0; i < ret.length; i++) {
                     ret[i] = lst.get(i);
                 }
             }
-        }else{
-            String[] p=s.split(",");
-            ret=new int[p.length];
+        } else {
+            String[] p = s.split(",");
+            ret = new double[p.length];
             for (int i = 0; i < p.length; i++) {
-                ret[i]=Integer.parseInt(p[i]);
+                if (p[i].contains("-")) {
+                    ret[i] = max+Integer.parseInt(p[i]);
+                }else{
+                    ret[i] = Integer.parseInt(p[i]);
+                }
+                
             }
         }
         return ret;

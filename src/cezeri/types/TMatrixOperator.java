@@ -23,6 +23,34 @@ public enum TMatrixOperator {
             ArrayList lst = new ArrayList();
             for (int j = 0; j < m[0].length; j++) {
                 for (int i = 0; i < m.length; i++) {
+                    if (m[i][j] > t1 && m[i][j] < t2) {
+                        lst.add(k);
+                    }
+                    k++;
+                }
+            }
+            int[] d1 = FactoryUtils.toIntArray1D(lst);
+            return d.setArray(d1);
+        }
+
+        @Override
+        public CMatrix apply(CMatrix p, double x) {
+            throw new UnsupportedOperationException("Only BETWEEN can be run"); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public CMatrix apply(CMatrix d, double val, String p1, String p2) {
+            throw new UnsupportedOperationException("Only BETWEEN can be run"); //To change body of generated methods, choose Tools | Templates.
+        }
+    },
+    BETWEEN_EQUALS() {
+        @Override
+        public CMatrix apply(CMatrix d, double t1, double t2) {
+            double[][] m = d.toDoubleArray2D();
+            int k = 0;
+            ArrayList lst = new ArrayList();
+            for (int j = 0; j < m[0].length; j++) {
+                for (int i = 0; i < m.length; i++) {
                     if (m[i][j] >= t1 && m[i][j] <= t2) {
                         lst.add(k);
                     }

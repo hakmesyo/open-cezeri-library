@@ -3175,12 +3175,13 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
+
     public static double[][] shuffle(double[][] d, int[] shuffleIndexes) {
-        int nr=d.length;
+        int nr = d.length;
         double[][] ret = new double[nr][d[0].length];
         int[] ind = randPermInt(d.length);
         for (int i = 0; i < ind.length; i++) {
-            shuffleIndexes[i]=ind[i];
+            shuffleIndexes[i] = ind[i];
         }
         for (int i = 0; i < nr; i++) {
             ret[i] = d[shuffleIndexes[i]];
@@ -3189,14 +3190,14 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] deShuffle(double[][] d, int[] shuffleIndexes) {
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             ret[shuffleIndexes[i]] = FactoryUtils.clone(d[i]);
         }
         return ret;
-        
+
     }
 
     public static double[][] setValue(double[][] d, String p1, String p2, double val) {
@@ -3214,50 +3215,48 @@ public final class FactoryMatrix implements Serializable {
                 }
             }
             return ret;
-        }
-        //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
+        } //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
         else if (p1.equals(":") && !p2.equals(":")) {
             if (p2.length() == 1) {
                 int c = Integer.parseInt(p2);
                 if (c < nc) {
                     for (int i = 0; i < nr; i++) {
-                        ret[i][c]=val; 
+                        ret[i][c] = val;
                     }
                     return ret;
                 }
             } else {
-                int[] p = FactoryUtils.resolveParam(p2,nc);
+                double[] p = FactoryUtils.resolveParam(p2, nc);
                 for (int i = 0; i < nr; i++) {
                     for (int j = 0; j < p.length; j++) {
-                        ret[i][p[j]]=val;
+                        ret[i][(int) p[j]] = val;
                     }
                 }
             }
-        //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
+            //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
         } else if (p2.equals(":") && !p1.equals(":")) {
             if (p1.length() == 1) {
                 int r = Integer.parseInt(p2);
-                if (r<nr) {
+                if (r < nr) {
                     for (int i = 0; i < nc; i++) {
-                        ret[r][i]=val;
+                        ret[r][i] = val;
                     }
                     return ret;
                 }
             } else {
-                int[] p = FactoryUtils.resolveParam(p1,nr);
+                double[] p = FactoryUtils.resolveParam(p1, nr);
                 for (int i = 0; i < p.length; i++) {
                     for (int j = 0; j < nc; j++) {
-                        ret[p[i]][j]=val;
+                        ret[(int) p[i]][j] = val;
                     }
                 }
             }
-        } 
-        else{
-            int[] pr = FactoryUtils.resolveParam(p1, nr);
-            int[] pc = FactoryUtils.resolveParam(p2, nc);
+        } else {
+            double[] pr = FactoryUtils.resolveParam(p1, nr);
+            double[] pc = FactoryUtils.resolveParam(p2, nc);
             for (int i = 0; i < pr.length; i++) {
                 for (int j = 0; j < pc.length; j++) {
-                    ret[pr[i]][pc[j]]=val;
+                    ret[(int) pr[i]][(int) pc[j]] = val;
                 }
             }
         }
@@ -3274,62 +3273,142 @@ public final class FactoryMatrix implements Serializable {
         //eğer komut tüm matrisi ilgilendir diyorsa tüm matrisi ger gönder
         if (p1.equals(":") && p2.equals(":")) {
             return ret;
-        }
-        //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
+        } //eğer komut tüm satırları ama belirli sutunları ilgilendiriyorsa
         else if (p1.equals(":") && !p2.equals(":")) {
             if (p2.length() == 1) {
                 int c = Integer.parseInt(p2);
                 if (c < nc) {
-                    ret=columns(ret, new int[]{c});
+                    ret = columns(ret, new int[]{c});
                     return ret;
                 }
             } else {
-                int[] p = FactoryUtils.resolveParam(p2,nc);
-                ret=columns(ret, p);
+                double[] p = FactoryUtils.resolveParam(p2, nc);
+                ret = columns(ret, FactoryUtils.toIntArray1D(p));
                 return ret;
             }
-        //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
+            //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
         } else if (p2.equals(":") && !p1.equals(":")) {
             if (p1.length() == 1) {
                 int r = Integer.parseInt(p2);
-                if (r<nr) {
-                    ret=rows(ret, new int[]{r});
+                if (r < nr) {
+                    ret = rows(ret, new int[]{r});
                     return ret;
                 }
             } else {
-                int[] p = FactoryUtils.resolveParam(p1,nr);
-                ret=rows(ret, p);
+                double[] p = FactoryUtils.resolveParam(p1, nr);
+                ret = rows(ret, FactoryUtils.toIntArray1D(p));
                 return ret;
             }
-        } 
-        //her iki parametre de birer matris aralığı belirtiyor ise
+        } //her iki parametre de birer matris aralığı belirtiyor ise
         //ilkönce matrisin ilgili satırlarını slice'la sonra sutunlarına geç
-        else{
-            int[] pr = FactoryUtils.resolveParam(p1, nr);
-            int[] pc = FactoryUtils.resolveParam(p2, nc);
-            ret=rows(ret, pr);
-            ret=columns(ret, pc);
+        else {
+            int[] pr = FactoryUtils.toIntArray1D(FactoryUtils.resolveParam(p1, nr));
+            int[] pc = FactoryUtils.toIntArray1D(FactoryUtils.resolveParam(p2, nc));
+            ret = rows(ret, pr);
+            ret = columns(ret, pc);
             return ret;
         }
         return ret;
     }
-    
+
     private static double[][] getColumns(double[][] d, int[] indices) {
-        int nr=d.length;
-        double[][] ret=new double[nr][indices.length];
+        int nr = d.length;
+        double[][] ret = new double[nr][indices.length];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < indices.length; j++) {
-                ret[i][j]=d[i][indices[j]];
+                ret[i][j] = d[i][indices[j]];
             }
         }
         return ret;
     }
 
     private static double[][] getRows(double[][] d, int[] indices) {
-        int nr=d.length;
-        double[][] ret=new double[indices.length][d[0].length];
+        int nr = d.length;
+        double[][] ret = new double[indices.length][d[0].length];
         for (int i = 0; i < indices.length; i++) {
-            ret[i]=d[indices[i]];
+            ret[i] = d[indices[i]];
+        }
+        return ret;
+    }
+
+    public static double[][] resize(double[][] d, int n) {
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr * n][nc * n];
+        int q=0,p=0;
+        for (int i = 0; i < nr; i++) {
+            for (int m = 0; m < n; m++) {
+                for (int j = 0; j < nc; j++) {
+                    for (int k = 0; k < n; k++) {
+                        ret[q][p]=d[i][j];
+                        p++;
+                    }
+                }
+                q++;
+                p=0;
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] dotProduct(double[][] p1, double[][] p2) {
+        double[][] ret=new double[p1.length][p2[0].length];
+        int nr=ret.length;
+        int nc=ret[0].length;
+        double[][] pt=clone(p2);
+        pt=transpose(pt);
+        
+        for (int i = 0; i < nr; i++) {
+            double sum=0;
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=dot(p1[i], pt[j]);
+            }
+        }
+        
+        return ret;
+    }
+    
+    public static double dot(double[] v1,double[] v2){
+        double ret=0;
+        int nr=v1.length;        
+        for (int i = 0; i < nr; i++) {
+            ret+=v1[i]*v2[i];
+        }
+        return ret;
+    }
+
+    public static int[][] ceil(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        int[][] ret=new int[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=(int)Math.ceil(d[i][j]);
+            }
+        }
+        return ret;
+    }
+    
+    public static int[][] floor(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        int[][] ret=new int[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=(int)Math.floor(d[i][j]);
+            }
+        }
+        return ret;
+    }
+
+    public static int[][] mod(double[][] d,int n) {
+        int nr=d.length;
+        int nc=d[0].length;
+        int[][] ret=new int[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=(int)d[i][j]%n;
+            }
         }
         return ret;
     }

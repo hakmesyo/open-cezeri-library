@@ -18,7 +18,7 @@ public class TestDCT {
                 .imshow()
                 .rgb2gray()
                 .imshow()
-                .resize(512,512)
+                .imresize(512,512)
                 .imshow()
                 .transformDCT()
                 .imshow();
