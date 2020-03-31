@@ -3176,7 +3176,7 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static double[][] shuffle(double[][] d, int[] shuffleIndexes) {
+    public static double[][] shuffleRows(double[][] d, int[] shuffleIndexes) {
         int nr = d.length;
         double[][] ret = new double[nr][d[0].length];
         int[] ind = randPermInt(d.length);
@@ -3189,13 +3189,44 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static double[][] deShuffle(double[][] d, int[] shuffleIndexes) {
+    public static double[][] shuffleRowsAndColumns(double[][] d, int[] shuffleIndexes) {
+        int nr = d.length;
+        int nc=d[0].length;
+        int[] ind = randPermInt(nr*nc);
+        int m=nr*nc;
+        for (int i = 0; i < m ; i++) {
+            shuffleIndexes[i] = ind[i];
+        }
+        double[] p=FactoryUtils.toDoubleArray1D(d);
+        double[] q=new double[m];
+        for (int i = 0; i < m; i++) {
+            q[i] = p[shuffleIndexes[i]];
+        }
+        double[][] ret=FactoryMatrix.reshape(q, nr, nc);
+        return ret;
+    }
+
+    public static double[][] deShuffleRows(double[][] d, int[] shuffleIndexes) {
         int nr = d.length;
         int nc = d[0].length;
         double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             ret[shuffleIndexes[i]] = FactoryUtils.clone(d[i]);
         }
+        return ret;
+
+    }
+
+    public static double[][] deShuffleRowsAndColumns(double[][] d, int[] shuffleIndexes) {
+        int nr = d.length;
+        int nc = d[0].length;
+        int size=nr*nc;
+        double[] p=FactoryUtils.toDoubleArray1D(d);
+        double[] q=new double[size];
+        for (int i = 0; i < size; i++) {
+            q[shuffleIndexes[i]] = p[i];
+        }
+        double[][] ret=FactoryMatrix.reshape(q, nr, nc);
         return ret;
 
     }

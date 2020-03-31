@@ -1279,9 +1279,11 @@ public final class FactoryUtils {
     }
 
     public static double[][] toDoubleArray2D(int[][] m) {
-        double[][] ret = new double[m.length][m[0].length];
-        for (int i = 0; i < m[0].length; i++) {
-            for (int j = 0; j < m[0].length; j++) {
+        int nr=m.length;
+        int nc=m[0].length;
+        double[][] ret = new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
                 ret[i][j] = m[i][j] * 1.0;
             }
         }
@@ -1407,10 +1409,13 @@ public final class FactoryUtils {
     }
 
     public static int[][] toIntArray2D(double[][] m) {
-        int[][] ret = new int[m.length][m[0].length];
-        for (int i = 0; i < m.length; i++) {
-            for (int j = 0; j < m[0].length; j++) {
-                ret[i][j] = (int) Math.round(m[i][j]);
+        int nr=m.length;
+        int nc=m[0].length;
+        int[][] ret = new int[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+//                ret[i][j] = (int) Math.round(m[i][j]);
+                ret[i][j] = (int)m[i][j];
             }
         }
         return ret;
@@ -5055,6 +5060,40 @@ public final class FactoryUtils {
             }
         }
         return ret;
+    }
+    
+    public static int[] byte2Int(byte[] b){
+        int nr=b.length;
+        int[] ret=new int[nr];
+        for (int i = 0; i < nr; i++) {
+            ret[i]=byte2Int(b[i]);
+        }
+        return ret;
+    }
+    
+    public static double[] byte2Double(byte[] b){
+        int nr=b.length;
+        double[] ret=new double[nr];
+        for (int i = 0; i < nr; i++) {
+            ret[i]=byte2Double(b[i]);
+        }
+        return ret;
+    }
+    
+    public static int byte2Int(byte b){
+        return b & 0xFF;
+    }
+
+    public static long byte2Long(byte b){
+        return (long)(b & 0xFF);
+    }
+
+    public static short byte2Short(byte b){
+        return (short)(b & 0xFF);
+    }
+
+    public static double byte2Double(byte b){
+        return (double)(b & 0xFF);
     }
 
 }

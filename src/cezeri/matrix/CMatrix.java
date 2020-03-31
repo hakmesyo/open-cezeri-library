@@ -1733,8 +1733,30 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow() {
-        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+        if (image == null) {
             image = ImageProcess.pixelsToImageGray(FactoryMatrix.transpose(array));
+        }
+        FrameImage frm = new FrameImage(image, this.imagePath);
+        frm.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * Matlab compatible command: show image in the frame
+     *
+     *
+     * Matlabdakine benzer şekilde temel resim gösteren figure açar default
+     * olarak imgenin orjinali nasılsa onu gösterir gri ise gri rgb ise rgb
+     * değişiklik yapmaz. Eğer gri göstrmek istiyorsanız imshowGray komutunu,
+     * diğer taraftan renkli göstermek için de imshowRGB yi kullanınız.
+     *
+     * @return
+     */
+    public CMatrix imshow(boolean isUpdate) {
+//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+        if (image == null || isUpdate) {
+            image = ImageProcess.pixelsToImageGray(array);
         }
         FrameImage frm = new FrameImage(image, this.imagePath);
         frm.setVisible(true);
@@ -4349,18 +4371,21 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix readImage(String path) {
-        BufferedImage bf = ImageProcess.readImageFromFile(path);
-        if (bf != null) {
-            Path p = Paths.get(path);
-            String fileName = p.getFileName().toString();
-            this.name += "|" + fileName;
-            this.image = bf;
-//            this.array = ImageProcess.imageToDoublePixels255(this.image);
-            this.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
-            this.imagePath = path;
-        } else {
-            System.err.println("null pointer exception, image could not be loaded properly");
-        }
+//        BufferedImage bf = ImageProcess.readImageFromFile(path);
+//        if (bf != null) {
+//            Path p = Paths.get(path);
+//            String fileName = p.getFileName().toString();
+//            this.name += "|" + fileName;
+//            this.image = bf;
+////            this.array = ImageProcess.imageToDoublePixels255(this.image);
+//            this.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
+//            this.imagePath = path;
+//        } else {
+//            System.err.println("null pointer exception, image could not be loaded properly");
+//        }
+        this.image=ImageProcess.readImage(path);
+        this.array=ImageProcess.bufferedImageToArray2D(this.image);
+        this.imagePath = path;
         return this;
     }
 
@@ -8020,10 +8045,6 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
-    public CMatrix negate() {
-        return this.multiplyScalar(-1);
-    }
-
     public CMatrix bruteForceAttack(char[] pool, String pass, boolean isPrint) {
         long t = FactoryUtils.tic();
         BruteForce bf = new BruteForce(pool, 1);
@@ -8045,48 +8066,77 @@ public final class CMatrix implements Serializable {
     
     public CMatrix shufflePixelImage(){
         CMatrix ret = this.clone(this);
-        int[] indexes=new int[ret.array.length];
-        ret.array=FactoryMatrix.shuffle(ret.array,indexes);
+        int[] indexes=new int[ret.array.length*ret.array[0].length];
+        ret.array=FactoryMatrix.shuffleRowsAndColumns(ret.array,indexes);
         ret.shuffleIndexes=indexes;
         return ret;
     }
     
     public CMatrix deShufllePixelImage(){
         CMatrix ret = this.clone(this);
-        ret.array=FactoryMatrix.deShuffle(ret.array,ret.shuffleIndexes);
+        ret.array=FactoryMatrix.deShuffleRowsAndColumns(ret.array,ret.shuffleIndexes);
         return ret;
     }
     
+    /**
+     * produce diagonal matrix based on the sequence provided in parameter i.e: n=5 means 0:5 --> 0,1,2,3,4
+     * @param n
+     * @return
+     */
     public CMatrix diag(int n){
         CMatrix ret = range(0,n).replicateColumn(n).multiplyElement(CMatrix.getInstance().eye(n));
         return ret;
     }
     
+    /**
+     * produce diagonal matrix based on the sequence provided as String command ie: "-12:15:1.44"
+     * @param s
+     * @return
+     */
     public CMatrix diag(String s){
         if (!s.contains(":")) {
             System.out.println("command should contain : range");
             return this;
         }
-        double[] p=FactoryUtils.resolveParam(s, Integer.MAX_VALUE);
+        double[] p=FactoryUtils.resolveParamForRange(s);
         CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
         return ret;
     }
     
+    /**
+     * produce diagonal matrix based on the sequence provided as 1D array
+     * @param p
+     * @return
+     */
     public CMatrix diag(double[] p){
         CMatrix ret = range(p).replicateColumn(p.length).multiplyElement(CMatrix.getInstance().eye(p.length));
         return ret;
     }
     
+    /**
+     * give info about current matrix size (number of rows;number of columns)
+     * @return 
+     */
     public CMatrix shape(){
-        CMatrix ret = CMatrix.getInstance(this.getRowNumber(),this.getColumnNumber());
-        return ret;
+        System.out.println("Matrix Size:["+this.getRowNumber()+","+this.getColumnNumber()+"]");
+        return this;
     }
     
+    /**
+     * give info about given matrix size (number of rows;number of columns)
+     * @param cm
+     * @return 
+     */
     public CMatrix shape(CMatrix cm){
-        CMatrix ret = CMatrix.getInstance(cm.getRowNumber(),cm.getColumnNumber());
-        return ret;
+        System.out.println("Matrix Size:["+cm.getRowNumber()+","+cm.getColumnNumber()+"]");
+        return this;
     }
     
+    /**
+     * is given matrix is Vector or not
+     * @param cm
+     * @return
+     */
     public boolean isVector(CMatrix cm){
         if (cm.getRowNumber()==1 || cm.getColumnNumber()==1) {
             return true;
@@ -8095,6 +8145,24 @@ public final class CMatrix implements Serializable {
         }
     }
         
+    /**
+     * is current matrix is Vector or not
+     * @param cm
+     * @return
+     */
+    public boolean isVector(){
+        if (this.getRowNumber()==1 || this.getColumnNumber()==1) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+        
+    /**
+     * produce diagonal matrix provided that given matrix is vector of range
+     * @param cm
+     * @return
+     */
     public CMatrix diag(CMatrix cm){
         if (!cm.isVector(cm)) {
             System.out.println("input is not a vector or nx1 or 1xn matrix");
@@ -8105,6 +8173,19 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    /**
+     * negate all elements of the current matrix
+     * @return
+     */
+    public CMatrix negate() {
+        return this.multiplyScalar(-1);
+    }
+
+    /**
+     * negate all given indices in the current matrix.
+     * @param indices
+     * @return
+     */
     public CMatrix negate(CMatrix indices) {
         CMatrix ret = this.clone(this);
         double[][] d=FactoryMatrix.clone(ret.array);
@@ -8116,7 +8197,28 @@ public final class CMatrix implements Serializable {
         ret.setArray(d2).reshape(d.length,d[0].length);
         return ret;
     }
+    
+    /**
+     * negate all given indices in the given matrix.
+     * @param indices
+     * @return
+     */
+    public CMatrix negate(CMatrix cm,CMatrix indices) {
+        CMatrix ret = cm.clone(cm);
+        double[][] d=FactoryMatrix.clone(ret.array);
+        double[] index=indices.toDoubleArray1D();
+        double[] d2=FactoryUtils.toDoubleArray1D(d);
+        for (int i = 0; i < index.length; i++) {
+            d2[(int)index[i]]=-d2[(int)index[i]];
+        }
+        ret.setArray(d2).reshape(d.length,d[0].length);
+        return ret;
+    }
 
+    /**
+     * truncate all the elements of the current matrix from double to integer 
+     * @return
+     */
     public CMatrix trunc() {
         CMatrix ret = this.clone(this);
         double[][] d=ret.array;
@@ -8125,6 +8227,11 @@ public final class CMatrix implements Serializable {
         return ret;
     }
     
+    /**
+     * truncate all the elements of the given matrix from double to integer
+     * @param cm
+     * @return
+     */
     public CMatrix trunc(CMatrix cm) {
         CMatrix ret = cm.clone(cm);
         double[][] d=ret.array;
@@ -8133,6 +8240,10 @@ public final class CMatrix implements Serializable {
         return ret;
     }
     
+    /**
+     * apply Math.ceil to the all elements of the current matrix
+     * @return
+     */
     public CMatrix ceil() {
         CMatrix ret = this.clone(this);
         double[][] d=ret.array;
@@ -8141,6 +8252,11 @@ public final class CMatrix implements Serializable {
         return ret;
     }
     
+    /**
+     * apply Math.ceil to the all elements of the given matrix
+     * @param cm
+     * @return
+     */
     public CMatrix ceil(CMatrix cm) {
         CMatrix ret = cm.clone(cm);
         double[][] d=ret.array;
@@ -8149,6 +8265,10 @@ public final class CMatrix implements Serializable {
         return ret;
     }
     
+    /**
+     * apply Math.floor to the all elements of the current matrix
+     * @return
+     */
     public CMatrix floor() {
         CMatrix ret = this.clone(this);
         double[][] d=ret.array;
@@ -8157,6 +8277,11 @@ public final class CMatrix implements Serializable {
         return ret;
     }
     
+    /**
+     * apply Math.ceil to the all elements of the given matrix
+     * @param cm
+     * @return
+     */
     public CMatrix floor(CMatrix cm) {
         CMatrix ret = cm.clone(cm);
         double[][] d=ret.array;

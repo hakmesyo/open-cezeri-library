@@ -31,6 +31,7 @@ import com.jhlabs.image.PointFilter;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,13 +76,12 @@ public final class ImageProcess {
 
     /**
      * Conversion from RGB space to LAB space (CIE)
+     *
      * @param R
      * @param G
      * @param B
      * @return
      */
-
-    
     public static double[] rgbToLab(int R, int G, int B) {
 
         double r, g, b, X, Y, Z, xr, yr, zr;
@@ -846,6 +846,70 @@ public final class ImageProcess {
         }
 
         return result;
+    }
+
+    public static BufferedImage readImage(String fileName) {
+        try {
+            return ImageIO.read(new File(fileName));
+        } catch (IOException ex) {
+            Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public static double[][] bufferedImageToArray2D(BufferedImage img) {
+        double[][] ret = null;
+        if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
+            WritableRaster raster = img.getRaster();
+            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+            byte[] d = data.getData();
+            double[] r = FactoryUtils.byte2Double(d);
+            ret = FactoryMatrix.reshape(r, img.getHeight(), img.getWidth());
+            return ret;
+        }else if(img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()){
+            WritableRaster raster = img.getRaster();
+            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+            byte[] d = data.getData();
+            double[] r = FactoryUtils.byte2Double(d);
+            double[] t= new double[r.length/3];
+            int size=t.length;
+            for (int i = 0; i < size; i++) {
+                t[i]=(int)((r[3*i]+r[3*i+1]+r[3*i+2])/3);
+            }
+            ret = FactoryMatrix.reshape(t, img.getHeight(), img.getWidth());
+            return ret;
+        }
+        return ret;
+    }
+    
+    public static double[][][] bufferedImageToArray3D(BufferedImage img) {
+        double[][][] ret = null;
+        if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
+            throw new ArithmeticException("BufferedImage has not rgba channels");
+        }else if(img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()){
+            WritableRaster raster = img.getRaster();
+            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+            byte[] d = data.getData();
+            double[] q = FactoryUtils.byte2Double(d);
+            double[] r= new double[q.length/3];
+            double[] g= new double[q.length/3];
+            double[] b= new double[q.length/3];
+            int size=r.length;
+            for (int i = 0; i < size; i++) {
+                r[i]=q[3*i];
+                g[i]=q[3*i+1];
+                b[i]=q[3*i+2];
+            }
+            double[][] rr = FactoryMatrix.reshape(r, img.getHeight(), img.getWidth());
+            double[][] gg = FactoryMatrix.reshape(g, img.getHeight(), img.getWidth());
+            double[][] bb = FactoryMatrix.reshape(b, img.getHeight(), img.getWidth());
+            ret=new double[3][][];
+            ret[0]=rr;
+            ret[1]=gg;
+            ret[2]=bb;
+            return ret;
+        }
+        return ret;
     }
 
     public static int[][] imageToPixelsInt(BufferedImage img) {
@@ -3521,7 +3585,7 @@ public final class ImageProcess {
 //        // convert the frame to HSV
 //        Imgproc.cvtColor(frame, hsvImage, Imgproc.COLOR_BGR2HSV);
 //        BufferedImage img = ocv_mat2Img(hsvImage);
-        BufferedImage img=ocv_2_hsv(bf);
+        BufferedImage img = ocv_2_hsv(bf);
         return img;
     }
 
@@ -3540,8 +3604,8 @@ public final class ImageProcess {
         BufferedImage img = ocv_mat2Img(mask);
         return img;
     }
-    
-    public static BufferedImage ocv_2_hsv(BufferedImage img){
+
+    public static BufferedImage ocv_2_hsv(BufferedImage img) {
         Mat blurredImage = new Mat();
         Mat hsvImage = new Mat();
         Mat mask = new Mat();
@@ -3563,7 +3627,6 @@ public final class ImageProcess {
 //        String valuesToPrint = "Hue range: " + minValues.val[0] + "-" + maxValues.val[0]
 //                + "\tSaturation range: " + minValues.val[1] + "-" + maxValues.val[1] + "\tValue range: "
 //                + minValues.val[2] + "-" + maxValues.val[2];
-
         // threshold HSV image to select tennis balls
         Core.inRange(hsvImage, minValues, maxValues, mask);
         BufferedImage bf = ImageProcess.ocv_mat2Img(hsvImage);
