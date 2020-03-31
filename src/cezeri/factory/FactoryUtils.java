@@ -1415,7 +1415,7 @@ public final class FactoryUtils {
         }
         return ret;
     }
-    
+
     public static int[][] trunc(double[][] m) {
         int[][] ret = new int[m.length][m[0].length];
         for (int i = 0; i < m.length; i++) {
@@ -4897,21 +4897,21 @@ public final class FactoryUtils {
     }
 
     public static double[] vector(double from, double to, double incr) {
-        List<Double> lst=new ArrayList();
-        for (double i = from; i < to; i+=incr) {
+        List<Double> lst = new ArrayList();
+        for (double i = from; i < to; i += incr) {
             lst.add(i);
         }
-        double[] ret=new double[lst.size()];
+        double[] ret = new double[lst.size()];
         for (int i = 0; i < ret.length; i++) {
-            ret[i]=lst.get(i);
+            ret[i] = lst.get(i);
         }
         return ret;
     }
 
     public static boolean canBeDotProduct(double[][] p1, double[][] p2) {
-        if (p1[0].length==p2.length) {
+        if (p1[0].length == p2.length) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -4957,22 +4957,22 @@ public final class FactoryUtils {
                         ss[0] = "0";
                         int q = Integer.parseInt(ss[1]);
                         if (q < 0) {
-                            ss[1] = (max  + q) + "";
+                            ss[1] = (max + q) + "";
                         }
                     } else if (ss[1].isEmpty()) {
                         int q = Integer.parseInt(ss[0]);
                         if (q < 0) {
-                            ss[0] = (max  + q) + "";
+                            ss[0] = (max + q) + "";
                         }
                         ss[1] = (max - 1) + "";
                     } else {
                         int q = Integer.parseInt(ss[0]);
                         if (q < 0) {
-                            ss[0] = (max  + q) + "";
+                            ss[0] = (max + q) + "";
                         }
                         q = Integer.parseInt(ss[1]);
                         if (q < 0) {
-                            ss[1] = (max  + q) + "";
+                            ss[1] = (max + q) + "";
                         }
                     }
                 } catch (Exception e) {
@@ -5026,11 +5026,32 @@ public final class FactoryUtils {
             ret = new double[p.length];
             for (int i = 0; i < p.length; i++) {
                 if (p[i].contains("-")) {
-                    ret[i] = max+Integer.parseInt(p[i]);
-                }else{
+                    ret[i] = max + Integer.parseInt(p[i]);
+                } else {
                     ret[i] = Integer.parseInt(p[i]);
                 }
-                
+
+            }
+        }
+        return ret;
+    }
+
+    public static double[] resolveParamForRange(String s) {
+        double[] ret = null;
+        if (s.contains(",")) {
+            throw new ArithmeticException("wrong parameters for range");
+        }
+        if (s.contains(":")) {
+            String[] ss = s.split(":");
+            if (ss.length == 3) {
+                double from = Double.parseDouble(ss[0]);
+                double to = Double.parseDouble(ss[1]);
+                double incr = Double.parseDouble(ss[2]);
+                ret = vector(from, to, incr);
+            } else if (ss.length ==2) {
+                double from = Double.parseDouble(ss[0]);
+                double to = Double.parseDouble(ss[1]);
+                ret = vector(from, to, 1);
             }
         }
         return ret;

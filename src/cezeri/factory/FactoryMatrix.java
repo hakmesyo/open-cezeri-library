@@ -1510,7 +1510,7 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] dot(double[][] ret, double[][] cm) {
-        return dot(ret, cm, Dimension.row);
+        return dot(ret, cm, Dimension.column);
     }
 
     public static double[][] dot(double[][] ret, double[][] cm, Dimension dm) {

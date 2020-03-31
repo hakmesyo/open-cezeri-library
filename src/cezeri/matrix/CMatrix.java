@@ -1111,7 +1111,7 @@ public final class CMatrix implements Serializable {
             System.out.println("should contain : range");
             return this;
         }        
-        double[] p=FactoryUtils.resolveParam(s, Integer.MAX_VALUE);
+        double[] p=FactoryUtils.resolveParamForRange(s);
         CMatrix ret = CMatrix.getInstance(p);
         return ret;
     }
@@ -3319,8 +3319,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix dot(CMatrix cm) {
         if (!this.isIdentical(this, cm)) {
-            System.out.println("Matrixes should be identical in size");
-            return this;
+            throw new ArithmeticException("Matrixes should be identical in size"); 
         }
         CMatrix ret = this.clone(this);
 
@@ -3330,8 +3329,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix dotProduct(CMatrix cm) {
         if(!FactoryUtils.canBeDotProduct(this.array,cm.array)){
-            System.out.println("two matrices size could not match so thet can not dot product");
-            return this;
+            throw new ArithmeticException("Matrx size didn't match for dot product");
         }
         CMatrix ret = this.clone(this);
         ret.setArray(FactoryMatrix.dotProduct(this.array,cm.array));
