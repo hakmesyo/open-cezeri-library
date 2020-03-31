@@ -1734,7 +1734,7 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imshow() {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-            image = ImageProcess.pixelsToImageGray(array);
+            image = ImageProcess.pixelsToImageGray(FactoryMatrix.transpose(array));
         }
         FrameImage frm = new FrameImage(image, this.imagePath);
         frm.setVisible(true);
