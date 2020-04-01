@@ -1734,9 +1734,13 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imshow() {
 //        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-        if (image == null) {
-            image = ImageProcess.pixelsToImageGray(FactoryMatrix.transpose(array));
-        }
+//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//            image = ImageProcess.pixelsToImageGray(array);
+////            image = ImageProcess.pixelsToImageGray(FactoryMatrix.transpose(array));
+//        }
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }        
         FrameImage frm = new FrameImage(image, this.imagePath);
         frm.setVisible(true);
         return this;
@@ -1920,19 +1924,8 @@ public final class CMatrix implements Serializable {
     
     public CMatrix toGrayLevel() {
         CMatrix ret = this.clone(this);
-
-//        returnedValue.image=GrayScale.luminosity(returnedValue.image);
-//        returnedValue.image = ImageProcess.pixelsToBufferedImage255(returnedValue.array);
-        if (ret.image == null) {
-            ret.image = ImageProcess.pixelsToImageGray(FactoryUtils.toIntArray2D(ret.array));
-//            ret.image = GrayScale.luminosity();
-        }
-        ret.image = ImageProcess.toGrayLevel(ret.image);
-        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
-//        if (returnedValue.image != null) {
-//            returnedValue.image = ImageProcess.toGrayLevel(returnedValue.image);
-//        }
-//        returnedValue.array = FactoryUtils.toDoubleArray(ImageProcess.imageToPixels255(returnedValue.image));
+        ret.array = ImageProcess.bufferedImageToArray2D(ret.image);
+        ret.image = ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
 

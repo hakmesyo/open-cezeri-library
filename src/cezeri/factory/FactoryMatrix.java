@@ -12,9 +12,12 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.SplittableRandom;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import jwave.Transform;
 import jwave.transforms.FastWaveletTransform;
 import jwave.transforms.wavelets.haar.Haar1;
@@ -1160,17 +1163,26 @@ public final class FactoryMatrix implements Serializable {
 //     * @return
 //     */
     public static int[] randPermInt(int n) {
-        int[] m = new int[n];
-        ArrayList<Integer> v = new ArrayList<Integer>();
-        for (int i = 0; i < n; i++) {
-            v.add(new Integer(i));
-        }
-        for (int i = 0; i < n; i++) {
-            int a = new Random().nextInt(n - i);
-            m[i] = v.get(a);
-            v.remove(a);
-        }
-        return m;
+        List<Integer> lst
+                = IntStream.range(0, n) // <-- creates a stream of ints
+                        .boxed() // <-- converts them to Integers
+                        .collect(Collectors.toList());          // <-- collects the values to a list
+
+        Collections.shuffle(lst);
+//        int[] m = new int[n];
+//        List<Integer> lst=Arrays.asList(IntStream.range(6, 10));
+//        Collections.shuffle(Arrays.asList(m));
+//        ArrayList<Integer> v = new ArrayList<Integer>();
+//        for (int i = 0; i < n; i++) {
+//            v.add(i);
+//        }
+//        for (int i = 0; i < n; i++) {
+//            int a = new Random().nextInt(n - i);
+//            m[i] = v.get(a);
+//            v.remove(a);
+//        }
+        int[] array = lst.stream().mapToInt(i->i).toArray();
+        return array;
     }
 
     public static double[][] shuffle(double[][] ds) {
@@ -3191,18 +3203,18 @@ public final class FactoryMatrix implements Serializable {
 
     public static double[][] shuffleRowsAndColumns(double[][] d, int[] shuffleIndexes) {
         int nr = d.length;
-        int nc=d[0].length;
-        int[] ind = randPermInt(nr*nc);
-        int m=nr*nc;
-        for (int i = 0; i < m ; i++) {
+        int nc = d[0].length;
+        int[] ind = randPermInt(nr * nc);
+        int m = nr * nc;
+        for (int i = 0; i < m; i++) {
             shuffleIndexes[i] = ind[i];
         }
-        double[] p=FactoryUtils.toDoubleArray1D(d);
-        double[] q=new double[m];
+        double[] p = FactoryUtils.toDoubleArray1D(d);
+        double[] q = new double[m];
         for (int i = 0; i < m; i++) {
             q[i] = p[shuffleIndexes[i]];
         }
-        double[][] ret=FactoryMatrix.reshape(q, nr, nc);
+        double[][] ret = FactoryMatrix.reshape(q, nr, nc);
         return ret;
     }
 
@@ -3220,13 +3232,13 @@ public final class FactoryMatrix implements Serializable {
     public static double[][] deShuffleRowsAndColumns(double[][] d, int[] shuffleIndexes) {
         int nr = d.length;
         int nc = d[0].length;
-        int size=nr*nc;
-        double[] p=FactoryUtils.toDoubleArray1D(d);
-        double[] q=new double[size];
+        int size = nr * nc;
+        double[] p = FactoryUtils.toDoubleArray1D(d);
+        double[] q = new double[size];
         for (int i = 0; i < size; i++) {
             q[shuffleIndexes[i]] = p[i];
         }
-        double[][] ret=FactoryMatrix.reshape(q, nr, nc);
+        double[][] ret = FactoryMatrix.reshape(q, nr, nc);
         return ret;
 
     }
@@ -3366,79 +3378,79 @@ public final class FactoryMatrix implements Serializable {
         int nr = d.length;
         int nc = d[0].length;
         double[][] ret = new double[nr * n][nc * n];
-        int q=0,p=0;
+        int q = 0, p = 0;
         for (int i = 0; i < nr; i++) {
             for (int m = 0; m < n; m++) {
                 for (int j = 0; j < nc; j++) {
                     for (int k = 0; k < n; k++) {
-                        ret[q][p]=d[i][j];
+                        ret[q][p] = d[i][j];
                         p++;
                     }
                 }
                 q++;
-                p=0;
+                p = 0;
             }
         }
         return ret;
     }
 
     public static double[][] dotProduct(double[][] p1, double[][] p2) {
-        double[][] ret=new double[p1.length][p2[0].length];
-        int nr=ret.length;
-        int nc=ret[0].length;
-        double[][] pt=clone(p2);
-        pt=transpose(pt);
-        
+        double[][] ret = new double[p1.length][p2[0].length];
+        int nr = ret.length;
+        int nc = ret[0].length;
+        double[][] pt = clone(p2);
+        pt = transpose(pt);
+
         for (int i = 0; i < nr; i++) {
-            double sum=0;
+            double sum = 0;
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=dot(p1[i], pt[j]);
+                ret[i][j] = dot(p1[i], pt[j]);
             }
         }
-        
+
         return ret;
     }
-    
-    public static double dot(double[] v1,double[] v2){
-        double ret=0;
-        int nr=v1.length;        
+
+    public static double dot(double[] v1, double[] v2) {
+        double ret = 0;
+        int nr = v1.length;
         for (int i = 0; i < nr; i++) {
-            ret+=v1[i]*v2[i];
+            ret += v1[i] * v2[i];
         }
         return ret;
     }
 
     public static int[][] ceil(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        int[][] ret=new int[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        int[][] ret = new int[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=(int)Math.ceil(d[i][j]);
-            }
-        }
-        return ret;
-    }
-    
-    public static int[][] floor(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        int[][] ret=new int[nr][nc];
-        for (int i = 0; i < nr; i++) {
-            for (int j = 0; j < nc; j++) {
-                ret[i][j]=(int)Math.floor(d[i][j]);
+                ret[i][j] = (int) Math.ceil(d[i][j]);
             }
         }
         return ret;
     }
 
-    public static int[][] mod(double[][] d,int n) {
-        int nr=d.length;
-        int nc=d[0].length;
-        int[][] ret=new int[nr][nc];
+    public static int[][] floor(double[][] d) {
+        int nr = d.length;
+        int nc = d[0].length;
+        int[][] ret = new int[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=(int)d[i][j]%n;
+                ret[i][j] = (int) Math.floor(d[i][j]);
+            }
+        }
+        return ret;
+    }
+
+    public static int[][] mod(double[][] d, int n) {
+        int nr = d.length;
+        int nc = d[0].length;
+        int[][] ret = new int[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j] = (int) d[i][j] % n;
             }
         }
         return ret;
