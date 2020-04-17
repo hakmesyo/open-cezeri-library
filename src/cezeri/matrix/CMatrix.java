@@ -1733,12 +1733,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow() {
-//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-//            image = ImageProcess.pixelsToImageGray(array);
-////            image = ImageProcess.pixelsToImageGray(FactoryMatrix.transpose(array));
-//        }
-        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array);
         }        
         FrameImage frm = new FrameImage(image, this.imagePath);
@@ -1758,7 +1753,6 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow(boolean isUpdate) {
-//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
         if (image == null || isUpdate) {
             image = ImageProcess.pixelsToImageGray(array);
         }

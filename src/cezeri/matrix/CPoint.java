@@ -25,6 +25,15 @@ public final class CPoint implements Serializable{
         column=c;
     }
     
+    public CPoint cloneCP(){
+        CPoint ret=new CPoint(row,column);
+        return ret;
+    }
+    
+    public boolean equals(CPoint cp){
+        return this.row==cp.row && this.column==cp.column;
+    }
+    
     @Override
     public String toString(){
         String s="row:"+row+",column:"+column+",weight:"+weight;
