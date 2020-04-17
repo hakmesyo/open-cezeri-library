@@ -4346,15 +4346,16 @@ public final class CMatrix implements Serializable {
     public CMatrix readImage() {
         File fl = ImageProcess.readImage();
         BufferedImage bf = ImageProcess.readImageFromFile(fl);
-        CMatrix ret = this.clone(this);
+//        CMatrix ret = this.clone(this);
         if (bf != null) {
-            ret.image = bf;
+            this.image = bf;
 //            this.array = FactoryUtils.toDoubleArray(ImageProcess.imageToPixels255(image));
-            ret.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
-            ret.imagePath = fl.getAbsolutePath();
+//            ret.array = ImageProcess.imageToPixelsDouble(GrayScale.luminosity(image));
+            this.imagePath = fl.getAbsolutePath();
+            this.array=ImageProcess.bufferedImageToArray2D(this.image);
 //            this.rgbImageArray = FactoryUtils.toTripleArray(ImageProcess.imageToPixels(image));
         }
-        return ret;
+        return this;
     }
 
     public CMatrix readImage(String path) {
