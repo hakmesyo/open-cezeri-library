@@ -859,7 +859,19 @@ public final class ImageProcess {
 
     public static double[][] bufferedImageToArray2D(BufferedImage img) {
         double[][] ret = null;
-        if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
+        if (img.getColorModel().getNumComponents() == 4) {
+            WritableRaster raster = img.getRaster();
+            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+            byte[] d = data.getData();
+            double[] r = FactoryUtils.byte2Double(d);
+            double[] t= new double[r.length/4];
+            int size=t.length;
+            for (int i = 0; i < size; i++) {
+                t[i]=(int)((r[4*i+1]+r[4*i+2]+r[4*i+3])/3);
+            }
+            ret = FactoryMatrix.reshape(t, img.getHeight(), img.getWidth());
+            return ret;
+        }else if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
             WritableRaster raster = img.getRaster();
             DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
             byte[] d = data.getData();
