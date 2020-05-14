@@ -146,12 +146,12 @@ public class PanelPicture extends JPanel {
         if (currBufferedImage != null) {
             if (activateAutoSize) {
                 currBufferedImage = ImageProcess.resize(originalBufferedImage, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
-                imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
+                imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 lbl.setText(getImageSize() + "X:Y");
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
             } else if (activateAutoSizeAspect) {
                 currBufferedImage = ImageProcess.resizeAspectRatio(originalBufferedImage, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
-                imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
+                imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 lbl.setText(getImageSize() + "X:Y");
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
             }
@@ -480,6 +480,9 @@ public class PanelPicture extends JPanel {
                 } else if (obj.getText().equals("Edge")) {
                     activateEdge = true;
                     currBufferedImage = ImageProcess.edgeDetectionCanny(currBufferedImage, 0.3f, 1.0f, 2.5f, 3, false);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Smooth")) {
+                    currBufferedImage = ImageProcess.filterGaussian(currBufferedImage, 3);
                     imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 } else if (obj.getText().equals("AutoSize")) {
                     activateAutoSize = true;

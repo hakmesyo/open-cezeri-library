@@ -198,7 +198,7 @@ public class FrameImage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_dataGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dataGridActionPerformed
-//        CMatrix cm = CMatrix.getInstance(((PanelPicture) panelPicture).getImage());
+        CMatrix cm = CMatrix.getInstance(((PanelPicture) panelPicture).getImage());
 //        CMatrix cm = CMatrix.getInstance(img);
         new FrameDataGrid(cm).setVisible(true);
     }//GEN-LAST:event_btn_dataGridActionPerformed

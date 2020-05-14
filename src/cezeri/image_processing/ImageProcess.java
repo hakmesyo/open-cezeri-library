@@ -24,9 +24,12 @@ import cezeri.matrix.CRectangle;
 import cezeri.factory.FactoryMatrix;
 import cezeri.utils.*;
 import com.jhlabs.composite.ColorDodgeComposite;
+import com.jhlabs.image.AverageFilter;
 import com.jhlabs.image.GaussianFilter;
 import com.jhlabs.image.GrayscaleFilter;
 import com.jhlabs.image.InvertFilter;
+import com.jhlabs.image.MotionBlurFilter;
+import com.jhlabs.image.MotionBlurOp;
 import com.jhlabs.image.PointFilter;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -1552,7 +1555,7 @@ public final class ImageProcess {
         g2.drawImage(src, 0, 0, w, h, null);
         g2.dispose();
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+        BufferedImage img = new BufferedImage(w, h, src.getType());
         g2 = img.createGraphics();
         g2.drawImage(resizedImg, 0, 0, w, h, null);
         g2.dispose();
@@ -2652,10 +2655,6 @@ public final class ImageProcess {
         return ret;
     }
 
-    public static CMatrix getHistogramRGB(BufferedImage image) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public static BufferedImage filterMedian(BufferedImage imgx) {
         return filterMedian(imgx, 3);
     }
@@ -2708,7 +2707,22 @@ public final class ImageProcess {
     }
 
     public static BufferedImage filterMean(BufferedImage imgx) {
-        return ImageProcess.filterMean(imgx, 3);
+        AverageFilter avgFilter=new AverageFilter();
+        BufferedImage dest = clone(imgx);
+        avgFilter.filter(dest, imgx);
+        return dest;
+//        return ImageProcess.filterMean(imgx, 3);
+    }
+
+    public static BufferedImage filterMotionBlur(BufferedImage imgx) {
+        MotionBlurOp op=new MotionBlurOp(5, 45, 13, 3);
+//        MotionBlurFilter motionFilter=new MotionBlurFilter();
+//        motionFilter.setAngle(20);
+//        motionFilter.setDistance(15);
+        //motionFilter.setRotation(10);
+        BufferedImage dest = clone(imgx);
+        op.filter(dest, imgx);
+        return dest;
     }
 
     public static double[][] filterMean(double[][] d) {
