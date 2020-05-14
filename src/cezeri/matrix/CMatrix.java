@@ -747,7 +747,7 @@ public final class CMatrix implements Serializable {
 
     private CMatrix(BufferedImage img) {
         this.image = img;
-        this.array = FactoryUtils.toDoubleArray2D(ImageProcess.imageToPixelsInt(img));
+        this.array = ImageProcess.imageToPixelsDouble(img);
         this.returnedValue = new CReturn();
     }
 //
@@ -792,7 +792,13 @@ public final class CMatrix implements Serializable {
     }
 
     public double[][] toDoubleArray2D() {
-        return this.array;
+        CMatrix cm=this;
+        if (image!=null && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+            cm=toGrayLevel();
+//            image = ImageProcess.rgb2gray(image);
+//            array=ImageProcess.bufferedImageToArray2D(image);
+        }        
+        return cm.array;
     }
 
     /**
@@ -842,6 +848,10 @@ public final class CMatrix implements Serializable {
 
     public String[][] toStringArray2D() {
         return FactoryUtils.toStringArray2D(this.array);
+    }
+
+    public String[][] toStringArray2DAsInt() {
+        return FactoryMatrix.toStringArray2DAsInt(this.array);
     }
 
     /**
@@ -1733,10 +1743,13 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow() {
-        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//            image = ImageProcess.pixelsToImageGray(array);
+//        }        
+        if (image==null) {
             image = ImageProcess.pixelsToImageGray(array);
         }        
-        FrameImage frm = new FrameImage(image, this.imagePath);
+        FrameImage frm = new FrameImage(this, this.imagePath);
         frm.setVisible(true);
         return this;
     }
@@ -1756,7 +1769,7 @@ public final class CMatrix implements Serializable {
         if (image == null || isUpdate) {
             image = ImageProcess.pixelsToImageGray(array);
         }
-        FrameImage frm = new FrameImage(image, this.imagePath);
+        FrameImage frm = new FrameImage(this, this.imagePath);
         frm.setVisible(true);
         return this;
     }
@@ -1871,10 +1884,13 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow(String title) {
-        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+//            image = ImageProcess.pixelsToImageGray(array);
+//        }
+        if (image == null) {
             image = ImageProcess.pixelsToImageGray(array);
         }
-        FrameImage frm = new FrameImage(image, title);
+        FrameImage frm = new FrameImage(this, title);
         frm.setVisible(true);
         return this;
     }
@@ -3657,6 +3673,11 @@ public final class CMatrix implements Serializable {
 
     public CMatrix saveOnFile(String file) {
         toAppendFile(file);
+        return this;
+    }
+    
+    public CMatrix saveImage(String file_name){
+        ImageProcess.saveImage(image, file_name);
         return this;
     }
 

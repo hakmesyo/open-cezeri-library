@@ -115,6 +115,8 @@
                   <Component id="btn_visualize" min="-2" pref="98" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="btn_visualize1" min="-2" pref="98" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="btn_convert_2_int" min="-2" pref="121" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
@@ -129,7 +131,7 @@
                   <Component id="jTextField_colNumber" min="-2" pref="42" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jComboBox_randomType" min="-2" pref="80" max="-2" attributes="0"/>
-                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="199" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -141,6 +143,7 @@
                       <Component id="btn_scatter" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="btn_visualize" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
                       <Component id="btn_visualize1" alignment="3" min="-2" pref="32" max="-2" attributes="0"/>
+                      <Component id="btn_convert_2_int" alignment="0" min="-2" pref="32" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -225,6 +228,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_visualize1ActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btn_convert_2_int">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Convert to Int"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_convert_2_intActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

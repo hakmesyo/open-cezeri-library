@@ -405,7 +405,7 @@ public class PicturePanelAdvanced extends JPanel {
             setDefaultValues();
             JRadioButtonMenuItem obj = (JRadioButtonMenuItem) e.getSource();
             if (obj.getText().equals("Clone")) {
-                new FrameImage(currBufferedImage, obj.getText()).setVisible(true);
+                new FrameImage(CMatrix.getInstance(currBufferedImage), obj.getText()).setVisible(true);
                 return;
             }
             if (obj.getText().equals("Load Image")) {
@@ -469,7 +469,7 @@ public class PicturePanelAdvanced extends JPanel {
                 mousePosBottomRight.y -= fromTop;
                 CMatrix cm = CMatrix.getInstance(currBufferedImage).subMatrix(mousePosTopLeft, mousePosBottomRight);
                 BufferedImage bf = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
-                new FrameImage(bf, obj.getText()).setVisible(true);
+                new FrameImage(CMatrix.getInstance(bf), obj.getText()).setVisible(true);
                 repaint();
                 return;
             }

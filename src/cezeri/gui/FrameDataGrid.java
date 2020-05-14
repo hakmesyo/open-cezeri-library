@@ -41,13 +41,13 @@ public class FrameDataGrid extends javax.swing.JFrame {
         tableLineNumber.setBackground(Color.LIGHT_GRAY);
         jScrollPane2.setRowHeaderView(tableLineNumber);
         setMatrix(m);
-        this.lbl_size.setText("["+m.getSize().row+" x "+m.getSize().column+"]");
-        this.setTitle(cm.name+" :: DataGrid");
+        this.lbl_size.setText("[" + m.getSize().row + " x " + m.getSize().column + "]");
+        this.setTitle(cm.name + " :: DataGrid");
     }
 
     public void setMatrix(CMatrix m) {
         this.cm = m;
-        jTable_artificialDS.setModel(getTableModelForArtificialData(cm));
+        jTable_artificialDS.setModel(getTableModelForArtificialData(cm,false));
     }
 
     public CMatrix getMatrix() {
@@ -78,6 +78,7 @@ public class FrameDataGrid extends javax.swing.JFrame {
         btn_plot = new javax.swing.JButton();
         btn_scatter = new javax.swing.JButton();
         btn_visualize1 = new javax.swing.JButton();
+        btn_convert_2_int = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -164,6 +165,13 @@ public class FrameDataGrid extends javax.swing.JFrame {
             }
         });
 
+        btn_convert_2_int.setText("Convert to Int");
+        btn_convert_2_int.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_convert_2_intActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -176,6 +184,8 @@ public class FrameDataGrid extends javax.swing.JFrame {
                 .addComponent(btn_visualize, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_visualize1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_convert_2_int, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jButton_buildArtificialDS, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -189,7 +199,7 @@ public class FrameDataGrid extends javax.swing.JFrame {
                 .addComponent(jTextField_colNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jComboBox_randomType, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 199, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,7 +208,8 @@ public class FrameDataGrid extends javax.swing.JFrame {
                     .addComponent(btn_plot, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_scatter, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btn_visualize, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_visualize1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btn_visualize1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_convert_2_int, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton_buildArtificialDS, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -233,7 +244,7 @@ public class FrameDataGrid extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton_buildArtificialDSActionPerformed
     private Vector<String> artificialDS = new Vector<String>();  //  @jve:decl-index=0:
 
-    public TableModel getTableModelForArtificialData(CMatrix m) {
+    public TableModel getTableModelForArtificialData(CMatrix m, boolean isInt) {
         if (m == null || m.getRowNumber() == 0) {
             return null;
         }
@@ -244,10 +255,17 @@ public class FrameDataGrid extends javax.swing.JFrame {
                 columnNames[i] = "" + (i);
             }
 //            columnNames[colNumber - 1] = "Class Label";
-            Object data[][] = m.toStringArray2D();
-            TableModel model = new DefaultTableModel(data, columnNames) {
-            };
-            return model;
+            if (!isInt) {
+                Object data[][] = m.toStringArray2D();
+                TableModel model = new DefaultTableModel(data, columnNames) {
+                };
+                return model;
+            }else{
+                Object data[][] = m.toStringArray2DAsInt();
+                TableModel model = new DefaultTableModel(data, columnNames) {
+                };
+                return model;
+            }
         } catch (Exception e) {
             return null;
         }
@@ -323,12 +341,17 @@ public class FrameDataGrid extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_scatterActionPerformed
 
     private void btn_visualize1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_visualize1ActionPerformed
-        cm=cm.transpose();
+        cm = cm.transpose();
         LineNumberTableRowHeader tableLineNumber = new LineNumberTableRowHeader(jScrollPane2, jTable_artificialDS);
         tableLineNumber.setBackground(Color.LIGHT_GRAY);
         jScrollPane2.setRowHeaderView(tableLineNumber);
         setMatrix(cm);
     }//GEN-LAST:event_btn_visualize1ActionPerformed
+
+    private void btn_convert_2_intActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_convert_2_intActionPerformed
+        jTable_artificialDS.setModel(getTableModelForArtificialData(cm,true));
+    }//GEN-LAST:event_btn_convert_2_intActionPerformed
+
     public static void plotMatrix(JTable table) {
         double[][] d = tableToArray(table);
 //        Matrix mm = MatrixFactory.importFromArray(d);
@@ -423,6 +446,7 @@ public class FrameDataGrid extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_convert_2_int;
     private javax.swing.JButton btn_plot;
     private javax.swing.JButton btn_scatter;
     private javax.swing.JButton btn_visualize;

@@ -136,7 +136,7 @@ public class FeatureExtractionPistachio {
 
         //***********************************************
         if (showFigure) {
-            FrameImage frm2 = new FrameImage(cm2);
+            FrameImage frm2 = new FrameImage(cm2,"");
             frm2.setVisible(true);
             frm2.setTitle(index + ".Proposed Pistachio");
             double[][] rg = regionGrowingByBreadthFirst(frm2.getPicturePanel(), cm2.toDoubleArray2D(), lst, 15, otsuThr * 0.9);

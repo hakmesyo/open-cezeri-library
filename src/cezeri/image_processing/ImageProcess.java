@@ -50,6 +50,7 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+import javax.swing.GrayFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.opencv.core.Core;
@@ -806,13 +807,54 @@ public final class ImageProcess {
     }
 
     public static int[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
-
         final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         final int width = image.getWidth();
         final int height = image.getHeight();
         final boolean hasAlphaChannel = image.getAlphaRaster() != null;
 
         int[][] result = new int[height][width];
+        if (hasAlphaChannel) {
+            final int pixelLength = 4;
+            for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+                int argb = 0;
+                argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+                argb += ((int) pixels[pixel + 1] & 0xff); // blue
+                argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
+                argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
+                result[row][col] = argb;
+                col++;
+                if (col == width) {
+                    col = 0;
+                    row++;
+                }
+            }
+        } else {
+            final int pixelLength = 3;
+            for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+                int argb = 0;
+                argb += -16777216; // 255 alpha
+                argb += ((int) pixels[pixel] & 0xff); // blue
+                argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+                argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
+                result[row][col] = argb;
+                col++;
+                if (col == width) {
+                    col = 0;
+                    row++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static double[][] convertBufferedImageTo2D(BufferedImage image) {
+        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+        final int width = image.getWidth();
+        final int height = image.getHeight();
+        final boolean hasAlphaChannel = image.getAlphaRaster() != null;
+
+        double[][] result = new double[height][width];
         if (hasAlphaChannel) {
             final int pixelLength = 4;
             for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
@@ -864,61 +906,64 @@ public final class ImageProcess {
             DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
             byte[] d = data.getData();
             double[] r = FactoryUtils.byte2Double(d);
-            double[] t= new double[r.length/4];
-            int size=t.length;
+            double[] t = new double[r.length / 4];
+            int size = t.length;
             for (int i = 0; i < size; i++) {
-                t[i]=(int)((r[4*i+1]+r[4*i+2]+r[4*i+3])/3);
+                t[i] = (int) ((r[4 * i + 1] + r[4 * i + 2] + r[4 * i + 3]) / 3);
             }
-            ret = FactoryMatrix.reshape(t, img.getHeight(), img.getWidth());
+            ret = FactoryMatrix.reshapeBasedOnRows(t, img.getHeight(), img.getWidth());
             return ret;
-        }else if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
+        } else if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
             WritableRaster raster = img.getRaster();
             DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
             byte[] d = data.getData();
             double[] r = FactoryUtils.byte2Double(d);
-            ret = FactoryMatrix.reshape(r, img.getHeight(), img.getWidth());
+            ret = FactoryMatrix.reshapeBasedOnRows(r, img.getHeight(), img.getWidth());
             return ret;
-        }else if(img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()){
-            WritableRaster raster = img.getRaster();
-            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-            byte[] d = data.getData();
-            double[] r = FactoryUtils.byte2Double(d);
-            double[] t= new double[r.length/3];
-            int size=t.length;
-            for (int i = 0; i < size; i++) {
-                t[i]=(int)((r[3*i]+r[3*i+1]+r[3*i+2])/3);
-            }
-            ret = FactoryMatrix.reshape(t, img.getHeight(), img.getWidth());
+        } else if (img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()) {
+            ret = convertBufferedImageTo2D(img);
+//            WritableRaster raster = img.getRaster();
+//            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+//            int[] rgb = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
+//
+//            byte[] d = data.getData();
+//            double[] r = FactoryUtils.byte2Double(d);
+//            double[] t = new double[r.length / 3];
+//            int size = t.length;
+//            for (int i = 0; i < size; i++) {
+//                t[i] = (int) ((r[3 * i] + r[3 * i + 1] + r[3 * i + 2]) / 3);
+//            }
+//            ret = FactoryMatrix.reshapeBasedOnRows(t, img.getHeight(), img.getWidth());
             return ret;
         }
         return ret;
     }
-    
+
     public static double[][][] bufferedImageToArray3D(BufferedImage img) {
         double[][][] ret = null;
         if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
             throw new ArithmeticException("BufferedImage has not rgba channels");
-        }else if(img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()){
+        } else if (img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()) {
             WritableRaster raster = img.getRaster();
             DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
             byte[] d = data.getData();
             double[] q = FactoryUtils.byte2Double(d);
-            double[] r= new double[q.length/3];
-            double[] g= new double[q.length/3];
-            double[] b= new double[q.length/3];
-            int size=r.length;
+            double[] r = new double[q.length / 3];
+            double[] g = new double[q.length / 3];
+            double[] b = new double[q.length / 3];
+            int size = r.length;
             for (int i = 0; i < size; i++) {
-                r[i]=q[3*i];
-                g[i]=q[3*i+1];
-                b[i]=q[3*i+2];
+                r[i] = q[3 * i];
+                g[i] = q[3 * i + 1];
+                b[i] = q[3 * i + 2];
             }
             double[][] rr = FactoryMatrix.reshape(r, img.getHeight(), img.getWidth());
             double[][] gg = FactoryMatrix.reshape(g, img.getHeight(), img.getWidth());
             double[][] bb = FactoryMatrix.reshape(b, img.getHeight(), img.getWidth());
-            ret=new double[3][][];
-            ret[0]=rr;
-            ret[1]=gg;
-            ret[2]=bb;
+            ret = new double[3][][];
+            ret[0] = rr;
+            ret[1] = gg;
+            ret[2] = bb;
             return ret;
         }
         return ret;
@@ -931,88 +976,90 @@ public final class ImageProcess {
     }
 
     public static double[][] imageToPixelsDouble(BufferedImage img) {
-        if (img == null) {
-            return null;
-        }
-        double[][] original = new double[img.getHeight()][img.getWidth()]; // where we'll put the image
-        if ((img.getType() == BufferedImage.TYPE_CUSTOM)
-                || (img.getType() == BufferedImage.TYPE_INT_RGB)
-                || (img.getType() == BufferedImage.TYPE_INT_ARGB)
-                || (img.getType() == BufferedImage.TYPE_3BYTE_BGR)
-                || (img.getType() == BufferedImage.TYPE_4BYTE_ABGR)) {
-            for (int i = 0; i < img.getHeight(); i++) {
-                for (int j = 0; j < img.getWidth(); j++) {
-                    original[i][j] = img.getRGB(j, i);
-                }
-            }
-        } else {
-            Raster image_raster = img.getData();
-            //get pixel by pixel
-            int[] pixel = new int[1];
-            int[] buffer = new int[1];
-
-            // declaring the size of arrays
-            original = new double[img.getHeight()][img.getWidth()];
-
-            //get the image in the array
-            for (int i = 0; i < img.getHeight(); i++) {
-                for (int j = 0; j < img.getWidth(); j++) {
-                    pixel = image_raster.getPixel(j, i, buffer);
-                    original[i][j] = pixel[0];
-                }
-            }
-        }
-        return original;
+//        if (img == null) {
+//            return null;
+//        }
+//        double[][] original = new double[img.getHeight()][img.getWidth()]; // where we'll put the image
+//        if ((img.getType() == BufferedImage.TYPE_CUSTOM)
+//                || (img.getType() == BufferedImage.TYPE_INT_RGB)
+//                || (img.getType() == BufferedImage.TYPE_INT_ARGB)
+//                || (img.getType() == BufferedImage.TYPE_3BYTE_BGR)
+//                || (img.getType() == BufferedImage.TYPE_4BYTE_ABGR)) {
+//            for (int i = 0; i < img.getHeight(); i++) {
+//                for (int j = 0; j < img.getWidth(); j++) {
+//                    original[i][j] = img.getRGB(j, i);
+//                }
+//            }
+//        } else {
+//            Raster image_raster = img.getData();
+//            //get pixel by pixel
+//            int[] pixel = new int[1];
+//            int[] buffer = new int[1];
+//
+//            // declaring the size of arrays
+//            original = new double[img.getHeight()][img.getWidth()];
+//
+//            //get the image in the array
+//            for (int i = 0; i < img.getHeight(); i++) {
+//                for (int j = 0; j < img.getWidth(); j++) {
+//                    pixel = image_raster.getPixel(j, i, buffer);
+//                    original[i][j] = pixel[0];
+//                }
+//            }
+//        }
+//        return original;
+        return bufferedImageToArray2D(img);
     }
 
     public static int[][] imageToPixels255_CIZ(BufferedImage img) {
-        MediaTracker mt = new MediaTracker(null);
-        mt.addImage(img, 0);
-        try {
-            mt.waitForID(0);
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-
-        int w = img.getWidth();
-        int h = img.getHeight();
-        //System.out.println("w:"+w+" h:"+h);
-        int pixels[] = new int[w * h];
-        int fpixels[] = new int[w * h];
-        int dpixel[][] = new int[w][h];
-        PixelGrabber pg = new PixelGrabber(img, 0, 0, w, h, pixels, 0, w);
-        try {
-            pg.grabPixels();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        int red = (pixels[0] >> 16 & 0xff);
-        int green = pixels[0] >> 8 & 0xff;
-        int blue = pixels[0] & 0xff;
-
-        if (red == green && red == blue) {
-            for (int i = 0; i < pixels.length; i++) {
-                fpixels[i] = pixels[i] & 0xff;
-            }
-        } else {
-            for (int i = 0; i < pixels.length; i++) {
-                int r = pixels[i] >> 16 & 0xff;
-                int g = pixels[i] >> 8 & 0xff;
-                int b = pixels[i] & 0xff;
-                int y = (int) (0.33000000000000002D * (double) r + 0.56000000000000005D * (double) g + 0.11D * (double) b);
-                fpixels[i] = y;
-//            fpixels[i] = pixels[i];
-            }
-        }
-        int k = 0;
-        for (int i = 0; i < h; i++) {
-            for (int j = 0; j < w; j++) {
-                dpixel[j][i] = fpixels[k];
-                k++;
-            }
-        }
-
-        return dpixel;
+        return imageToPixelsInt(img);
+//        MediaTracker mt = new MediaTracker(null);
+//        mt.addImage(img, 0);
+//        try {
+//            mt.waitForID(0);
+//        } catch (Exception e) {
+//            // TODO: handle exception
+//        }
+//
+//        int w = img.getWidth();
+//        int h = img.getHeight();
+//        //System.out.println("w:"+w+" h:"+h);
+//        int pixels[] = new int[w * h];
+//        int fpixels[] = new int[w * h];
+//        int dpixel[][] = new int[w][h];
+//        PixelGrabber pg = new PixelGrabber(img, 0, 0, w, h, pixels, 0, w);
+//        try {
+//            pg.grabPixels();
+//        } catch (Exception e) {
+//            // TODO: handle exception
+//        }
+//        int red = (pixels[0] >> 16 & 0xff);
+//        int green = pixels[0] >> 8 & 0xff;
+//        int blue = pixels[0] & 0xff;
+//
+//        if (red == green && red == blue) {
+//            for (int i = 0; i < pixels.length; i++) {
+//                fpixels[i] = pixels[i] & 0xff;
+//            }
+//        } else {
+//            for (int i = 0; i < pixels.length; i++) {
+//                int r = pixels[i] >> 16 & 0xff;
+//                int g = pixels[i] >> 8 & 0xff;
+//                int b = pixels[i] & 0xff;
+//                int y = (int) (0.33000000000000002D * (double) r + 0.56000000000000005D * (double) g + 0.11D * (double) b);
+//                fpixels[i] = y;
+////            fpixels[i] = pixels[i];
+//            }
+//        }
+//        int k = 0;
+//        for (int i = 0; i < h; i++) {
+//            for (int j = 0; j < w; j++) {
+//                dpixel[j][i] = fpixels[k];
+//                k++;
+//            }
+//        }
+//
+//        return dpixel;
     }
 
     public static int[] imageToPixelsTo1D(BufferedImage img) {
@@ -1079,7 +1126,8 @@ public final class ImageProcess {
     }
 
     public static BufferedImage pixelsToImageGray(double dizi[][]) {
-        int[] pixels = FactoryUtils.toIntArray1D(dizi);
+//        dizi=FactoryMatrix.flipBoth(dizi);
+        int[] pixels = FactoryUtils.toIntArray1DBasedOnRows(dizi);
         int h = dizi.length;
         int w = dizi[0].length;
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
@@ -1219,7 +1267,6 @@ public final class ImageProcess {
     }
 
     public static BufferedImage rgb2gray(BufferedImage img) {
-//        return toNewColorSpace(img, BufferedImage.TYPE_BYTE_GRAY);
         return toGrayLevel(img);
     }
 
@@ -1449,16 +1496,33 @@ public final class ImageProcess {
     }
 
     public static BufferedImage revert(BufferedImage img) {
-        BufferedImage ret = null;
-        int[][] d = imageToPixelsInt(img);
-        int[][] q = new int[d.length][d[0].length];
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
-                q[i][j] = Math.abs(255 - d[i][j]);
+        int width = img.getWidth();
+        int height = img.getHeight();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int p = img.getRGB(x, y);
+                int a = (p >> 24) & 0xff;
+                int r = (p >> 16) & 0xff;
+                int g = (p >> 8) & 0xff;
+                int b = p & 0xff;
+                r = 255 - r;
+                g = 255 - g;
+                b = 255 - b;
+                p = (a << 24) | (r << 16) | (g << 8) | b;
+                img.setRGB(x, y, p);
             }
         }
-        ret = ImageProcess.pixelsToImageGray(q);
-        return ret;
+        return img;
+//        BufferedImage ret = null;
+//        int[][] d = imageToPixelsInt(img);
+//        int[][] q = new int[d.length][d[0].length];
+//        for (int i = 0; i < d.length; i++) {
+//            for (int j = 0; j < d[0].length; j++) {
+//                q[i][j] = Math.abs(255 - d[i][j]);
+//            }
+//        }
+//        ret = ImageProcess.pixelsToImageGray(q);
+//        return ret;
     }
 
     /**
@@ -1482,7 +1546,9 @@ public final class ImageProcess {
 
         BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TRANSLUCENT);
         Graphics2D g2 = resizedImg.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+//        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2.drawImage(src, 0, 0, w, h, null);
         g2.dispose();
 
@@ -2067,11 +2133,6 @@ public final class ImageProcess {
         return skew;
     }
 
-//    public static BufferedImage clone(BufferedImage img) {
-//        BufferedImage ret = new BufferedImage(img.getWidth(), img.getHeight(), img.getType());
-//        ret.getGraphics().drawImage(img, 0, 0, null);
-//        return ret;
-//    }
     public static BufferedImage clone(BufferedImage img) {
         ColorModel cm = img.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
@@ -2079,13 +2140,13 @@ public final class ImageProcess {
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
-    public static Image clone(Image img) {
-        BufferedImage bf = ImageProcess.toBufferedImage(img);
-        BufferedImage ret = new BufferedImage(bf.getWidth(), bf.getHeight(), bf.getType());
-        ret.getGraphics().drawImage(img, 0, 0, null);
-        return ret;
-    }
-
+//    public static Image clone(Image img) {
+//        BufferedImage bf = ImageProcess.toBufferedImage(img);
+//        BufferedImage ret = new BufferedImage(bf.getWidth(), bf.getHeight(), bf.getType());
+//        ret.getGraphics().drawImage(img, 0, 0, null);
+//        return ret;
+//    }
+//
     public static int[] getImagePixels(BufferedImage image) {
         int[] dummy = null;
         int wid, hgt;
@@ -3338,8 +3399,14 @@ public final class ImageProcess {
         return toNewColorSpace(image, BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    public static BufferedImage toGrayLevel(BufferedImage image) {
-        return toNewColorSpace(image, BufferedImage.TYPE_BYTE_GRAY);
+    public static BufferedImage toGrayLevel(BufferedImage img) {
+        BufferedImage image = new BufferedImage(img.getWidth(), img.getHeight(),
+                BufferedImage.TYPE_BYTE_GRAY);
+        Graphics g = image.getGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        return image;
+//        return toNewColorSpace(image, BufferedImage.TYPE_BYTE_GRAY);
 //        return pixelsToImageGray(imageToPixelsDouble(image));
     }
 

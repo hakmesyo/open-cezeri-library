@@ -23,7 +23,7 @@ public class TestDynamicROI {
 //        CMatrix cm2=cm.subMatrix(p[0],p[1]).imshow(true);//.commandParser(p[0].row+":"+p[1].row, p[0].column+":"+p[1].column).imshow();
         double t=0;
         double n=0;
-        FrameImage frm=new FrameImage(cm);
+        FrameImage frm=new FrameImage(cm,"");
         for (int i = p[0].row; i <p[1].row ; i++) {
             for (int j =p[0].column; j < p[1].column; j++) {
                 CPoint cp=new CPoint(i, j);

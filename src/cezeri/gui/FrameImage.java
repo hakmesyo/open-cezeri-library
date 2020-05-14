@@ -26,6 +26,7 @@ public class FrameImage extends javax.swing.JFrame {
     BufferedImage currBufferedImage = null;
     private Vector<String> listImageFile = new Vector<String>();
     int listIndex = 0;
+    CMatrix cm=null;
 
     /**
      * Creates new form FrameImage
@@ -41,9 +42,11 @@ public class FrameImage extends javax.swing.JFrame {
      * @param img : image to be drawn
      * @param title : Caption of the frame
      */
-    public FrameImage(BufferedImage img, String title) {
+    public FrameImage(CMatrix cm, String title) {
         super(title);
         initComponents();
+        this.cm=cm;
+        this.img=cm.getImage();
         getPicturePanel().setImage(img);
         this.setSize(img.getWidth() + pw, img.getHeight() + ph);
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,49 +57,49 @@ public class FrameImage extends javax.swing.JFrame {
         getPicturePanel().setImage(img);
     }
 
-    public FrameImage(BufferedImage img) {
-        super("Image");
-        initComponents();
-        getPicturePanel().setImage(img);
-        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        getPicturePanel().setFrame(this);
-    }
+//    public FrameImage(BufferedImage img) {
+//        super("Image");
+//        initComponents();
+//        getPicturePanel().setImage(img);
+//        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+////        getPicturePanel().setFrame(this);
+//    }
+//
+//    public FrameImage(BufferedImage img,double[][] data) {
+//        super("Image");
+//        initComponents();
+//        getPicturePanel().setImage(img,data);
+//        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+////        getPicturePanel().setFrame(this);
+//    }
 
-    public FrameImage(BufferedImage img,double[][] data) {
-        super("Image");
-        initComponents();
-        getPicturePanel().setImage(img,data);
-        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        getPicturePanel().setFrame(this);
-    }
-
-    public FrameImage(CMatrix cm) {
-        super(cm.name);
-        initComponents();
-        BufferedImage img = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
-        getPicturePanel().setImage(img);
-        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public FrameImage(int[][] data) {
-        initComponents();
-        BufferedImage img = ImageProcess.pixelsToImageGray(data);
-        getPicturePanel().setImage(img);
-        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public FrameImage(String filePath) {
-        super(filePath);
-        initComponents();
-        img = ImageProcess.readImageFromFile(filePath);
-        getPicturePanel().setImage(img);
-        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-     }
+//    public FrameImage(CMatrix cm) {
+//        super(cm.name);
+//        initComponents();
+//        BufferedImage img = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
+//        getPicturePanel().setImage(img);
+//        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//    }
+//
+//    public FrameImage(int[][] data) {
+//        initComponents();
+//        BufferedImage img = ImageProcess.pixelsToImageGray(data);
+//        getPicturePanel().setImage(img);
+//        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//    }
+//
+//    public FrameImage(String filePath) {
+//        super(filePath);
+//        initComponents();
+//        img = ImageProcess.readImageFromFile(filePath);
+//        getPicturePanel().setImage(img);
+//        this.setSize(img.getWidth() + pw, img.getHeight() + ph);
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//     }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -195,7 +198,8 @@ public class FrameImage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_dataGridActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dataGridActionPerformed
-        CMatrix cm = CMatrix.getInstance(((PanelPicture) panelPicture).getImage());
+//        CMatrix cm = CMatrix.getInstance(((PanelPicture) panelPicture).getImage());
+//        CMatrix cm = CMatrix.getInstance(img);
         new FrameDataGrid(cm).setVisible(true);
     }//GEN-LAST:event_btn_dataGridActionPerformed
 
@@ -224,37 +228,37 @@ public class FrameImage extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrameImage().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(FrameImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new FrameImage().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_dataGrid;

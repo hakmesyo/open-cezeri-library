@@ -40,7 +40,7 @@ public class TestAugmentedReality {
         webcam.setViewSize(new Dimension(640, 480));
         webcam.open();
         BufferedImage bf = webcam.getImage();
-        FrameImage frm = new FrameImage(bf);
+        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"");
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frm.setVisible(true);
         

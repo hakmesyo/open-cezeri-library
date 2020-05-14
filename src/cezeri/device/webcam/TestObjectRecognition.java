@@ -9,6 +9,7 @@ import cezeri.gui.FrameImage;
 import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CPoint;
 import cezeri.factory.FactoryUtils;
+import cezeri.matrix.CMatrix;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamResolution;
 import java.awt.Color;
@@ -75,7 +76,7 @@ public class TestObjectRecognition {
         webcam.open();
 
         BufferedImage bf = webcam.getImage();
-        FrameImage frm = new FrameImage(bf);
+        FrameImage frm = new FrameImage(CMatrix.getInstance(bf),"");
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frm.setVisible(true);
         long t2 = FactoryUtils.tic();

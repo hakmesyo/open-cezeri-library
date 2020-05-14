@@ -2,6 +2,7 @@ package cezeri.factory;
 
 import Jama.Matrix;
 import Jama.SingularValueDecomposition;
+import static cezeri.factory.FactoryUtils.formatDouble;
 import static cezeri.factory.FactoryUtils.showMessage;
 import static cezeri.factory.FactoryUtils.toDoubleArray1D;
 import cezeri.matrix.CMatrix;
@@ -3084,6 +3085,21 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
+    
+    public static double[][] reshapeBasedOnRows(double[] d, int r, int c) {
+        double[][] ret = new double[r][c];
+        if (d.length != r * c) {
+            showMessage("size mismatch");
+            return ret;
+        }
+        int k = 0;
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                ret[i][j] = d[k++];
+            }
+        }
+        return ret;
+    }
 
     public static Object[][] reshape(Object[] d, int r, int c) {
         Object[][] ret = new Object[r][c];
@@ -3451,6 +3467,53 @@ public final class FactoryMatrix implements Serializable {
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 ret[i][j] = (int) d[i][j] % n;
+            }
+        }
+        return ret;
+    }
+
+    public static String[][] toStringArray2DAsInt(double[][] m) {
+        String[][] ret = new String[m.length][m[0].length];
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                ret[i][j] = String.valueOf((int)m[i][j]);
+//                ret[i][j] = String.valueOf(formatDouble(m[i][j], 3));
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] flipRight(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=d[i][nc-1-j];
+            }
+        }
+        return ret;
+    }
+    
+    public static double[][] flipDown(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=d[nr-1-i][j];
+            }
+        }
+        return ret;
+    }
+    
+    public static double[][] flipBoth(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        double[][] ret=new double[nr][nc];
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j]=d[nr-1-i][nc-1-j];
             }
         }
         return ret;

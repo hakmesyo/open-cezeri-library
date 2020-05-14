@@ -1,5 +1,6 @@
 package cezeri.vision;
 
+import cezeri.factory.FactoryMatrix;
 import cezeri.gui.FrameImageHistogram;
 import cezeri.gui.FrameImage;
 import cezeri.image_processing.ImageProcess;
@@ -41,7 +42,7 @@ public class PanelPicture extends JPanel {
     private boolean showDrawableRegion = false;
     private BufferedImage currBufferedImage;
     private BufferedImage originalBufferedImage;
-    private BufferedImage originalBufferedImageTemp;
+//    private BufferedImage originalBufferedImageTemp;
     private TimeWatch watch = TimeWatch.start();
     private JRadioButtonMenuItem items[];
     private final JPopupMenu popupMenu = new JPopupMenu();
@@ -97,10 +98,12 @@ public class PanelPicture extends JPanel {
     }
 
     public void setImage(BufferedImage image) {
-        currBufferedImage = image;
-        originalBufferedImage = image;
-        originalBufferedImageTemp = image;
-        imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
+        currBufferedImage = ImageProcess.clone(image);
+        originalBufferedImage = ImageProcess.clone(image);
+//        originalBufferedImageTemp = image;
+        imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+//        imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
+//        FactoryMatrix.println(imgData);
         lbl.setText(getImageSize() + "X:Y");
         if (activateStatistics) {
             currBufferedImage = ImageProcess.toGrayLevel(originalBufferedImage);
@@ -111,9 +114,9 @@ public class PanelPicture extends JPanel {
     }
 
     public void setImage(BufferedImage image, double[][] data) {
-        currBufferedImage = image;
-        originalBufferedImage = image;
-        originalBufferedImageTemp = image;
+        currBufferedImage = ImageProcess.clone(image);;
+        originalBufferedImage = ImageProcess.clone(image);;
+//        originalBufferedImageTemp = image;
         imgData = data;
         lbl.setText(getImageSize() + "X:Y");
         if (activateStatistics) {
@@ -142,12 +145,12 @@ public class PanelPicture extends JPanel {
         int hPanel = this.getHeight();
         if (currBufferedImage != null) {
             if (activateAutoSize) {
-                currBufferedImage = ImageProcess.resize(originalBufferedImageTemp, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
+                currBufferedImage = ImageProcess.resize(originalBufferedImage, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
                 imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
                 lbl.setText(getImageSize() + "X:Y");
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
             } else if (activateAutoSizeAspect) {
-                currBufferedImage = ImageProcess.resizeAspectRatio(originalBufferedImageTemp, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
+                currBufferedImage = ImageProcess.resizeAspectRatio(originalBufferedImage, this.getWidth() - 2 * panWidth, this.getHeight() - 2 * panWidth);
                 imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
                 lbl.setText(getImageSize() + "X:Y");
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
@@ -196,15 +199,19 @@ public class PanelPicture extends JPanel {
                     p.x = mousePos.x - fromLeft;
                     p.y = mousePos.y - fromTop;
                     if (currBufferedImage.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + imgData[p.y][p.x] + "");
+                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + imgData[p.y][p.x] + " Img Type=TYPE_BYTE_GRAY");
                     } else if (currBufferedImage.getType() == BufferedImage.TYPE_INT_RGB) {
                         String s = "" + new Color((int) imgData[p.y][p.x], true);
                         s = s.replace("java.awt.Color", "").replace("r", "h").replace("g", "s").replace("b", "v");
-                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + "");// + " RGB=" + "(" + r + "," + g + "," + b + ")");
+                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + " Img Type=TYPE_INT_RGB");// + " RGB=" + "(" + r + "," + g + "," + b + ")");
+                    } else if (currBufferedImage.getType() == BufferedImage.TYPE_3BYTE_BGR) {
+                        String s = "" + new Color((int) imgData[p.y][p.x], true);
+                        s = s.replace("java.awt.Color", "");
+                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + " Img Type=TYPE_3BYTE_BGR");// + " RGB=" + "(" + r + "," + g + "," + b + ")");
                     } else {
                         String s = "" + new Color((int) imgData[p.y][p.x], true);
                         s = s.replace("java.awt.Color", "");
-                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + "");// + " RGB=" + "(" + r + "," + g + "," + b + ")");
+                        lbl.setText(getImageSize() + " Pos=(" + p.y + ":" + p.x + ") Value=" + s + " Img Type=" + currBufferedImage.getType());// + " RGB=" + "(" + r + "," + g + "," + b + ")");
                     }
                     gr.setColor(Color.blue);
                     gr.drawLine(0, mousePos.y, wPanel - 1, mousePos.y);
@@ -264,19 +271,19 @@ public class PanelPicture extends JPanel {
             "Clone",
             "Load Image",
             "Save Image",
-            "Revert",
             "AutoSize",
             "AutoSizeAspect",
-            "Original",
             "Statistics",
             "Histogram",
+            "Revert",
+            "Original",
+            "Gray",
+            "HSV",
             "Red",
             "Green",
             "Blue",
-            "Gray",
-            "HSV",
-            "RGB",
             "Edge",
+            "Equalize",
             "Smooth",
             "Sharpen",
             "ROI",
@@ -399,247 +406,137 @@ public class PanelPicture extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             // determine which menu item was selected  
-            setDefaultValues();
-            JRadioButtonMenuItem obj = (JRadioButtonMenuItem) e.getSource();
-            if (obj.getText().equals("Clone")) {
-                new FrameImage(currBufferedImage, obj.getText()).setVisible(true);
-                return;
-            }
-            if (obj.getText().equals("Load Image")) {
+            try {
                 setDefaultValues();
-                activateStatistics = false;
-                File fl = ImageProcess.readImageFileFromFolderWithDirectoryPath(imagePath);
-                if (fl == null) {
+                JRadioButtonMenuItem obj = (JRadioButtonMenuItem) e.getSource();
+                if (obj.getText().equals("Clone")) {
+                    new FrameImage(CMatrix.getInstance(currBufferedImage), obj.getText()).setVisible(true);
                     return;
-                }
-                BufferedImage bf = ImageProcess.readImageFromFile(fl.getAbsolutePath());
-                if (bf != null) {
-                    originalBufferedImage = bf;
-                    currBufferedImage = (originalBufferedImage);
-                    imagePath = fl.getAbsolutePath();
-                    imageFolder = FactoryUtils.getFolderPath(imagePath);
-                    fileName = fl.getName();
+                } else if (obj.getText().equals("Load Image")) {
+                    activateStatistics = false;
+                    File fl = ImageProcess.readImageFileFromFolderWithDirectoryPath(imagePath);
+                    if (fl == null) {
+                        return;
+                    }
+                    BufferedImage bf = ImageProcess.readImageFromFile(fl.getAbsolutePath());
+                    if (bf != null) {
+                        originalBufferedImage = bf;
+                        currBufferedImage = (originalBufferedImage);
+                        imagePath = fl.getAbsolutePath();
+                        imageFolder = FactoryUtils.getFolderPath(imagePath);
+                        fileName = fl.getName();
 //                    fileList = FactoryUtils.getFileListInFolder(imageFolder);
 //                    currentImageIndex = getCurrentImageIndex();
-                    imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
-                    if (activateStatistics) {
-                        stat = TStatistics.getStatistics(currBufferedImage);
+                        imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
+                        if (activateStatistics) {
+                            stat = TStatistics.getStatistics(currBufferedImage);
+                        }
+                    } else {
+                        return;
                     }
-                } else {
-                    return;
-                }
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Save Image")) {
-                setDefaultValues();
-                ImageProcess.imwrite(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Original")) {
-                setDefaultValues();
-                activateOriginal = true;
-                activateStatistics = false;
-                currBufferedImage = (originalBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Histogram")) {
-                setDefaultValues();
-                activateHistogram = true;
-                CMatrix.getInstance(currBufferedImage).imhist();
-//                imgData = ImageProcess.imageToPixels255Double(originalBufferedImage);
-//                currBufferedImage = ImageProcess.pixelsToBufferedImage255(imgData);
-//                imgData = ImageProcess.imageToPixels255Double(currBufferedImage);
-//                if (histFrame == null) {
-////                    histFrame = new FrameImageHistogram(CMatrix.getInstance(imgData));
-//                    histFrame = new FrameImageHistogram(CMatrix.getInstance(currBufferedImage));
-//                } else {
-//                    histFrame.setHistogramData(CMatrix.getInstance(imgData));
-//                }
-//                histFrame.setVisible(true);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Statistics")) {
-                setDefaultValues();
-                activateStatistics = true;
-                currBufferedImage = ImageProcess.toGrayLevel(originalBufferedImage);
-                imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
-                stat = TStatistics.getStatistics(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Red")) {
-                setDefaultValues();
-                activateRedChannel = true;
-                currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "red");
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Green")) {
-                setDefaultValues();
-                activateRedChannel = true;
-                currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "green");
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Blue")) {
-                setDefaultValues();
-                activateRedChannel = true;
-                currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "blue");
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("RGB")) {
-                setDefaultValues();
-                activateRGB = true;
-                currBufferedImage = (originalBufferedImage);
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Gray")) {
-                setDefaultValues();
-                activateGray = true;
-                currBufferedImage = ImageProcess.rgb2gray(originalBufferedImage);
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("HSV")) {
-                setDefaultValues();
-                activateHSV = true;
-                currBufferedImage = ImageProcess.toHSVColorSpace(originalBufferedImage);
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-//                imgData = ImageProcess.imageToPixels255Double(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Edge")) {
-                setDefaultValues();
-                activateEdge = true;
-                currBufferedImage = ImageProcess.edgeDetectionCanny(currBufferedImage, 0.3f, 1.0f, 2.5f, 3, false);
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                imgData = ImageProcess.imageToPixelsDouble(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("AutoSize")) {
-                setDefaultValues();
-                activateAutoSize = true;
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("AutoSizeAspect")) {
-                setDefaultValues();
-                activateAutoSizeAspect = true;
-                repaint();
-                return;
-            }
-//            if (obj.getText().equals("ROI")) {
-//                setDefaultValues();
-//                activateEdge = true;
-//                currBufferedImage = ImageProcess.pixelsToBufferedImage255(ImageProcess.imageToPixels255Int(originalBufferedImage));
-//                currBufferedImage = ImageProcess.edgeDetectionCanny(currBufferedImage, 0.5f, 1.0f, 3.0f, 3, false);
-//                repaint();
-//                return;
-//            }
-            if (obj.getText().equals("Revert")) {
-                setDefaultValues();
-                activateRevert = true;
-                currBufferedImage = ImageProcess.revert(currBufferedImage);
-                originalBufferedImageTemp = ImageProcess.clone(currBufferedImage);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("ROI")) {
-                setDefaultValues();
-                activateROI = true;
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Clone ROI")) {
-                setDefaultValues();
-                showRegion = false;
-                activateCloneROI = true;
-                mousePosTopLeft.x -= fromLeft;
-                mousePosTopLeft.y -= fromTop;
-                mousePosBottomRight.x -= fromLeft;
-                mousePosBottomRight.y -= fromTop;
+                } else if (obj.getText().equals("Save Image")) {
+                    ImageProcess.imwrite(currBufferedImage);
+                } else if (obj.getText().equals("Histogram")) {
+                    activateHistogram = true;
+                    CMatrix.getInstance(currBufferedImage).imhist();
+                } else if (obj.getText().equals("Statistics")) {
+                    activateStatistics = true;
+                    currBufferedImage = ImageProcess.toGrayLevel(originalBufferedImage);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                    stat = TStatistics.getStatistics(currBufferedImage);
+                } else if (obj.getText().equals("Revert")) {
+                    activateRevert = true;
+                    currBufferedImage = ImageProcess.revert(currBufferedImage);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Original")) {
+                    activateOriginal = true;
+                    activateStatistics = false;
+                    currBufferedImage = ImageProcess.clone(originalBufferedImage);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Gray")) {
+                    activateGray = true;
+                    currBufferedImage = ImageProcess.rgb2gray(currBufferedImage);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("HSV")) {
+                    activateHSV = true;
+                    currBufferedImage = ImageProcess.toHSVColorSpace(originalBufferedImage);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Red")) {
+                    activateRedChannel = true;
+                    currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "red");
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Green")) {
+                    activateRedChannel = true;
+                    currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "green");
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Blue")) {
+                    activateRedChannel = true;
+                    currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "blue");
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Equalize")) {
+                    activateEdge = true;
+                    currBufferedImage = ImageProcess.equalizeHistogram(ImageProcess.rgb2gray(currBufferedImage));
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("Edge")) {
+                    activateEdge = true;
+                    currBufferedImage = ImageProcess.edgeDetectionCanny(currBufferedImage, 0.3f, 1.0f, 2.5f, 3, false);
+                    imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
+                } else if (obj.getText().equals("AutoSize")) {
+                    activateAutoSize = true;
+                } else if (obj.getText().equals("AutoSizeAspect")) {
+                    activateAutoSizeAspect = true;
+                } else if (obj.getText().equals("ROI")) {
+                    activateROI = true;
+                } else if (obj.getText().equals("Clone ROI")) {
+                    showRegion = false;
+                    activateCloneROI = true;
+                    mousePosTopLeft.x -= fromLeft;
+                    mousePosTopLeft.y -= fromTop;
+                    mousePosBottomRight.x -= fromLeft;
+                    mousePosBottomRight.y -= fromTop;
 //                CMatrix cm = CMatrix.getInstance(currBufferedImage).subMatrix(mousePosTopLeft, mousePosBottomRight);
-                CRectangle cr = new CRectangle(mousePosTopLeft.y, mousePosTopLeft.x,
-                        Math.abs(mousePosBottomRight.x - mousePosTopLeft.x),Math.abs(mousePosBottomRight.y - mousePosTopLeft.y));
-                BufferedImage bf = ImageProcess.cropImage(currBufferedImage, cr);
+                    CRectangle cr = new CRectangle(mousePosTopLeft.y, mousePosTopLeft.x,
+                            Math.abs(mousePosBottomRight.x - mousePosTopLeft.x), Math.abs(mousePosBottomRight.y - mousePosTopLeft.y));
+                    BufferedImage bf = ImageProcess.cropImage(currBufferedImage, cr);
 //                BufferedImage bf = ImageProcess.pixelsToImageGray(cm.toIntArray2D());
-                new FrameImage(bf, obj.getText()).setVisible(true);
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("DROI")) {
-                setDefaultValues();
-                activateDrawableROI = true;
-                activateROI = false;
-                drawableRoiList.clear();
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Save DROI Corners")) {
-                setDefaultValues();
-                if (drawableRoiList.size() > 0) {
-                    CPoint[] plst = new CPoint[drawableRoiList.size()];
-                    plst = drawableRoiList.toArray(plst);
-                    int[][] d = new int[drawableRoiList.size()][2];
-                    for (int i = 0; i < drawableRoiList.size(); i++) {
-                        d[i][0] = plst[i].row;
-                        d[i][1] = plst[i].column;
+                    new FrameImage(CMatrix.getInstance(bf), obj.getText()).setVisible(true);
+                } else if (obj.getText().equals("DROI")) {
+                    activateDrawableROI = true;
+                    activateROI = false;
+                    drawableRoiList.clear();
+                } else if (obj.getText().equals("Save DROI Corners")) {
+                    if (drawableRoiList.size() > 0) {
+                        CPoint[] plst = new CPoint[drawableRoiList.size()];
+                        plst = drawableRoiList.toArray(plst);
+                        int[][] d = new int[drawableRoiList.size()][2];
+                        for (int i = 0; i < drawableRoiList.size(); i++) {
+                            d[i][0] = plst[i].row;
+                            d[i][1] = plst[i].column;
+                        }
+                        String fileName = FactoryUtils.inputMessage("set roi file name:", "roi.txt");
+                        FactoryUtils.writeToFile("data\\" + fileName, d);
                     }
-                    String fileName = FactoryUtils.inputMessage("set roi file name:", "roi.txt");
-                    FactoryUtils.writeToFile("data\\" + fileName, d);
+                } else if (obj.getText().equals("Save DROI Pixels")) {
+                    if (drawableRoiList.size() > 0) {
+                        CPoint[] plst = new CPoint[drawableRoiList.size()];
+                        plst = drawableRoiList.toArray(plst);
+                        CPoint[] pixels = FactoryUtils.getPointsInROI(plst);
+                        FactoryUtils.savePointsInROI(pixels);
+                    }
+                } else if (obj.getText().equals("Load DROI Corners")) {
+                    drawableRoiList.clear();
+                    double[][] d = FactoryUtils.readFromFile(",");
+                    int[][] dd = FactoryUtils.toIntArray2D(d);
+                    for (int i = 0; i < d.length; i++) {
+                        CPoint p = new CPoint(dd[i][0], dd[i][1]);
+                        drawableRoiList.add(p);
+                    }
                 }
                 repaint();
-                return;
+            } catch (Exception ex) {
+                System.err.println(ex.toString());
             }
-            if (obj.getText().equals("Save DROI Pixels")) {
-                setDefaultValues();
-                if (drawableRoiList.size() > 0) {
-                    CPoint[] plst = new CPoint[drawableRoiList.size()];
-                    plst = drawableRoiList.toArray(plst);
-                    CPoint[] pixels = FactoryUtils.getPointsInROI(plst);
-                    FactoryUtils.savePointsInROI(pixels);
-                }
-                repaint();
-                return;
-            }
-            if (obj.getText().equals("Load DROI Corners")) {
-                setDefaultValues();
-                drawableRoiList.clear();
-                double[][] d = FactoryUtils.readFromFile(",");
-                int[][] dd = FactoryUtils.toIntArray2D(d);
-                for (int i = 0; i < d.length; i++) {
-                    CPoint p = new CPoint(dd[i][0], dd[i][1]);
-                    drawableRoiList.add(p);
-                }
-                repaint();
-                return;
-            }
-//            if (obj.getText().equals("LBP")) {
-//                setDefaultValues();
-//                activateLBP = true;
-//                currBufferedImage = ImageProcess.toGrayLevel(originalBufferedImage);
-//                int[] lbp = LBP.getLBP(currBufferedImage);
-//                FrameImageHistogram frm = new FrameImageHistogram(CMatrix.getInstance(lbp));
-//                frm.setVisible(true);
-//                repaint();
-//                return;
-//            }
         }
-
     }
 
     public void setActivateStatistics(boolean activateStatistics) {

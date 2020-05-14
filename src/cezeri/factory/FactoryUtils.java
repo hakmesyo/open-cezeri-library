@@ -1279,8 +1279,8 @@ public final class FactoryUtils {
     }
 
     public static double[][] toDoubleArray2D(int[][] m) {
-        int nr=m.length;
-        int nc=m[0].length;
+        int nr = m.length;
+        int nc = m[0].length;
         double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
@@ -1409,13 +1409,13 @@ public final class FactoryUtils {
     }
 
     public static int[][] toIntArray2D(double[][] m) {
-        int nr=m.length;
-        int nc=m[0].length;
+        int nr = m.length;
+        int nc = m[0].length;
         int[][] ret = new int[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
 //                ret[i][j] = (int) Math.round(m[i][j]);
-                ret[i][j] = (int)m[i][j];
+                ret[i][j] = (int) m[i][j];
             }
         }
         return ret;
@@ -2248,12 +2248,45 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static int[] toIntArray1DBasedOnRows(double[][] d) {
+        int[] ret = new int[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (int) d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static int[] toIntArray1DBasedOnRows(float[][] d) {
+        int[] ret = new int[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (int) d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static int[] toIntArray1D(float[][] d) {
         int[] ret = new int[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
                 ret[k++] = (int) d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static short[] toShortArray1DBasedOnRows(double[][] d) {
+        short[] ret = new short[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (short) d[i][j];
             }
         }
         return ret;
@@ -2270,12 +2303,34 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static float[] toFloatArray1DBasedOnRows(double[][] d) {
+        float[] ret = new float[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (float) d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static float[] toFloatArray1D(double[][] d) {
         float[] ret = new float[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
                 ret[k++] = (float) d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static long[] toLongArray1DBasedOnRows(double[][] d) {
+        long[] ret = new long[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (long) d[i][j];
             }
         }
         return ret;
@@ -2292,12 +2347,34 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static String[] toStringArray1DBasedOnRows(double[][] d) {
+        String[] ret = new String[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = String.valueOf(d[i][j]);
+            }
+        }
+        return ret;
+    }
+
     public static String[] toStringArray1D(double[][] d) {
         String[] ret = new String[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
                 ret[k++] = String.valueOf(d[i][j]);
+            }
+        }
+        return ret;
+    }
+
+    public static short[] toShortArray1DBasedOnRows(float[][] d) {
+        short[] ret = new short[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (short) d[i][j];
             }
         }
         return ret;
@@ -2314,11 +2391,33 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static byte[] toByteArray1DBasedOnRows(double[][] d) {
+        byte[] ret = new byte[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (byte) d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static byte[] toByteArray1D(double[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
+                ret[k++] = (byte) d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static byte[] toByteArray1DBasedOnRows(float[][] d) {
+        byte[] ret = new byte[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
                 ret[k++] = (byte) d[i][j];
             }
         }
@@ -2336,6 +2435,17 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static byte[] toByteArray1DBasedOnRows(int[][] d) {
+        byte[] ret = new byte[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = (byte) d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static byte[] toByteArray1D(int[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
@@ -2347,11 +2457,33 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static float[] toFloatArray1DBasedOnRows(float[][] d) {
+        float[] ret = new float[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static float[] toFloatArray1D(float[][] d) {
         float[] ret = new float[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
+                ret[k++] = d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static int[] toIntArray1DBasedOnRows(int[][] d) {
+        int[] ret = new int[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -2369,11 +2501,33 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static byte[] toByteArray1DBasedOnRows(byte[][] d) {
+        byte[] ret = new byte[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                ret[k++] = d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static byte[] toByteArray1D(byte[][] d) {
         byte[] ret = new byte[d.length * d[0].length];
         int k = 0;
         for (int j = 0; j < d[0].length; j++) {
             for (int i = 0; i < d.length; i++) {
+                ret[k++] = d[i][j];
+            }
+        }
+        return ret;
+    }
+
+    public static short[] toShortArray1DBasedOnRows(short[][] d) {
+        short[] ret = new short[d.length * d[0].length];
+        int k = 0;
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
                 ret[k++] = d[i][j];
             }
         }
@@ -5053,7 +5207,7 @@ public final class FactoryUtils {
                 double to = Double.parseDouble(ss[1]);
                 double incr = Double.parseDouble(ss[2]);
                 ret = vector(from, to, incr);
-            } else if (ss.length ==2) {
+            } else if (ss.length == 2) {
                 double from = Double.parseDouble(ss[0]);
                 double to = Double.parseDouble(ss[1]);
                 ret = vector(from, to, 1);
@@ -5061,39 +5215,39 @@ public final class FactoryUtils {
         }
         return ret;
     }
-    
-    public static int[] byte2Int(byte[] b){
-        int nr=b.length;
-        int[] ret=new int[nr];
+
+    public static int[] byte2Int(byte[] b) {
+        int nr = b.length;
+        int[] ret = new int[nr];
         for (int i = 0; i < nr; i++) {
-            ret[i]=byte2Int(b[i]);
+            ret[i] = byte2Int(b[i]);
         }
         return ret;
     }
-    
-    public static double[] byte2Double(byte[] b){
-        int nr=b.length;
-        double[] ret=new double[nr];
+
+    public static double[] byte2Double(byte[] b) {
+        int nr = b.length;
+        double[] ret = new double[nr];
         for (int i = 0; i < nr; i++) {
-            ret[i]=byte2Double(b[i]);
+            ret[i] = byte2Double(b[i]);
         }
         return ret;
     }
-    
-    public static int byte2Int(byte b){
+
+    public static int byte2Int(byte b) {
         return b & 0xFF;
     }
 
-    public static long byte2Long(byte b){
-        return (long)(b & 0xFF);
+    public static long byte2Long(byte b) {
+        return (long) (b & 0xFF);
     }
 
-    public static short byte2Short(byte b){
-        return (short)(b & 0xFF);
+    public static short byte2Short(byte b) {
+        return (short) (b & 0xFF);
     }
 
-    public static double byte2Double(byte b){
-        return (double)(b & 0xFF);
+    public static double byte2Double(byte b) {
+        return (double) (b & 0xFF);
     }
 
 }
