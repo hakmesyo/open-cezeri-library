@@ -378,9 +378,11 @@ public class PanelPlot extends javax.swing.JPanel {
         double maxY = getMaxYValue(d);
         double minY = getMinYValue(d);
         double deltaY = maxY - minY;
-        double n = 10.0;
+        double n = Math.round(y0/100.0);
 //        int l = y0 - 60;
         int l = y0 - 50;
+//        double ratio=y0/n;
+        
         int top = 50;
         gr.drawLine(x0, top, x0, y0 + 20);
         gr.drawLine(w - fromRight, top, w - fromRight, y0 + 20);
@@ -389,10 +391,11 @@ public class PanelPlot extends javax.swing.JPanel {
         double dY = l / n;
         int q = 0;
         int art = 5;
-        int shift = 25;
+//        int shift = 25;
+        int shift = 20;
         for (int i = 0; i <= n; i++) {
             if (maxY > 1) {
-                yVal[i] = (Math.round((i * delta + minY) * n)) / n;
+                yVal[i] = Math.round(Math.round((i * delta + minY) * n) / n);
             } else {
                 yVal[i] = (i * delta + minY);
             }
@@ -409,7 +412,7 @@ public class PanelPlot extends javax.swing.JPanel {
     private void drawXAxis(Graphics gr, int x0, int y0, int w, int fromRight, double[][] d) {
         double maxX = 0;
         double minX = 0;
-        double n = 10.0;
+        double n = Math.round(w/150.0);
         int l = w - (x0 + fromRight);
         double dx = l / n;
         double[] xVal = new double[(int) n + 1];
@@ -429,7 +432,8 @@ public class PanelPlot extends javax.swing.JPanel {
         for (int i = 0; i <= n; i++) {
             xVal[i] = (Math.round(minX + i * delta));
             q = (int) (x0 + i * dx);
-            gr.drawString((int) xVal[i] + "", q - 10, y0 + 40);
+//            gr.drawString((int) xVal[i] + "", q - 10, y0 + 40);
+            gr.drawString(FactoryUtils.formatDoubleAsString(xVal[i],3), q - 10, y0 + 40);
             gr.drawLine(q, top, q, top + 5);
             gr.drawLine(q, y0 + 20, q, y0 + 20 - 5);
         }

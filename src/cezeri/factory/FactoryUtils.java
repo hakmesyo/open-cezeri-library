@@ -1659,8 +1659,19 @@ public final class FactoryUtils {
     }
 
     public static String formatDoubleAsString(double num, int n) {
-        String ret = String.format("%." + n + "f", num).replace(',', '.');
-        if (ret.length() > 5) {
+        //String ret = String.format("%." + n + "f", num).replace(',', '.');
+        double x = formatDouble(num, n);
+        String ret=""+x;
+        if (x >= 1 || x<=-1) {
+            int m=(x>0)?ret.length():ret.length()-1;
+            if (m>2) {
+                int q=m-(m/2)-2;
+                x=Math.round(x/Math.pow(10, q))*Math.pow(10, q);
+                ret=""+x;
+            }
+            ret = ret.substring(0, ret.indexOf("."));
+        } 
+        if (ret.length() > 10) {
             ret = String.format("%5.2e", Double.parseDouble(ret));
         }
         return ret;

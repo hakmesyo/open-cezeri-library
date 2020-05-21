@@ -775,6 +775,32 @@ public final class ImageProcess {
         return I;
 
     }
+    
+    public static BufferedImage pixelsToImageColor(double[][] pixels) {
+        int numRows = pixels.length;
+        int numCols = pixels[0].length;
+        int[] oneDPixels = new int[numRows * numCols];
+
+        int index = 0;
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                oneDPixels[index] = (int)pixels[row][col];
+                index++;
+            }
+        }
+
+        // The MemoryImageSource class is an ImageProducer that can
+        // build an image out of 1D pixels. Then, rather confusingly,
+        // the createImage() method, inherited from Component, is used
+        // to make the actual Image instance. This is simply Java's
+        // confusing, roundabout way. An alternative is to use the
+        // Raster models provided in BufferedImage.
+        MemoryImageSource imSource = new MemoryImageSource(numCols, numRows, oneDPixels, 0, numCols);
+        Image imG = Toolkit.getDefaultToolkit().createImage(imSource);
+        BufferedImage I = imageToBufferedImage(imG);
+        return I;
+
+    }
 
     public static BufferedImage pixelsToImageColorArgbFormat(double[][][] pixels) {
         int numRows = pixels[0].length;
@@ -852,6 +878,7 @@ public final class ImageProcess {
     }
 
     public static double[][] convertBufferedImageTo2D(BufferedImage image) {
+
         final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         final int width = image.getWidth();
         final int height = image.getHeight();
@@ -1129,7 +1156,6 @@ public final class ImageProcess {
     }
 
     public static BufferedImage pixelsToImageGray(double dizi[][]) {
-//        dizi=FactoryMatrix.flipBoth(dizi);
         int[] pixels = FactoryUtils.toIntArray1DBasedOnRows(dizi);
         int h = dizi.length;
         int w = dizi[0].length;
@@ -2707,7 +2733,7 @@ public final class ImageProcess {
     }
 
     public static BufferedImage filterMean(BufferedImage imgx) {
-        AverageFilter avgFilter=new AverageFilter();
+        AverageFilter avgFilter = new AverageFilter();
         BufferedImage dest = clone(imgx);
         avgFilter.filter(dest, imgx);
         return dest;
@@ -2715,7 +2741,7 @@ public final class ImageProcess {
     }
 
     public static BufferedImage filterMotionBlur(BufferedImage imgx) {
-        MotionBlurOp op=new MotionBlurOp(5, 45, 13, 3);
+        MotionBlurOp op = new MotionBlurOp(5, 45, 13, 3);
 //        MotionBlurFilter motionFilter=new MotionBlurFilter();
 //        motionFilter.setAngle(20);
 //        motionFilter.setDistance(15);
@@ -3910,6 +3936,12 @@ public final class ImageProcess {
             }
         }
         return ret;
+    }
+
+    public static BufferedImage convertToBufferedImageTypes(BufferedImage img, int TYPE) {
+        BufferedImage convertedImg = new BufferedImage(img.getWidth(), img.getHeight(), TYPE);
+        convertedImg.getGraphics().drawImage(img, 0, 0, null);
+        return convertedImg;
     }
 
 }

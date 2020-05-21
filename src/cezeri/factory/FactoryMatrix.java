@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.SplittableRandom;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import jwave.Transform;
@@ -2583,7 +2584,19 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-
+    
+    public static double[][] fillRandMatrixWithSeed(double[][] d, int seed) {
+        int nr = d.length;
+        int nc = d[0].length;
+        SplittableRandom r=new SplittableRandom(seed);
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                d[i][j] = r.nextDouble();
+            }
+        }
+        return d;
+    }
+    
     public static double[][] fillRandMatrix(double[][] d, int max) {
         SecureRandom r = new SecureRandom();
         for (int i = 0; i < d.length; i++) {
@@ -2613,6 +2626,16 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
+    
+    public static double[][] fillRandMatrixWithSeed(double[][] d, double max, int seed) {
+        SplittableRandom rnd=new SplittableRandom(seed);
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                d[i][j] = rnd.nextDouble() * max;
+            }
+        }
+        return d;
+    }
 
     public static double[][] fillRandMatrix(double[][] d, double max) {
         SecureRandom r = new SecureRandom();
@@ -2633,6 +2656,20 @@ public final class FactoryMatrix implements Serializable {
         return d;
     }
 
+    public static double[][] fillRandMatrixTimeSeries(double[][] d, double min, double max, Random rnd) {
+        int nr=d.length;
+        int nc=d[0].length;
+        d=fillRandMatrix(d,min,max,rnd);
+        double[][] ret=new double[nr][nc];
+        for (int j = 0; j < nc; j++) {
+            ret[0][j]=d[0][j];
+            for (int i = 1; i < nr; i++) {
+                ret[i][j] = ret[i-1][j]+d[i][j];
+            }
+        }
+        return ret;
+    }
+
     public static double[][] fillRandMatrix(double[][] d, int min, int max) {
         SecureRandom r = new SecureRandom();
         for (int i = 0; i < d.length; i++) {
@@ -2645,6 +2682,16 @@ public final class FactoryMatrix implements Serializable {
 
     public static double[][] fillRandMatrix(double[][] d, double min, double max, Random rnd) {
 //        SecureRandom r = new SecureRandom();
+        for (int i = 0; i < d.length; i++) {
+            for (int j = 0; j < d[0].length; j++) {
+                d[i][j] = min + rnd.nextDouble() * (max - min);
+            }
+        }
+        return d;
+    }
+
+    public static double[][] fillRandMatrixWithSeed(double[][] d, double min, double max, int seed) {
+        SplittableRandom rnd=new SplittableRandom(seed);
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
                 d[i][j] = min + rnd.nextDouble() * (max - min);

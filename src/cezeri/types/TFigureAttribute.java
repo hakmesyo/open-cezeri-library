@@ -18,7 +18,8 @@ import java.util.ArrayList;
 public class TFigureAttribute {
     public String figureCaption="";
     public String title="";
-    public String[] axis=new String[]{"Indexes","Values"};
+//    public String[] axis=new String[]{"Indexes","Values"};
+    public String[] axis=new String[]{"",""};
 //    public String[] items=new String[]{"Observed","Simulated"};;
     public String[] items=new String[]{"",""};;
 //    public TPointType pointType=TPointType.LINE;

@@ -85,7 +85,7 @@
                   <Component id="txt_dpi" min="-2" pref="47" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="201" max="32767" attributes="0"/>
+                  <EmptySpace pref="423" max="32767" attributes="0"/>
                   <Component id="btnSort" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="89" max="-2" attributes="0"/>
               </Group>

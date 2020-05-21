@@ -125,6 +125,7 @@ public final class CMatrix implements Serializable {
     public String[] combinationPairs;
     public String[] permutationPairs;
     public static CMatrix currentMatrix = null;
+    private boolean isArraySet=false;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -795,16 +796,19 @@ public final class CMatrix implements Serializable {
 
     public double[][] toDoubleArray2D() {
         CMatrix cm = this;
-        if (image != null && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
-            cm = toGrayLevel();
-//            image = ImageProcess.rgb2gray(image);
-//            array=ImageProcess.bufferedImageToArray2D(image);
-        }
+//        if (image != null && image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
+//            cm = toGrayLevel();
+////            image = ImageProcess.rgb2gray(image);
+////            array=ImageProcess.bufferedImageToArray2D(image);
+//        }
         return cm.array;
     }
 
     /**
-     * ARGB values
+     * return Alpha, Red, Green and Blue values of original RGB image
+     * first dimension contains spectral information
+     * second dimension is image height (number of rows)
+     * third dimension is image width (number of columns)
      *
      * @return
      */
@@ -942,6 +946,14 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix setArray(double[][] array) {
         this.array = array;
+        double max=Math.max(Math.abs(this.getMaxTotal()),Math.abs(this.getMinTotal()));
+        if (max<=255) {
+            this.image=ImageProcess.pixelsToImageGray(array);
+        }else{
+            this.image=ImageProcess.pixelsToImageColor(array);
+            this.image=ImageProcess.convertToBufferedImageTypes(image, 5);
+        }
+        
         return this;
     }
 
@@ -1398,6 +1410,13 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    public CMatrix randWithSeed(int seed) {
+        CMatrix ret = this.clone(this);
+        ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, seed));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
     public CMatrix rand(int n) {
         CMatrix ret = new CMatrix(n);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, random));
@@ -1405,9 +1424,23 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    public CMatrix randWithSeed(int n,int seed) {
+        CMatrix ret = new CMatrix(n);
+        ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, seed));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
     public CMatrix rand(int r, int c) {
         CMatrix ret = new CMatrix(r, c);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, random));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
+    public CMatrix randWithSeed(int r, int c, int seed) {
+        CMatrix ret = new CMatrix(r, c);
+        ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, seed));
         ret.name = this.name + "|rand";
         return ret.clone(this);
     }
@@ -1433,6 +1466,13 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    public CMatrix randWithSeed(int r, int c, double max,int seed) {
+        CMatrix ret = new CMatrix(r, c);
+        ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, max, seed));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
     public CMatrix rand(int r, int c, int min, int max) {
         CMatrix ret = new CMatrix(r, c);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, min, max, random));
@@ -1440,9 +1480,32 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
+    /**
+     * randTimeSeries method generates random signal similar to the timeline series of trends in any assets
+     * which provides us to inspect time series signals in 1D
+     * @param r
+     * @param c
+     * @param min
+     * @param max
+     * @return 
+     */
+    public CMatrix randTimeSeries(int r, int c, double min, double max) {
+        CMatrix ret = new CMatrix(r, c);
+        ret.setArray(FactoryMatrix.fillRandMatrixTimeSeries(ret.array, min, max, random));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
     public CMatrix rand(int r, int c, double min, double max) {
         CMatrix ret = new CMatrix(r, c);
         ret.setArray(FactoryMatrix.fillRandMatrix(ret.array, min, max, random));
+        ret.name = this.name + "|rand";
+        return ret.clone(this);
+    }
+
+    public CMatrix randWithSeed(int r, int c, double min, double max,int seed) {
+        CMatrix ret = new CMatrix(r, c);
+        ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, min, max, seed));
         ret.name = this.name + "|rand";
         return ret.clone(this);
     }
@@ -5572,8 +5635,10 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imresize(int w, int h) {
         CMatrix ret = this.clone(this);
-
-        ret.image = ImageProcess.resize(image, w, h);
+        if (ret.image==null) {
+            ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        }
+        ret.image = ImageProcess.resize(ret.image, w, h);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
         return ret;
@@ -7183,6 +7248,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix fromARGB(double[][][] argb) {
         BufferedImage img = ImageProcess.pixelsToImageColorArgbFormat(argb);
+        img=ImageProcess.convertToBufferedImageTypes(img,BufferedImage.TYPE_3BYTE_BGR);
         return new CMatrix(img);
     }
 
