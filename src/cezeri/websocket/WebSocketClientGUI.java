@@ -26,41 +26,6 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
      */
     public WebSocketClientGUI() {
         initComponents();
-        try {
-            // cc = new ChatClient(new URI(uriField.getText()), area, ( Draft ) draft.getSelectedItem() );
-            Draft[] drafts = {new Draft_6455()};
-            cc = new WebSocketClient(new URI(txt_host.getText() + ":" + txt_port.getText()), drafts[0]) {
-
-                @Override
-                public void onMessage(String message) {
-                    log.append("received msg: " + message + "\n");
-                    log.setCaretPosition(log.getDocument().getLength());
-                }
-
-                @Override
-                public void onOpen(ServerHandshake handshake) {
-                    log.append("You are connected to ChatServer: " + getURI() + "\n");
-                    log.setCaretPosition(log.getDocument().getLength());
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    log.append("You have been disconnected from: " + getURI() + "; Code: " + code + " " + reason + "\n");
-                    log.setCaretPosition(log.getDocument().getLength());
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    log.append("Exception occured ...\n" + ex + "\n");
-                    log.setCaretPosition(log.getDocument().getLength());
-                    ex.printStackTrace();
-                }
-            };
-
-            cc.connect();
-        } catch (URISyntaxException ex) {
-            log.append(txt_host.getText() + ":" + txt_port.getText() + " is not a valid WebSocket URI\n");
-        }
     }
 
     /**
@@ -82,6 +47,7 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txt_msg = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        btn_start = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("CHAT CLIENT");
@@ -120,6 +86,13 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
 
         jLabel4.setText("msg");
 
+        btn_start.setText("start");
+        btn_start.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_startActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,8 +116,12 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(bnt_send))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
-                    .addComponent(txt_port)
-                    .addComponent(txt_host))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txt_host, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
+                            .addComponent(txt_port))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_start, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -153,7 +130,8 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txt_host, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(jLabel1)
+                    .addComponent(btn_start))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -170,7 +148,7 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
                             .addComponent(txt_msg, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
                         .addGap(13, 13, 13)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
                         .addContainerGap())))
         );
 
@@ -190,6 +168,10 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
             cc.close();
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void btn_startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_startActionPerformed
+        start();
+    }//GEN-LAST:event_btn_startActionPerformed
 
     /**
      * @param args the command line arguments
@@ -243,6 +225,7 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bnt_send;
+    private javax.swing.JButton btn_start;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -259,6 +242,44 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
             cc.send(txt_msg.getText());
             txt_msg.setText("");
             txt_msg.requestFocus();
+        }
+    }
+
+    private void start() {
+        try {
+            // cc = new ChatClient(new URI(uriField.getText()), area, ( Draft ) draft.getSelectedItem() );
+            Draft[] drafts = {new Draft_6455()};
+            cc = new WebSocketClient(new URI(txt_host.getText() + ":" + txt_port.getText()), drafts[0]) {
+
+                @Override
+                public void onMessage(String message) {
+                    log.append("received msg: " + message + "\n");
+                    log.setCaretPosition(log.getDocument().getLength());
+                }
+
+                @Override
+                public void onOpen(ServerHandshake handshake) {
+                    log.append("You are connected to ChatServer: " + getURI() + "\n");
+                    log.setCaretPosition(log.getDocument().getLength());
+                }
+
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    log.append("You have been disconnected from: " + getURI() + "; Code: " + code + " " + reason + "\n");
+                    log.setCaretPosition(log.getDocument().getLength());
+                }
+
+                @Override
+                public void onError(Exception ex) {
+                    log.append("Exception occured ...\n" + ex + "\n");
+                    log.setCaretPosition(log.getDocument().getLength());
+                    ex.printStackTrace();
+                }
+            };
+
+            cc.connect();
+        } catch (URISyntaxException ex) {
+            log.append(txt_host.getText() + ":" + txt_port.getText() + " is not a valid WebSocket URI\n");
         }
     }
 }
