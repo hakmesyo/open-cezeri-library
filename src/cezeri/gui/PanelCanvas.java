@@ -1,7 +1,6 @@
 package cezeri.gui;
 
 import cezeri.factory.FactoryUtils;
-import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CPoint;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -25,6 +23,8 @@ public class PanelCanvas extends JPanel {
     public boolean isNodeVisible = false;
     private int pan_width, pan_height;
     private double totDist = 0;
+    private boolean isManual = false;
+    private CPoint prevCity, currentCity;
 
     public PanelCanvas() {
         initialize();
@@ -40,7 +40,7 @@ public class PanelCanvas extends JPanel {
         if (_edges != null) {
             edges = _edges;
             norm_edges = new CPoint[edges.length];;
-            totDist = calculateTotalCost()-2;
+            totDist = calculateTotalCost() - 2;
         }
         repaint();
     }
@@ -63,15 +63,20 @@ public class PanelCanvas extends JPanel {
             normalizeEdgeData();
             drawEdges(gr, norm_edges);
         }
+        if (isManual) {
+            drawManualEdges(gr);
+        }
         int px = mousePos.x - fromLeft;
         int py = mousePos.y - fromTop;
-        lbl.setText("Total Path Cost = " + (int) totDist + " Pos = [ " + py + " : " + px + " ]");
+        lbl.setText("Total Path Cost = " + (int) totDist + " Pos = [ " + py + " : " + px + " ] Selected Cities : "+k);
         this.paintComponents(gr);
         gr.setColor(Color.red);
         gr.drawRect(0, 0, wPanel - 1, hPanel - 1);
         gr.drawRect(1, 1, wPanel - 3, hPanel - 3);
 
     }
+
+    int k = 0;
 
     private void initialize() {
         lbl = new JLabel("X:Y");
@@ -90,18 +95,64 @@ public class PanelCanvas extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2 && !e.isConsumed()) {
                     e.consume();
+                    if (checkFirstCity(e)) {
+                        isManual = !isManual;
+                        System.out.println("başlangıç şehiri tıklandımı?" + isManual);
+                        if (isManual) {
+                            norm_edges = new CPoint[nodes.length];
+                            norm_edges[0]=norm_nodes[0].cloneCP();
+                            currentCity = norm_nodes[0];
+                            prevCity = currentCity.cloneCP();
+                            k++;
+                        }
+                    }
+                } else if (isManual && e.getClickCount() == 1) {
+                    int city_index = getClickedCity(e);
+                    if (city_index != -1 && city_index != -2) {
+                        System.out.println("city_index = " + city_index);
+                        currentCity = norm_nodes[city_index].cloneCP();
+                        double dist = getDistance(currentCity, prevCity);
+                        System.out.println("dist = " + dist);
+                        totDist+=dist;
+                        norm_edges[k++] = currentCity;
+                        prevCity = currentCity.cloneCP();
+                    }
+
                 }
+                repaint();
             }
 
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
-
                 lblShow = true;
             }
 
             @Override
             public void mouseReleased(java.awt.event.MouseEvent e) {
                 lblShow = false;
+            }
+
+            private boolean checkFirstCity(MouseEvent e) {
+                boolean ret = false;
+                if (Math.abs(e.getPoint().x - norm_nodes[0].column) < 10 && Math.abs(e.getPoint().y - norm_nodes[0].row) < 10) {
+                    ret = true;
+                }
+                return ret;
+            }
+
+            private int getClickedCity(MouseEvent e) {
+                int n = -1;
+                for (int i = 0; i < norm_nodes.length; i++) {
+                    if (Math.abs(e.getPoint().x - norm_nodes[i].column) < 10 && Math.abs(e.getPoint().y - norm_nodes[i].row) < 10) {
+                        if (!norm_nodes[i].equals(currentCity)) {
+                            return i;
+                        } else {
+                            return -2;
+                        }
+
+                    }
+                }
+                return n;
             }
 
         });
@@ -199,6 +250,19 @@ public class PanelCanvas extends JPanel {
 
     private double getDistance(CPoint e1, CPoint e2) {
         return Math.sqrt(Math.pow(e1.column - e2.column, 2) + Math.pow(e1.row - e2.row, 2));
+    }
+
+    private void drawManualEdges(Graphics2D gr) {
+        if (k<2) {
+            return;
+        }
+        gr.setColor(Color.GREEN);
+        double dist=0;
+        for (int i = 1; i < k; i++) {
+            dist = FactoryUtils.formatDouble(getDistance(norm_edges[i - 1], norm_edges[i]),0);
+            gr.drawLine(norm_edges[i-1].column + 5, norm_edges[i-1].row + 5, norm_edges[i].column + 5, norm_edges[i].row + 5);
+            gr.drawString("" + dist, (norm_edges[i].column + norm_edges[i - 1].column) / 2, (norm_edges[i].row + norm_edges[i - 1].row) / 2);
+        }
     }
 
 }

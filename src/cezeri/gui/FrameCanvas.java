@@ -5,14 +5,9 @@
  */
 package cezeri.gui;
 
-import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CMatrix;
-import cezeri.factory.FactoryUtils;
-import cezeri.vision.PanelPicture;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.Vector;
-import javax.swing.JFrame;
 
 /**
  *

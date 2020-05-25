@@ -5,7 +5,7 @@
  */
 package cezeri.deep_learning;
 
-import cezeri.websocket.ChatServer;
+import cezeri.websocket.MyWebSocketServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,14 +26,14 @@ public class CDL_Utils {
 
     public static boolean stopServer = false;
     public static boolean isConnectPythonServer = false;
-    public static ChatServer s;
+    public static MyWebSocketServer s;
     public static WebSocketClient client;
 
     public static void startJavaServer() {
         new Thread(() -> {
             try {
                 int port = 8887;
-                s = new ChatServer(port);
+                s = new MyWebSocketServer(port);
                 s.start();
                 System.out.println("Java WebSocket Server started on port: " + s.getPort());
                 BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
