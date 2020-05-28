@@ -39,7 +39,7 @@ public class PanelCanvas extends JPanel {
         }
         if (_edges != null) {
             edges = _edges;
-            norm_edges = new CPoint[edges.length];;
+            norm_edges = new CPoint[edges.length + 1];
             totDist = calculateTotalCost() - 2;
         }
         repaint();
@@ -68,7 +68,7 @@ public class PanelCanvas extends JPanel {
         }
         int px = mousePos.x - fromLeft;
         int py = mousePos.y - fromTop;
-        lbl.setText("Total Path Cost = " + (int) totDist + " Pos = [ " + py + " : " + px + " ] Selected Cities : "+k);
+        lbl.setText("Total Path Cost = " + (int) totDist + " Pos = [ " + py + " : " + px + " ] Selected Cities : " + (k - 1));
         this.paintComponents(gr);
         gr.setColor(Color.red);
         gr.drawRect(0, 0, wPanel - 1, hPanel - 1);
@@ -99,23 +99,28 @@ public class PanelCanvas extends JPanel {
                         isManual = !isManual;
                         System.out.println("başlangıç şehiri tıklandımı?" + isManual);
                         if (isManual) {
-                            norm_edges = new CPoint[nodes.length];
-                            norm_edges[0]=norm_nodes[0].cloneCP();
-                            currentCity = norm_nodes[0];
+                            edges = new CPoint[nodes.length + 1];
+                            norm_edges = new CPoint[nodes.length + 1];
+                            edges[0] = nodes[0].cloneCP();
+                            currentCity = nodes[0];
                             prevCity = currentCity.cloneCP();
                             k++;
+                            normalizeNodeData();
+                            normalizeEdgeData();
                         }
                     }
                 } else if (isManual && e.getClickCount() == 1) {
                     int city_index = getClickedCity(e);
                     if (city_index != -1 && city_index != -2) {
                         System.out.println("city_index = " + city_index);
-                        currentCity = norm_nodes[city_index].cloneCP();
+                        currentCity = nodes[city_index].cloneCP();
                         double dist = getDistance(currentCity, prevCity);
                         System.out.println("dist = " + dist);
-                        totDist+=dist;
-                        norm_edges[k++] = currentCity;
+                        totDist += dist;
+                        edges[k++] = currentCity;
                         prevCity = currentCity.cloneCP();
+                        normalizeNodeData();
+                        normalizeEdgeData();
                     }
 
                 }
@@ -172,7 +177,6 @@ public class PanelCanvas extends JPanel {
             @Override
             public void mouseDragged(java.awt.event.MouseEvent e) {
                 mousePos = e.getPoint();
-//                System.out.println("row:"+(mousePos.y-fromTop)+" col:"+(mousePos.x-fromLeft));
                 repaint();
             }
         });
@@ -186,6 +190,9 @@ public class PanelCanvas extends JPanel {
             gr.fillOval(nodes[i].column, nodes[i].row, 10, 10);
             gr.setColor(Color.red);
             gr.drawOval(nodes[i].column, nodes[i].row, 10, 10);
+            gr.setColor(Color.yellow);
+            gr.drawString(""+i,nodes[i].column,nodes[i].row);
+
         }
     }
 
@@ -209,10 +216,10 @@ public class PanelCanvas extends JPanel {
         gr.setColor(Color.green);
         int pr = _edges[0].row;
         int pc = _edges[0].column;
-        int n = _edges.length;
+        int n = _edges.length - 1;
         double dist = 0;
 
-        for (int i = 1; i < _edges.length; i++) {
+        for (int i = 1; i < _edges.length - 1; i++) {
             dist = getDistance(edges[i - 1], edges[i]);
             pr = _edges[i - 1].row;
             pc = _edges[i - 1].column;
@@ -242,6 +249,9 @@ public class PanelCanvas extends JPanel {
         float dw = w / 500.f;
         float dh = h / 500.f;
         for (int i = 0; i < edges.length; i++) {
+            if (edges[i] == null) {
+                break;
+            }
             norm_edges[i] = edges[i].cloneCP();
             norm_edges[i].column = (int) (norm_edges[i].column * dw);
             norm_edges[i].row = (int) (norm_edges[i].row * dh);
@@ -253,14 +263,16 @@ public class PanelCanvas extends JPanel {
     }
 
     private void drawManualEdges(Graphics2D gr) {
-        if (k<2) {
+        normalizeNodeData();
+        normalizeEdgeData();
+        if (k < 2) {
             return;
         }
         gr.setColor(Color.GREEN);
-        double dist=0;
+        double dist = 0;
         for (int i = 1; i < k; i++) {
-            dist = FactoryUtils.formatDouble(getDistance(norm_edges[i - 1], norm_edges[i]),0);
-            gr.drawLine(norm_edges[i-1].column + 5, norm_edges[i-1].row + 5, norm_edges[i].column + 5, norm_edges[i].row + 5);
+            dist = FactoryUtils.formatDouble(getDistance(edges[i - 1], edges[i]), 0);
+            gr.drawLine(norm_edges[i - 1].column + 5, norm_edges[i - 1].row + 5, norm_edges[i].column + 5, norm_edges[i].row + 5);
             gr.drawString("" + dist, (norm_edges[i].column + norm_edges[i - 1].column) / 2, (norm_edges[i].row + norm_edges[i - 1].row) / 2);
         }
     }
