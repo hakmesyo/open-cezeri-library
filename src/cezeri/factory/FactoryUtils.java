@@ -299,7 +299,7 @@ public final class FactoryUtils {
     }
 
     public static void writeToFile(String path, String row) {
-        Writer out;
+        Writer out = null;
         try {
             try {
                 out = new BufferedWriter(new OutputStreamWriter(
@@ -307,7 +307,11 @@ public final class FactoryUtils {
                 try {
                     try {
                         out.write(row);
+                        Thread.sleep(5);
+                        out.close();
                     } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
                         Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } finally {
@@ -318,7 +322,10 @@ public final class FactoryUtils {
                     }
                 }
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+//                new File(path).delete();
+//                System.out.println("FactoryUtils.writeToFile(path,row) metodunda hata oldu");
+//                writeToFile(path, row);
+                //Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
@@ -844,7 +851,8 @@ public final class FactoryUtils {
     }
 
     public static void showMessage(String str) {
-        JOptionPane.showMessageDialog(null, str);
+//        JOptionPane.showMessageDialog(null, str);
+        System.out.println(str);
     }
 
     public static String inputMessage(String str1, String str2) {
@@ -1661,16 +1669,16 @@ public final class FactoryUtils {
     public static String formatDoubleAsString(double num, int n) {
         //String ret = String.format("%." + n + "f", num).replace(',', '.');
         double x = formatDouble(num, n);
-        String ret=""+x;
-        if (x >= 1 || x<=-1) {
-            int m=(x>0)?ret.length():ret.length()-1;
-            if (m>2) {
-                int q=m-(m/2)-2;
-                x=Math.round(x/Math.pow(10, q))*Math.pow(10, q);
-                ret=""+x;
+        String ret = "" + x;
+        if (x >= 1 || x <= -1) {
+            int m = (x > 0) ? ret.length() : ret.length() - 1;
+            if (m > 2) {
+                int q = m - (m / 2) - 2;
+                x = Math.round(x / Math.pow(10, q)) * Math.pow(10, q);
+                ret = "" + x;
             }
             ret = ret.substring(0, ret.indexOf("."));
-        } 
+        }
         if (ret.length() > 10) {
             ret = String.format("%5.2e", Double.parseDouble(ret));
         }

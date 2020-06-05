@@ -40,7 +40,7 @@ public class TestHDR {
         cm_over=cm_over.setArray(d);       
         cm_over.imshow("after transforming");
         
-        CMatrix cm_ortlama = cm_under.add(cm_over).divideScalar(2.0).imshow("ortlama");
+        CMatrix cm_ortlama = cm_under.add(cm_over).divideScalar(2.0).imshow("ortalama");
         
     }
 }

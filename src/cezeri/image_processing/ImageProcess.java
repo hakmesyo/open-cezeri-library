@@ -775,7 +775,7 @@ public final class ImageProcess {
         return I;
 
     }
-    
+
     public static BufferedImage pixelsToImageColor(double[][] pixels) {
         int numRows = pixels.length;
         int numCols = pixels[0].length;
@@ -784,7 +784,7 @@ public final class ImageProcess {
         int index = 0;
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
-                oneDPixels[index] = (int)pixels[row][col];
+                oneDPixels[index] = (int) pixels[row][col];
                 index++;
             }
         }
@@ -944,13 +944,21 @@ public final class ImageProcess {
             ret = FactoryMatrix.reshapeBasedOnRows(t, img.getHeight(), img.getWidth());
             return ret;
         } else if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
+//            int w=img.getWidth();
+//            int h=img.getHeight();
+//            byte[] imageBytes=new byte[w*h];
+//            img.getRaster().setDataElements(0, 0, w, h, imageBytes);
             WritableRaster raster = img.getRaster();
             DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
             byte[] d = data.getData();
             double[] r = FactoryUtils.byte2Double(d);
+            if (r.length != img.getWidth() * img.getHeight()) {
+                System.out.println("farklı");
+            }
             ret = FactoryMatrix.reshapeBasedOnRows(r, img.getHeight(), img.getWidth());
             return ret;
         } else if (img.getColorModel().getNumComponents() == 3 && !img.getColorModel().hasAlpha()) {
+            img = convertToBufferedImageTypes(img, 5);
             ret = convertBufferedImageTo2D(img);
 //            WritableRaster raster = img.getRaster();
 //            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();

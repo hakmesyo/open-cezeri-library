@@ -3,9 +3,6 @@ package cezeri.search.meta_heuristic.simulated_annealing;
 import cezeri.gui.FrameCanvas;
 import cezeri.matrix.CPoint;
 import java.util.Random;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SimulatedAnnealing {
 

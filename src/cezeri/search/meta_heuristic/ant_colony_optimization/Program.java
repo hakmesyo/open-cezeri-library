@@ -2,12 +2,6 @@ package cezeri.search.meta_heuristic.ant_colony_optimization;
 
 import cezeri.factory.FactoryMatrix;
 import cezeri.factory.FactoryUtils;
-import cezeri.matrix.CMatrix;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
