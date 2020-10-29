@@ -3686,7 +3686,10 @@ public final class FactoryUtils {
     }
 
     public static void makeDirectory(String fn) {
-        new File(fn).mkdir();
+        File file=new File(fn);
+        if (!file.exists()) {
+            file.mkdir();
+        }
     }
 
     public static double[] getTotalMovement(double[][] d) {

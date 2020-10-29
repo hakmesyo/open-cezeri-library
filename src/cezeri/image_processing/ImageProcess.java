@@ -2575,7 +2575,7 @@ public final class ImageProcess {
     }
 
     public static BufferedImage saveImageAsJPEG(String filePath, BufferedImage currBufferedImage, int k) {
-        System.out.println("New Image Captured and jpg file saved");
+        //System.out.println("New Image Captured and jpg file saved");
         try {
             if (currBufferedImage == null) {
                 return null;

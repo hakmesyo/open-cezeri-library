@@ -19,7 +19,7 @@ public class TestWebCamPanel {
 
 		Dimension[] nonStandardResolutions = new Dimension[] {
 			WebcamResolution.PAL.getSize(),
-			WebcamResolution.HD720.getSize(),
+			WebcamResolution.HD.getSize(),
 			new Dimension(2000, 1000),
 			new Dimension(1000, 500),
 		};
