@@ -38,6 +38,7 @@
  */
 package cezeri.matrix;
 
+import cezeri.call_back_interface.CallBackDataBase;
 import cezeri.deep_learning.CDL;
 import cezeri.factory.FactoryCombination;
 import cezeri.factory.FactoryMatrix;
@@ -61,6 +62,7 @@ import cezeri.image_processing.SobelEdgeDetector;
 import cezeri.utils.ReaderCSV;
 import cezeri.factory.FactoryNormalization;
 import cezeri.factory.FactoryPermutation;
+import cezeri.factory.FactorySocket;
 import cezeri.factory.FactoryUtils;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -94,6 +96,10 @@ import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
 import java.util.stream.DoubleStream;
+import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.factory.FactoryDataBase;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
@@ -1150,9 +1156,9 @@ public final class CMatrix implements Serializable {
 
     public CMatrix range(double from_inclusive, double to_exclusive, double step) {
         if (step > 0) {
-            return vector(from_inclusive, step, to_exclusive - 1);
+            return vector(from_inclusive, step, to_exclusive);
         } else {
-            return vector(from_inclusive, step, to_exclusive + 1);
+            return vector(from_inclusive, step, to_exclusive);
         }
     }
 
@@ -8386,6 +8392,59 @@ public final class CMatrix implements Serializable {
         int[][] d2 = FactoryMatrix.floor(d);
         ret.setArray(d2);
         return ret;
+    }
+    
+    public CMatrix startWebSocket(CallBackWebSocket icb){
+        FactorySocket.startJavaWebSocketServer(icb);
+        return this;
+    }
+    
+    public CMatrix startWebSocket(int port,CallBackWebSocket icb){
+        FactorySocket.startJavaWebSocketServer(FactoryUtils.getLocalIP(),8887,icb);
+        return this;
+    }
+
+    public CMatrix startWebSocket(String ip,int port,CallBackWebSocket icb){
+        FactorySocket.startJavaWebSocketServer(ip,port,icb);
+        return this;
+    }
+    
+    Connection db_con=null;
+    
+    public CMatrix connectDB(String dbName,String dbUser,String password){
+        db_con=new FactoryDataBase().connectDB("127.0.0.1", dbName, dbUser, password); 
+        if (db_con!=null) {
+            System.out.println("Database connection was established successfully");
+        }
+        return this;
+    }
+    
+    public CMatrix connectDB(String ip,String dbName,String dbUser,String password){
+        db_con=new FactoryDataBase().connectDB(ip, dbName, dbUser, password); 
+        if (db_con!=null) {
+            System.out.println("Database connection was established successfully");
+        }
+        return this;
+    }
+    
+    public CMatrix closeDB(){
+        if (db_con!=null) {
+            try {
+                db_con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return this;
+    }
+
+    public CMatrix executeSQL(String sql,CallBackDataBase callBackDataBase) {
+        if (db_con==null) {
+            System.out.println("Database connection was crushed try to connect database first");
+            return this;
+        }
+        FactoryDataBase.getResultSet(sql,callBackDataBase);
+        return this;
     }
 
 }

@@ -6,22 +6,16 @@
 package cezeri.factory;
 
 import static cezeri.factory.FactorySocket.running;
-import cezeri.websocket.InterfaceCallBack;
 import cezeri.websocket.SocketServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.framing.Framedata;
-import org.java_websocket.handshake.ClientHandshake;
-import org.java_websocket.server.WebSocketServer;
+import cezeri.call_back_interface.CallBackWebSocket;
 
 /**
  *
@@ -37,11 +31,11 @@ public class FactorySocket {
     public static final AtomicBoolean running = new AtomicBoolean(false);
     public static int nAttempts = 0;
 
-    public static void startJavaWebSocketServer(InterfaceCallBack icb) {
-        startJavaWebSocketServer("localhost", 8887,icb);
+    public static void startJavaWebSocketServer(CallBackWebSocket icb) {
+        startJavaWebSocketServer("127.0.0.1", 8887,icb);
     }
 
-    public static void startJavaWebSocketServer(String ip, int port,InterfaceCallBack icb) {
+    public static void startJavaWebSocketServer(String ip, int port,CallBackWebSocket icb) {
         new Thread(() -> {
             try {
                 server = new SocketServer(ip, port,icb);
@@ -87,7 +81,7 @@ public class FactorySocket {
     }
     
     public static void main(String[] args) {
-        startJavaWebSocketServer("192.168.1.33",1111,new InterfaceCallBack() {
+        startJavaWebSocketServer("127.0.0.1",1111,new CallBackWebSocket() {
             @Override
             public void onMessageReceived(String str) {
                 System.out.println(str);

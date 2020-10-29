@@ -13,13 +13,14 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import cezeri.call_back_interface.CallBackWebSocket;
 
 public class SocketServer extends WebSocketServer {
 
     public static boolean isClientConnectedNow = false;
-    public static InterfaceCallBack icbf = null;
+    public static CallBackWebSocket icbf = null;
 
-    public SocketServer(String ip, int port, InterfaceCallBack icb) throws UnknownHostException {
+    public SocketServer(String ip, int port, CallBackWebSocket icb) throws UnknownHostException {
         super(new InetSocketAddress(new InetSocketAddress(ip, port).getAddress(), port));
         icbf=icb;
     }

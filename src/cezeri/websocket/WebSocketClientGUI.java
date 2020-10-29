@@ -64,13 +64,13 @@ public class WebSocketClientGUI extends javax.swing.JFrame {
             }
         });
 
-        txt_host.setText("ws://localhost");
+        txt_host.setText("ws://192.168.1.33");
 
         jLabel1.setText("host:");
 
         jLabel2.setText("port:");
 
-        txt_port.setText("4444");
+        txt_port.setText("8887");
 
         log.setColumns(20);
         log.setRows(5);

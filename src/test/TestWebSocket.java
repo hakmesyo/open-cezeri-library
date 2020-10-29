@@ -5,7 +5,9 @@
  */
 package test;
 
+import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.deep_learning.CDL_Utils;
+import cezeri.matrix.CMatrix;
 
 /**
  *
@@ -14,16 +16,19 @@ import cezeri.deep_learning.CDL_Utils;
 public class TestWebSocket {
 
     public static void main(String[] args) {
-        CDL_Utils.startJavaServer();
-        CDL_Utils.connectPythonServer();
-        CDL_Utils.delay(3000);
-        CDL_Utils.stopWebsocketServer();
-        System.exit(0);
-        
-        
-        
-        
-        
+        CMatrix cm = CMatrix.getInstance()
+                .startWebSocket(new CallBackWebSocket() {
+                    @Override
+                    public void onMessageReceived(String str) {
+                        System.out.println("str = " + str);
+                    }
+                });
+
+//        CDL_Utils.startJavaServer();
+//        CDL_Utils.connectPythonServer();
+//        CDL_Utils.delay(3000);
+//        CDL_Utils.stopWebsocketServer();
+//        System.exit(0);
 //        CMatrix.getInstance()
 //                .switchToDeepLearning()
 //                .setBackEnd("python",false)
