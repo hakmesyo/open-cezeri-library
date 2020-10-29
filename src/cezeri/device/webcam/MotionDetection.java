@@ -14,7 +14,6 @@ import cezeri.factory.FactoryWebCam;
 public class MotionDetection {
     public static void main(String[] args) {
         //FactoryWebCam.openWebCam(0).startWithGUI().startMotionDetectionImage("C:\\recorded_images");
-        FactoryWebCam.openWebCam(0).startWithGUI().startMotionDetectionVideo("C:\\recorded_videos");
-        
+        FactoryWebCam.openWebCam(0).startWithGUI().startMotionDetectionVideo("C:\\recorded_videos");        
     }
 }
