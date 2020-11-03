@@ -39,6 +39,7 @@ public class FactoryWebCam {
     private boolean isImageRecord = false;
     private static String folderPath = "recorded";
     private static Dimension size;
+    private static boolean isFlipped=false;
 
     private FactoryWebCam() {
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,7 +109,7 @@ public class FactoryWebCam {
         long start = System.currentTimeMillis();
 
         //warming up
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             bf = webCam.getImage();
             frm.setImage(bf);
             bf = ImageProcess.filterGaussian(bf, 5);
@@ -121,6 +122,9 @@ public class FactoryWebCam {
 
         while (true) {
             bf = webCam.getImage();
+            if (isFlipped) {
+                bf=ImageProcess.flipVertical(bf);
+            }
             frm.setImage(bf);
             bf_rgb = ImageProcess.clone(bf);
             bf = ImageProcess.filterGaussian(bf, 5);
@@ -207,6 +211,11 @@ public class FactoryWebCam {
 
     public BufferedImage getImage() {
         return webCam.getImage();
+    }
+    
+    public FactoryWebCam flipImageAlongVerticalAxis(){
+        isFlipped=!isFlipped;
+        return factWebCam;
     }
 
     public FactoryWebCam startMotionDetectionImage() {

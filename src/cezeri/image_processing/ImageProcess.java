@@ -46,16 +46,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.swing.GrayFilter;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import org.dcm4che2.imageio.plugins.dcm.DicomImageReadParam;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -2485,6 +2488,28 @@ public final class ImageProcess {
         } catch (IOException ex) {
             Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static BufferedImage convertDicomToBufferedImage(String filePath){
+        File file = new File(filePath);
+        Iterator<ImageReader> iterator = ImageIO.getImageReadersByFormatName("DICOM");
+        BufferedImage img=null;
+        while (iterator.hasNext()) {
+            ImageReader imageReader = (ImageReader) iterator.next();
+            DicomImageReadParam dicomImageReadParam = (DicomImageReadParam) imageReader.getDefaultReadParam();
+            try {
+                ImageInputStream iis = ImageIO.createImageInputStream(file);
+                imageReader.setInput(iis, false);
+                img = imageReader.read(0, dicomImageReadParam);
+                iis.close();
+                if (img == null) {
+                    System.out.println("Could not read image!!");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return img;
     }
 
     public static boolean ocv_saveImageWithFormat(BufferedImage img, String path) {
