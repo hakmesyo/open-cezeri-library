@@ -4,6 +4,7 @@
  */
 package cezeri.types;
 
+import cezeri.matrix.CPoint;
 import java.awt.Point;
 
 /**
@@ -11,6 +12,16 @@ import java.awt.Point;
  * @author HP-pc
  */
 public class TRoi {
-    public Point p;
+
+    public Point cp;
+    public CPoint centerPoint;
+    public int pr;
+    public int pc;
     public int width;
+    public int height;
+
+    @Override
+    public String toString() {
+        return centerPoint.row+","+centerPoint.column+","+pr + "," + pc + "," + width + "," + height;
+    }
 }

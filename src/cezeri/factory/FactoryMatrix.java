@@ -3395,7 +3395,7 @@ public final class FactoryMatrix implements Serializable {
             //eğer komut belirli satırları ama tüm sutunları ilgilendiriyor ise
         } else if (p2.equals(":") && !p1.equals(":")) {
             if (p1.length() == 1) {
-                int r = Integer.parseInt(p2);
+                int r = Integer.parseInt(p1);
                 if (r < nr) {
                     ret = rows(ret, new int[]{r});
                     return ret;

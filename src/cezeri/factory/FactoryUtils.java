@@ -11,6 +11,7 @@ import cezeri.types.TLearningType;
 import cezeri.gui.FramePlot;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
+import cezeri.types.TRoi;
 import cezeri.utils.CustomComparatorForCPoint;
 import cezeri.utils.MersenneTwister;
 import cezeri.utils.ReaderCSV;
@@ -3093,6 +3094,17 @@ public final class FactoryUtils {
         }
         return results.toArray(new File[0]);
     }
+    
+    public static File[] getFolderListInFolder(String path) {
+        ArrayList<File> results = new ArrayList<>();
+        File[] files = new File(path).listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                results.add(file);
+            }
+        }
+        return results.toArray(new File[0]);
+    }
 
     public static File[] getFileListInFolderForImages(String imageFolder) {
         File dir = new File(imageFolder);
@@ -3227,7 +3239,7 @@ public final class FactoryUtils {
      * internally it is used nf=nearFactor which you should give as a parameter
      *
      * @param d:input image matrix
-     * @param t:threshould value for background subtraction
+     * @param t:threshold value for background subtraction
      * @param nf:near factor how far object from the edge of the image matrix
      * @return cropped matrix related to the object itself
      */
@@ -3786,6 +3798,15 @@ public final class FactoryUtils {
         return d;
     }
 
+    public static boolean deleteFile(File file) {
+        return file.delete();
+    }
+    
+    public static boolean deleteFile(String filePath) {
+        File file = new File(filePath);
+        return file.delete();
+    }
+    
     public static boolean renameFile(String oldname, String newname) {
         // File (or directory) with old name
         File file = new File(oldname);
@@ -3866,6 +3887,59 @@ public final class FactoryUtils {
 
     public static boolean isPointInROI(CPoint p, CPoint[] roi) {
         return isPointInPolygon(p, roi);
+    }
+
+    public static TRoi getROI(double[][] d) {
+        int nr=d.length;
+        List<Integer> lstRowFirstOccurance=new ArrayList();
+        List<Integer> lstRowLastOccurance=new ArrayList();
+        List<Integer> lstColumnFirstOccurance=new ArrayList();
+        List<Integer> lstColumnLastOccurance=new ArrayList();
+        for (int i = 0; i < nr; i++) {
+            lstRowFirstOccurance.add(getFirstIndex(d[i],255));
+            lstRowLastOccurance.add(getLastIndex(d[i],255));
+        }
+        double[][] dd=FactoryMatrix.transpose(d);
+        nr=dd.length;
+        for (int i = 0; i < nr; i++) {
+            lstColumnFirstOccurance.add(getFirstIndex(dd[i],255));
+            lstColumnLastOccurance.add(getLastIndex(dd[i],255));
+        }
+        TRoi roi=new TRoi();
+        Collections.sort(lstRowFirstOccurance);int r1=lstRowFirstOccurance.get(0);
+        Collections.sort(lstRowLastOccurance);int r2=lstRowLastOccurance.get(lstRowLastOccurance.size()-1);
+        Collections.sort(lstColumnFirstOccurance);int c1=lstColumnFirstOccurance.get(0);
+        Collections.sort(lstColumnLastOccurance);int c2=lstColumnLastOccurance.get(lstColumnLastOccurance.size()-1);
+        //System.out.println("r1,r2,c1,c2:"+r1+","+r2+","+c1+","+c2);
+        int w=r2-r1;
+        int h=c2-c1;
+        CPoint cp=new CPoint(c1+h/2,r1+w/2);
+        roi.centerPoint=cp;
+        roi.pr=c1;
+        roi.pc=r1;
+        roi.width=w;
+        roi.height=h;
+        return roi;
+    }
+    
+    public static int getFirstIndex(double[] d,int thr){
+        int n=d.length;
+        for (int i = 0; i < n; i++) {
+            if (d[i]==thr) {
+                return i;
+            }
+        }
+        return Integer.MAX_VALUE;
+    }
+    
+    public static int getLastIndex(double[] d,int thr){
+        int n=d.length;
+        for (int i = n-1; i >0; i--) {
+            if (d[i]==thr) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static CPoint[] getPointsInROI(CPoint[] roi) {
@@ -4314,6 +4388,32 @@ public final class FactoryUtils {
             }
         }
         return ret;
+    }
+    
+    /**
+     * Reads a CSV-file from disk into a 2D double array.
+     *
+     * @param filename
+     * @param separator Separator character between values.
+     * @param headerLines Number of header lines to skip before reading data.
+     * @return 2D double array
+     */
+    public static List<String[]> readCSV_AsString(String filename, char separator, int headerLines) {
+        BufferedReader br = null;
+        java.util.List<String[]> values = null;
+        try {
+            br = new BufferedReader(new FileReader(filename));
+            CSVReader cr = new CSVReader(br, separator, '\"', '\\', headerLines);
+            values = cr.readAll();
+            cr.close();
+            br.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return values;
     }
 
     public static float[][] toFloatArray2D(int[][] array) {

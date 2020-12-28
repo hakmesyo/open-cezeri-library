@@ -6022,6 +6022,7 @@ public final class CMatrix implements Serializable {
         CMatrix ret = this.clone(this);
 
         ret.image = ImageProcess.drawRectangle(ret.image, r, c, w, h, thickness, color);
+        ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
         return ret;
     }

@@ -1695,7 +1695,7 @@ public final class ImageProcess {
         for (int i = 0; i < points.length; i++) {
             Point p = new Point(n * hRow + hRow / 2, points[i].centerPos);
             TRoi roi = new TRoi();
-            roi.p = p;
+            roi.cp = p;
             roi.width = points[i].width;
             pl.add(roi);
             //yaz((n + 1) + ".satır da "+(i+1)+". yer"+" pos:"+p.x+","+p.y);
@@ -2489,11 +2489,11 @@ public final class ImageProcess {
             Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public static BufferedImage convertDicomToBufferedImage(String filePath){
+
+    public static BufferedImage convertDicomToBufferedImage(String filePath) {
         File file = new File(filePath);
         Iterator<ImageReader> iterator = ImageIO.getImageReadersByFormatName("DICOM");
-        BufferedImage img=null;
+        BufferedImage img = null;
         while (iterator.hasNext()) {
             ImageReader imageReader = (ImageReader) iterator.next();
             DicomImageReadParam dicomImageReadParam = (DicomImageReadParam) imageReader.getDefaultReadParam();
