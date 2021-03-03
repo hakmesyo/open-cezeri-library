@@ -19,9 +19,13 @@ public class TestBlobDetection {
                 .histeq()
                 .imshow()
                 .filterGaussian(5)
-                .imshow()
+                .imshow()            
                 
-                
+                ;
+        CMatrix cm2 = CMatrix.getInstance()
+                .make_blobs(500, 5, 5)
+                .scatter()
+                //.println()
                 ;
     }
 }

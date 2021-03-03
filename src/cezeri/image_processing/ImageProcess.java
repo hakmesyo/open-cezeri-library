@@ -2346,7 +2346,8 @@ public final class ImageProcess {
 
     public static File readImage() {
         JFileChooser chooser = new JFileChooser();
-        chooser.setCurrentDirectory(new java.io.File("images"));
+        //chooser.setCurrentDirectory(new java.io.File("images"));
+        chooser.setCurrentDirectory(new java.io.File(FactoryUtils.getWorkingDirectory()));
         chooser.setDialogTitle("select Data Set file");
         chooser.setSize(new java.awt.Dimension(45, 37)); // Generated
         File file = null;
@@ -3197,7 +3198,7 @@ public final class ImageProcess {
 //    }
     public static BufferedImage drawRectangle(BufferedImage img, int x, int y, int w, int h, int thickness, Color color) {
         if (img.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-            img = toNewColorSpace(img, BufferedImage.TYPE_3BYTE_BGR);
+            //img = toNewColorSpace(img, BufferedImage.TYPE_3BYTE_BGR);
         }
         Graphics2D g2d = (Graphics2D) img.getGraphics();
         g2d.setStroke(new BasicStroke(thickness));
@@ -3687,7 +3688,7 @@ public final class ImageProcess {
         double[][] d = imageToPixelsDouble(img);
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
-                if (d[i][j] >= t1 && d[i][j] <= t2) {
+                if (d[i][j] >= t1 && d[i][j] < t2) {
                     d[i][j] = 255;
                 } else {
                     d[i][j] = 0;

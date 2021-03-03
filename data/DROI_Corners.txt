@@ -1,0 +1,3 @@
+C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;567,1121;718,1194;678,1275;535,1198;567,1121;
+C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;588,1042;754,1098;720,1184;561,1121;589,1043;
+C:\Dropbox\NetbeansProjects\OpenCezeriLibrary\images\H1_1_56_M.PNG;593,992;758,1029;744,1078;581,1046;594,990;

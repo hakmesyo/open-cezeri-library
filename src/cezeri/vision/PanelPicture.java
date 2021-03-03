@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -65,6 +66,7 @@ public class PanelPicture extends JPanel {
     private boolean activateHSV = false;
     private boolean activateEdge = false;
     private boolean activateAutoSize = false;
+    public String imageFileName;
 
     public boolean isActivateAutoSize() {
         return activateAutoSize;
@@ -512,12 +514,19 @@ public class PanelPicture extends JPanel {
                         CPoint[] plst = new CPoint[drawableRoiList.size()];
                         plst = drawableRoiList.toArray(plst);
                         int[][] d = new int[drawableRoiList.size()][2];
+                        String line="";
                         for (int i = 0; i < drawableRoiList.size(); i++) {
                             d[i][0] = plst[i].row;
                             d[i][1] = plst[i].column;
+                            line+=plst[i].row+","+plst[i].column+";";
                         }
-                        String fileName = FactoryUtils.inputMessage("set roi file name:", "roi.txt");
-                        FactoryUtils.writeToFile("data\\" + fileName, d);
+                        String fileName = FactoryUtils.inputMessage("Write Unique ID Label", "");
+                        if (!FactoryUtils.isFolderExist("data")) {
+                            FactoryUtils.makeDirectory("data");                            
+                        }
+                        line=imageFileName+";"+fileName+";"+line+"\n";
+                        FactoryUtils.writeOnFile("data/DROI_Corners.txt", line);
+                        //FactoryUtils.writeToFile("data\\" + fileName, d);
                     }
                 } else if (obj.getText().equals("Save DROI Pixels")) {
                     if (drawableRoiList.size() > 0) {

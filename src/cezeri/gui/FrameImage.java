@@ -48,6 +48,7 @@ public class FrameImage extends javax.swing.JFrame {
         this.cm=cm;
         this.img=cm.getImage();
         getPicturePanel().setImage(img);
+         getPicturePanel().imageFileName=title;
         this.setSize(img.getWidth() + pw, img.getHeight() + ph);
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        getPicturePanel().setFrame(this);

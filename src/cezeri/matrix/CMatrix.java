@@ -131,7 +131,7 @@ public final class CMatrix implements Serializable {
     public String[] combinationPairs;
     public String[] permutationPairs;
     public static CMatrix currentMatrix = null;
-    private boolean isArraySet=false;
+    private boolean isArraySet = false;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -811,10 +811,9 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * return Alpha, Red, Green and Blue values of original RGB image
-     * first dimension contains spectral information
-     * second dimension is image height (number of rows)
-     * third dimension is image width (number of columns)
+     * return Alpha, Red, Green and Blue values of original RGB image first
+     * dimension contains spectral information second dimension is image height
+     * (number of rows) third dimension is image width (number of columns)
      *
      * @return
      */
@@ -952,14 +951,14 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix setArray(double[][] array) {
         this.array = array;
-        double max=Math.max(Math.abs(this.getMaxTotal()),Math.abs(this.getMinTotal()));
-        if (max<=255) {
-            this.image=ImageProcess.pixelsToImageGray(array);
-        }else{
-            this.image=ImageProcess.pixelsToImageColor(array);
-            this.image=ImageProcess.convertToBufferedImageTypes(image, 5);
+        double max = Math.max(Math.abs(this.getMaxTotal()), Math.abs(this.getMinTotal()));
+        if (max <= 255) {
+            this.image = ImageProcess.pixelsToImageGray(array);
+        } else {
+            this.image = ImageProcess.pixelsToImageColor(array);
+            this.image = ImageProcess.convertToBufferedImageTypes(image, 5);
         }
-        
+
         return this;
     }
 
@@ -1430,7 +1429,7 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
-    public CMatrix randWithSeed(int n,int seed) {
+    public CMatrix randWithSeed(int n, int seed) {
         CMatrix ret = new CMatrix(n);
         ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, seed));
         ret.name = this.name + "|rand";
@@ -1472,7 +1471,7 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
-    public CMatrix randWithSeed(int r, int c, double max,int seed) {
+    public CMatrix randWithSeed(int r, int c, double max, int seed) {
         CMatrix ret = new CMatrix(r, c);
         ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, max, seed));
         ret.name = this.name + "|rand";
@@ -1487,13 +1486,15 @@ public final class CMatrix implements Serializable {
     }
 
     /**
-     * randTimeSeries method generates random signal similar to the timeline series of trends in any assets
-     * which provides us to inspect time series signals in 1D
+     * randTimeSeries method generates random signal similar to the timeline
+     * series of trends in any assets which provides us to inspect time series
+     * signals in 1D
+     *
      * @param r
      * @param c
      * @param min
      * @param max
-     * @return 
+     * @return
      */
     public CMatrix randTimeSeries(int r, int c, double min, double max) {
         CMatrix ret = new CMatrix(r, c);
@@ -1509,7 +1510,7 @@ public final class CMatrix implements Serializable {
         return ret.clone(this);
     }
 
-    public CMatrix randWithSeed(int r, int c, double min, double max,int seed) {
+    public CMatrix randWithSeed(int r, int c, double min, double max, int seed) {
         CMatrix ret = new CMatrix(r, c);
         ret.setArray(FactoryMatrix.fillRandMatrixWithSeed(ret.array, min, max, seed));
         ret.name = this.name + "|rand";
@@ -1817,9 +1818,10 @@ public final class CMatrix implements Serializable {
 //        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
 //            image = ImageProcess.pixelsToImageGray(array);
 //        }        
-        if (image == null) {
-            image = ImageProcess.pixelsToImageGray(array);
-        }
+//        if (image == null) {
+//            image = ImageProcess.pixelsToImageGray(array);
+//        }
+        image = ImageProcess.pixelsToImageGray(array);
         FrameImage frm = new FrameImage(this, this.imagePath);
         frm.setVisible(true);
         return this;
@@ -2147,7 +2149,7 @@ public final class CMatrix implements Serializable {
         FrameImageHistogram frm = new FrameImageHistogram(cc);
         frm.setTitle(title);
         frm.setVisible(true);
-        return ret;
+        return this;
     }
 
     /**
@@ -3266,14 +3268,8 @@ public final class CMatrix implements Serializable {
 
     public double sumTotal() {
         CMatrix ret = this.clone(this);
-
-        double m = 0;
-        for (int i = 0; i < ret.getRowNumber(); i++) {
-            for (int j = 0; j < ret.getColumnNumber(); j++) {
-                m += ret.toDoubleArray2D()[i][j];
-            }
-        }
-        return m;
+        double d=FactoryMatrix.sumTotal(ret.array);
+        return d;
     }
 
     public double prodTotal() {
@@ -5099,7 +5095,6 @@ public final class CMatrix implements Serializable {
 
     public CMatrix absDifference(CMatrix cmx) {
         CMatrix ret = this.clone(this);
-
         ret.array = FactoryMatrix.absDifference(ret.array, cmx.array);
         return ret;
     }
@@ -5641,8 +5636,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imresize(int w, int h) {
         CMatrix ret = this.clone(this);
-        if (ret.image==null) {
-            ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        if (ret.image == null) {
+            ret.image = ImageProcess.pixelsToImageGray(ret.array);
         }
         ret.image = ImageProcess.resize(ret.image, w, h);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
@@ -6015,6 +6010,7 @@ public final class CMatrix implements Serializable {
      * @param c:column
      * @param w:width
      * @param h:height
+     * @param thickness
      * @param color:Color.RED i.e.
      * @return
      */
@@ -6025,6 +6021,19 @@ public final class CMatrix implements Serializable {
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
         return ret;
+    }
+    
+    /**
+     * draw a specified color rectangle onto image from point1 to point 2 use
+     * imshow to visualize
+     *
+     * @param rect:CRectangle
+     * @param thickness:thickness
+     * @param color:Color.RED i.e.
+     * @return
+     */
+    public CMatrix drawRect(CRectangle rect, int thickness, Color color) {
+        return drawRect(rect.row, rect.column, rect.width, rect.height, thickness, color);
     }
 
     /**
@@ -7255,7 +7264,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix fromARGB(double[][][] argb) {
         BufferedImage img = ImageProcess.pixelsToImageColorArgbFormat(argb);
-        img=ImageProcess.convertToBufferedImageTypes(img,BufferedImage.TYPE_3BYTE_BGR);
+        img = ImageProcess.convertToBufferedImageTypes(img, BufferedImage.TYPE_3BYTE_BGR);
         return new CMatrix(img);
     }
 
@@ -8394,42 +8403,42 @@ public final class CMatrix implements Serializable {
         ret.setArray(d2);
         return ret;
     }
-    
-    public CMatrix startWebSocket(CallBackWebSocket icb){
+
+    public CMatrix startWebSocket(CallBackWebSocket icb) {
         FactorySocket.startJavaWebSocketServer(icb);
         return this;
     }
-    
-    public CMatrix startWebSocket(int port,CallBackWebSocket icb){
-        FactorySocket.startJavaWebSocketServer(FactoryUtils.getLocalIP(),8887,icb);
+
+    public CMatrix startWebSocket(int port, CallBackWebSocket icb) {
+        FactorySocket.startJavaWebSocketServer(FactoryUtils.getLocalIP(), 8887, icb);
         return this;
     }
 
-    public CMatrix startWebSocket(String ip,int port,CallBackWebSocket icb){
-        FactorySocket.startJavaWebSocketServer(ip,port,icb);
+    public CMatrix startWebSocket(String ip, int port, CallBackWebSocket icb) {
+        FactorySocket.startJavaWebSocketServer(ip, port, icb);
         return this;
     }
-    
-    Connection db_con=null;
-    
-    public CMatrix connectDB(String dbName,String dbUser,String password){
-        db_con=new FactoryDataBase().connectDB("127.0.0.1", dbName, dbUser, password); 
-        if (db_con!=null) {
+
+    Connection db_con = null;
+
+    public CMatrix connectDB(String dbName, String dbUser, String password) {
+        db_con = new FactoryDataBase().connectDB("127.0.0.1", dbName, dbUser, password);
+        if (db_con != null) {
             System.out.println("Database connection was established successfully");
         }
         return this;
     }
-    
-    public CMatrix connectDB(String ip,String dbName,String dbUser,String password){
-        db_con=new FactoryDataBase().connectDB(ip, dbName, dbUser, password); 
-        if (db_con!=null) {
+
+    public CMatrix connectDB(String ip, String dbName, String dbUser, String password) {
+        db_con = new FactoryDataBase().connectDB(ip, dbName, dbUser, password);
+        if (db_con != null) {
             System.out.println("Database connection was established successfully");
         }
         return this;
     }
-    
-    public CMatrix closeDB(){
-        if (db_con!=null) {
+
+    public CMatrix closeDB() {
+        if (db_con != null) {
             try {
                 db_con.close();
             } catch (SQLException ex) {
@@ -8439,12 +8448,12 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public CMatrix executeSQL(String sql,CallBackDataBase callBackDataBase) {
-        if (db_con==null) {
+    public CMatrix executeSQL(String sql, CallBackDataBase callBackDataBase) {
+        if (db_con == null) {
             System.out.println("Database connection was crushed try to connect database first");
             return this;
         }
-        FactoryDataBase.getResultSet(sql,callBackDataBase);
+        FactoryDataBase.getResultSet(sql, callBackDataBase);
         return this;
     }
 

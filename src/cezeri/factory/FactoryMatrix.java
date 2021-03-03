@@ -1969,6 +1969,9 @@ public final class FactoryMatrix implements Serializable {
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 rt[i][j] = Math.abs(d1[i][j] - d2[i][j]);
+                if (rt[i][j]>10) {
+                    int a=1;
+                }
             }
         }
         return rt;

@@ -28,8 +28,9 @@ public class TestCMatrix {
 
     public static void main(String[] args) {
         System.out.println("default dir:" + FactoryUtils.getDefaultDirectory());
-
-        test_vector_or_range();
+        //CMatrix cm = CMatrix.getInstance().rand(3, 5).println();
+        CMatrix cm = CMatrix.getInstance().diag(CMatrix.getInstance().range(10, 20)).println();
+        //test_vector_or_range();
 
 //        CMatrix.getInstance().rand(500,300).imshow().scale(255).imshow();
 //        String path = ".\\images\\E1.jpg";

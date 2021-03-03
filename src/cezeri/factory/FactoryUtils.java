@@ -274,7 +274,18 @@ public final class FactoryUtils {
     }
 
     public static void writeOnFile(String file_name, String row) {
+        
         File outFile = new File(file_name);
+        if (!outFile.exists()) {
+            try {
+                if (!outFile.createNewFile()){
+                    System.out.println(file_name+" file was generated");
+                    return;
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         FileWriter out;
         try {
             out = new FileWriter(outFile, true);
@@ -5381,6 +5392,12 @@ public final class FactoryUtils {
             Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "127.0.0.1";
+    }
+    
+    public double distanceHausDorff(double[][] d1,double[][] d2){
+        double ret=0;
+        
+        return ret;
     }
 
 }
