@@ -5183,21 +5183,30 @@ public final class FactoryUtils {
     }
 
     public static double[] vector(int from, int to) {
-        double[] ret = new double[to - from];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = from + i;
+        if (from<to) {
+            return vector(from, to, 1);
+        }else{
+            return vector(from, to, -1);
         }
-        return ret;
+//        double[] ret = new double[to - from];
+//        for (int i = 0; i < ret.length; i++) {
+//            ret[i] = from + i;
+//        }
+//        return ret;
     }
 
     public static double[] vector(double from, double to, double incr) {
-        List<Double> lst = new ArrayList();
-        for (double i = from; i < to; i += incr) {
-            lst.add(i);
+       if (from < to && incr < 0) {
+            throw new UnsupportedOperationException("incr should be positive");
         }
-        double[] ret = new double[lst.size()];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = lst.get(i);
+        if (from > to && incr > 0) {
+            throw new UnsupportedOperationException("incr should be negative");
+        }
+        double delta = Math.abs(to - from);
+        int n = Math.abs((int) (delta / incr));
+        double[] ret = new double[n];
+        for (int i = 0; i < n; i++) {
+            ret[i] = from + i * incr;
         }
         return ret;
     }
@@ -5345,7 +5354,12 @@ public final class FactoryUtils {
             } else if (ss.length == 2) {
                 double from = Double.parseDouble(ss[0]);
                 double to = Double.parseDouble(ss[1]);
-                ret = vector(from, to, 1);
+                if (from<to) {
+                    ret = vector(from, to,1);
+                }else{
+                    ret = vector(from, to,-1);
+                }
+                
             }
         }
         return ret;

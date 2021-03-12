@@ -1146,7 +1146,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix range(int from_inclusive, int to_exclusive) {
-        return vector(from_inclusive, to_exclusive - 1);
+        return vector(from_inclusive, to_exclusive);
     }
 
     public CMatrix range(int to_exclusive) {
@@ -1154,11 +1154,12 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix range(double from_inclusive, double to_exclusive, double step) {
-        if (step > 0) {
-            return vector(from_inclusive, step, to_exclusive);
-        } else {
-            return vector(from_inclusive, step, to_exclusive);
-        }
+        return vector(from_inclusive, step, to_exclusive);
+//        if (step > 0) {
+//            return vector(from_inclusive, step, to_exclusive);
+//        } else {
+//            return vector(from_inclusive, step, to_exclusive);
+//        }
     }
 
     public CMatrix rangeWithSampleNumber(double from_inclusive, double to_exclusive, int nSample) {
@@ -1177,16 +1178,11 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix vector(double from, double to) {
         CMatrix ret = this.clone(this);
-        if (from > to) {
-            throw new UnsupportedOperationException("from should be smaller than to, other wise use other constructor");
+        if (from < to) {
+            return vector(from, 1, to);
+        }else{
+            return vector(from,-1,to);
         }
-        int n = (int) (Math.abs(to - from) + 1);
-        ret.array = new double[1][n];
-        for (int i = 0; i < n; i++) {
-            ret.array[0][i] = from + i;
-        }
-        ret.name = this.name + "|vector";
-        return ret.transpose();
     }
 
     /**
