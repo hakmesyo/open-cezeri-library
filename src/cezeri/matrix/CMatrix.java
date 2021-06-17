@@ -98,6 +98,7 @@ import java.security.SecureRandom;
 import java.util.stream.DoubleStream;
 import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.factory.FactoryDataBase;
+import static cezeri.image_processing.ImageProcess.imageToPixelsColorInt;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -1180,8 +1181,8 @@ public final class CMatrix implements Serializable {
         CMatrix ret = this.clone(this);
         if (from < to) {
             return vector(from, 1, to);
-        }else{
-            return vector(from,-1,to);
+        } else {
+            return vector(from, -1, to);
         }
     }
 
@@ -1718,6 +1719,23 @@ public final class CMatrix implements Serializable {
         framePlot.setVisible(true);
         return this;
     }
+    
+    /**
+     * By using single plot frame, this command try to redraw updated matrix it
+     * is useful if you make animation or moving simulation within the loop
+     *
+     * @return CMatrix
+     */
+    public CMatrix plotRefresh(TFigureAttribute fg) {
+        if (framePlot == null) {
+            framePlot = new FramePlot(this);
+            framePlot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
+        framePlot.setMatrix(this);
+        framePlot.setFigureAttribute(fg);
+        framePlot.setVisible(true);
+        return this;
+    }
 
     /**
      * By using single plot frame, this command try to redraw updated matrix it
@@ -1811,13 +1829,13 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow() {
-//        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
-//            image = ImageProcess.pixelsToImageGray(array);
-//        }        
+        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }        
 //        if (image == null) {
 //            image = ImageProcess.pixelsToImageGray(array);
 //        }
-        image = ImageProcess.pixelsToImageGray(array);
+        //image = ImageProcess.pixelsToImageGray(array);
         FrameImage frm = new FrameImage(this, this.imagePath);
         frm.setVisible(true);
         return this;
@@ -2755,6 +2773,7 @@ public final class CMatrix implements Serializable {
         if (p.equals(":")) {
             ret = new CMatrix(ret.toDoubleArray1D());
         }
+        ret.image=null;
         return ret;
     }
 
@@ -3264,7 +3283,7 @@ public final class CMatrix implements Serializable {
 
     public double sumTotal() {
         CMatrix ret = this.clone(this);
-        double d=FactoryMatrix.sumTotal(ret.array);
+        double d = FactoryMatrix.sumTotal(ret.array);
         return d;
     }
 
@@ -3420,12 +3439,22 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix dotProduct(CMatrix cm) {
-        if (!FactoryUtils.canBeDotProduct(this.array, cm.array)) {
-            throw new ArithmeticException("Matrx size didn't match for dot product");
+//        if (this.getRowNumber() == cm.getRowNumber()) {
+//            if (this.getColumnNumber() == cm.getColumnNumber()) {
+//                if (cm.getColumnNumber() == 1) {
+//                    CMatrix ret = this.clone(this);
+//                    ret.setArray(FactoryMatrix.dotProduct(this.array, cm.array));
+//                    return ret;
+//                }
+//            }
+//        } else 
+        if (FactoryUtils.canBeDotProduct(this.array, cm.array)) {
+            CMatrix ret = this.clone(this);
+            ret.setArray(FactoryMatrix.dotProduct(this.array, cm.array));
+            return ret;
         }
-        CMatrix ret = this.clone(this);
-        ret.setArray(FactoryMatrix.dotProduct(this.array, cm.array));
-        return ret;
+        System.err.println("Matrix size didn't match for dot product");
+        return cm;
     }
 
     public CMatrix getMagnitude() {
@@ -3448,7 +3477,6 @@ public final class CMatrix implements Serializable {
 
     public CMatrix calculateCosineTheoremWithDotProduct(CMatrix second) {
         CMatrix ret = this.clone(this);
-
         double[][] d = new double[1][1];
         d[0][0] = Math.acos(ret.dotProduct(second).getValue() / (ret.getMagnitude().getValue() * second.getMagnitude().getValue())) / Math.PI * 180;
         ret.setArray(d);
@@ -3490,6 +3518,10 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix times(CMatrix cm) {
+        if (FactoryUtils.isVector(this.array) && FactoryUtils.isVector(cm.array) && FactoryUtils.isSimilarShape(this.array,cm.array)) {
+            double d=FactoryUtils.dotVector(this.array,cm.array);
+            return CMatrix.getInstance().setArray(new double[]{d});
+        }
         if (this.getColumnNumber() != cm.getRowNumber()) {
 //            System.out.println("can not multiply please make sure two matrix obey the matrix multiplication rule i.e. column number of first matrix must equal to the coulmnumber of the second matrix");
             throw new InputMismatchException("can not multiply these two matrices please make sure both matrices obey the matrix multiplication rule i.e. column number of first matrix must equal to the colum number of the second matrix");
@@ -3505,6 +3537,8 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|times";
         return ret;
     }
+    
+   
 
     public CMatrix multiplyScalar(double n) {
         CMatrix ret = this.clone(this);
@@ -5954,10 +5988,13 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix drawLine(int r1, int c1, int r2, int c2, int th, Color color) {
-        CMatrix ret = this.clone(this);
-
-        ret.image = ImageProcess.drawLine(ret.image, r1, c1, r2, c2, th, color);
-
+        CMatrix ret = this.clone(this);        
+        if (ret.image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+            ret.image = ImageProcess.drawLine(ret.image, r1, c1, r2, c2, th, color);
+            ret.array=ImageProcess.imageToPixelsDouble(ret.image);
+        }else{
+            ret.image = ImageProcess.drawLine(ret.image, r1, c1, r2, c2, th, color);
+        }
         return ret;
     }
 
@@ -6018,7 +6055,7 @@ public final class CMatrix implements Serializable {
 
         return ret;
     }
-    
+
     /**
      * draw a specified color rectangle onto image from point1 to point 2 use
      * imshow to visualize
@@ -6398,7 +6435,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix threshold(int t) {
         CMatrix ret = this.clone(this);
-
+        
         ret.image = ImageProcess.binarizeGrayScaleImage(ret.array, t);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
@@ -7251,7 +7288,12 @@ public final class CMatrix implements Serializable {
     }
 
     public double[][][] getARGB() {
-        return ImageProcess.imageToPixelsColorDoubleFaster(image);
+        if (image!=null) {
+            return ImageProcess.imageToPixelsColorDoubleFaster(image);
+        }else{
+            this.image=ImageProcess.pixelsToImageColor(array);
+            return ImageProcess.imageToPixelsColorDoubleFaster(image);
+        }        
     }
 
     public CMatrix argbToBufferedImage(double[][][] argb) {
@@ -8215,7 +8257,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix shape() {
-        System.out.println("Matrix Size:[" + this.getRowNumber() + "," + this.getColumnNumber() + "]");
+        System.out.println("Matrix Shape:[" + this.getRowNumber() + "," + this.getColumnNumber() + "]");
         return this;
     }
 
@@ -8226,10 +8268,249 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix shape(CMatrix cm) {
-        System.out.println("Matrix Size:[" + cm.getRowNumber() + "," + cm.getColumnNumber() + "]");
+        System.out.println("Matrix Shape:[" + cm.getRowNumber() + "," + cm.getColumnNumber() + "]");
         return this;
     }
 
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(byte[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+    
+   /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(short[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(int[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(float[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(double[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(String[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(boolean[][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
+        return this;
+    }
+
+    
+    
+    
+    
+     /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(byte[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+    
+   /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(short[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(int[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(float[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(double[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(String[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(boolean[][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
+        return this;
+    }
+
+
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(byte[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+    
+   /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(short[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(int[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(float[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(double[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(String[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+    
+    /**
+     * tensor information of given n-dim matrix
+     *
+     * @param m
+     * @return
+     */
+    public CMatrix shape(boolean[][][][] m) {
+        System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
+        return this;
+    }
+
+
+    
+    
     /**
      * is given matrix is Vector or not
      *

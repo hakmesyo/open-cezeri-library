@@ -22,7 +22,7 @@ public class PanelCanvas extends JPanel {
     public boolean isEdgeVisible = false;
     public boolean isNodeVisible = false;
     private int pan_width, pan_height;
-    private double totDist = 0;
+    private double totDist = 0;    
     private boolean isManual = false;
     private CPoint prevCity, currentCity;
 
@@ -40,7 +40,7 @@ public class PanelCanvas extends JPanel {
         if (_edges != null) {
             edges = _edges;
             norm_edges = new CPoint[edges.length + 1];
-            totDist = calculateTotalCost() - 2;
+            totDist = calculateTotalCost();
         }
         repaint();
     }
@@ -205,7 +205,7 @@ public class PanelCanvas extends JPanel {
 
         for (int i = 1; i < edges.length; i++) {
             dist = getDistance(edges[i - 1], edges[i]);
-            t += dist;
+            t += (int)dist;
         }
         dist = getDistance(edges[n - 1], edges[0]);
         t += dist;

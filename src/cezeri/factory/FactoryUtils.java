@@ -5219,6 +5219,32 @@ public final class FactoryUtils {
         }
     }
 
+    public static boolean isVector(double[][] array) {
+        if (array.length==1 || array[0].length==1) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static boolean isSimilarShape(double[][] d1, double[][] d2) {
+        if (d1.length==d2.length && d1[0].length==d2[0].length) {
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static double dotVector(double[][] d1, double[][] d2) {
+        double ret=0;
+        double[] d_1=toDoubleArray1D(d1);
+        double[] d_2=toDoubleArray1D(d2);
+        for (int i = 0; i < d_1.length; i++) {
+            ret+=d_1[i]*d_2[i];
+        }
+        return ret;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
