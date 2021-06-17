@@ -27,6 +27,7 @@ import static processing.core.PApplet.println;
 public class TestCMatrix {
 
     public static void main(String[] args) {
+        
         System.out.println("default dir:" + FactoryUtils.getDefaultDirectory());
         //CMatrix cm = CMatrix.getInstance().rand(3, 5).println();
         CMatrix cm = CMatrix.getInstance().diag(CMatrix.getInstance().range(10, 20)).println();
