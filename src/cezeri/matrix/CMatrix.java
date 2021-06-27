@@ -1737,6 +1737,18 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix plotRefresh(TFigureAttribute fg,String caption) {
+        if (framePlot == null) {
+            framePlot = new FramePlot(this);
+            framePlot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        }
+        framePlot.setMatrix(this);
+        framePlot.setFigureAttribute(fg);
+        framePlot.setVisible(true);
+        framePlot.setTitle(caption);
+        return this;
+    }
+
     /**
      * By using single plot frame, this command try to redraw updated matrix it
      * is useful if you make animation or moving simulation within the loop
@@ -1871,6 +1883,8 @@ public final class CMatrix implements Serializable {
     public CMatrix imshowRefresh(String title) {
         if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array);
+        }else if(image.getType() != BufferedImage.TYPE_BYTE_GRAY){
+            image = ImageProcess.pixelsToImageColor(array);
         }
         if (frameImage == null) {
             frameImage = new FrameImage();
@@ -2493,7 +2507,7 @@ public final class CMatrix implements Serializable {
             }
         }
 //        returnedValue.rgbImageArray = FactoryUtils.clone(rgbImageArray);
-        ret.image = null;
+        ret.image = this.image;
         ret.name = this.name + "|transpose";
         return ret;
     }
@@ -5509,6 +5523,7 @@ public final class CMatrix implements Serializable {
                 d[i] = lst.get(i);
             }
             CMatrix r = CMatrix.getInstance(d).transpose();
+            r.image=ret.image;
             return r;
         }
         if (dim == 2) {
