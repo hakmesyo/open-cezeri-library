@@ -569,6 +569,20 @@ public final class FactoryMatrix implements Serializable {
         return result;
     }
 
+    public static double[][][] clone(double[][][] input) {
+        if (input == null) {
+            return null;
+        }
+        int n1 = input.length;
+        int n2 = input[0].length;
+        int n3 = input[0][0].length;
+        double[][][] result = new double[n1][n2][n3];
+        for (int i = 0; i < n1; i++) {
+            result[i]=clone(input[i]);
+        }
+        return result;
+    }
+
     public static int[] clone(int[] input) {
         if (input == null) {
             return null;

@@ -1719,7 +1719,7 @@ public final class CMatrix implements Serializable {
         framePlot.setVisible(true);
         return this;
     }
-    
+
     /**
      * By using single plot frame, this command try to redraw updated matrix it
      * is useful if you make animation or moving simulation within the loop
@@ -1737,7 +1737,7 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public CMatrix plotRefresh(TFigureAttribute fg,String caption) {
+    public CMatrix plotRefresh(TFigureAttribute fg, String caption) {
         if (framePlot == null) {
             framePlot = new FramePlot(this);
             framePlot.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -1841,9 +1841,9 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshow() {
-        if (image==null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array);
-        }        
+        }
 //        if (image == null) {
 //            image = ImageProcess.pixelsToImageGray(array);
 //        }
@@ -1881,9 +1881,16 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix imshowRefresh(String title) {
-        if (image == null || image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
+        if (image == null) {
+            if (FactoryUtils.getMaximum(array) > 0.0) {
+                image = ImageProcess.pixelsToImageGray(array);
+            } else {
+                image = ImageProcess.pixelsToImageColor(array);
+            }
+        }
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageGray(array);
-        }else if(image.getType() != BufferedImage.TYPE_BYTE_GRAY){
+        } else if (image.getType() != BufferedImage.TYPE_BYTE_GRAY) {
             image = ImageProcess.pixelsToImageColor(array);
         }
         if (frameImage == null) {
@@ -2787,7 +2794,7 @@ public final class CMatrix implements Serializable {
         if (p.equals(":")) {
             ret = new CMatrix(ret.toDoubleArray1D());
         }
-        ret.image=null;
+        ret.image = null;
         return ret;
     }
 
@@ -3532,8 +3539,8 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix times(CMatrix cm) {
-        if (FactoryUtils.isVector(this.array) && FactoryUtils.isVector(cm.array) && FactoryUtils.isSimilarShape(this.array,cm.array)) {
-            double d=FactoryUtils.dotVector(this.array,cm.array);
+        if (FactoryUtils.isVector(this.array) && FactoryUtils.isVector(cm.array) && FactoryUtils.isSimilarShape(this.array, cm.array)) {
+            double d = FactoryUtils.dotVector(this.array, cm.array);
             return CMatrix.getInstance().setArray(new double[]{d});
         }
         if (this.getColumnNumber() != cm.getRowNumber()) {
@@ -3551,8 +3558,6 @@ public final class CMatrix implements Serializable {
         ret.name = this.name + "|times";
         return ret;
     }
-    
-   
 
     public CMatrix multiplyScalar(double n) {
         CMatrix ret = this.clone(this);
@@ -5088,9 +5093,10 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix add(CMatrix cmx) {
         CMatrix ret = this.clone(this);
-
-        for (int i = 0; i < this.getRowNumber(); i++) {
-            for (int j = 0; j < this.getColumnNumber(); j++) {
+        int nr=this.getRowNumber();
+        int nc=this.getColumnNumber();
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
                 ret.array[i][j] = this.array[i][j] + cmx.array[i][j];
             }
         }
@@ -5523,7 +5529,8 @@ public final class CMatrix implements Serializable {
                 d[i] = lst.get(i);
             }
             CMatrix r = CMatrix.getInstance(d).transpose();
-            r.image=ret.image;
+            //r.image=ret.image;
+            r.image = null;
             return r;
         }
         if (dim == 2) {
@@ -5544,9 +5551,10 @@ public final class CMatrix implements Serializable {
                 d[i] = lst.get(i);
             }
             CMatrix r = CMatrix.getInstance(d);
+            r.image = null;
             return r;
         }
-
+        ret.image = null;
         return ret;
     }
 
@@ -6003,11 +6011,11 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix drawLine(int r1, int c1, int r2, int c2, int th, Color color) {
-        CMatrix ret = this.clone(this);        
+        CMatrix ret = this.clone(this);
         if (ret.image.getType() == BufferedImage.TYPE_BYTE_GRAY) {
             ret.image = ImageProcess.drawLine(ret.image, r1, c1, r2, c2, th, color);
-            ret.array=ImageProcess.imageToPixelsDouble(ret.image);
-        }else{
+            ret.array = ImageProcess.imageToPixelsDouble(ret.image);
+        } else {
             ret.image = ImageProcess.drawLine(ret.image, r1, c1, r2, c2, th, color);
         }
         return ret;
@@ -6450,7 +6458,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix threshold(int t) {
         CMatrix ret = this.clone(this);
-        
+
         ret.image = ImageProcess.binarizeGrayScaleImage(ret.array, t);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
@@ -7303,12 +7311,12 @@ public final class CMatrix implements Serializable {
     }
 
     public double[][][] getARGB() {
-        if (image!=null) {
+        if (image != null) {
             return ImageProcess.imageToPixelsColorDoubleFaster(image);
-        }else{
-            this.image=ImageProcess.pixelsToImageColor(array);
+        } else {
+            this.image = ImageProcess.pixelsToImageColor(array);
             return ImageProcess.imageToPixelsColorDoubleFaster(image);
-        }        
+        }
     }
 
     public CMatrix argbToBufferedImage(double[][][] argb) {
@@ -7810,7 +7818,7 @@ public final class CMatrix implements Serializable {
      * @param sigma : standard deviation
      * @return CMatrix
      */
-    public CMatrix mexicanHat(double sigma) {
+    public CMatrix mexicanHat2D(double sigma) {
         CMatrix ret = this.clone(this);
         int nr = ret.getRowNumber();
         int nc = ret.getColumnNumber();
@@ -7830,6 +7838,12 @@ public final class CMatrix implements Serializable {
         h = h1.minusScalar(h1.sumTotal() / (ret.getMatrixVolume()));
 
         return h;
+    }
+    
+    public CMatrix mexicanHat1D(double sigma) {
+        CMatrix ret = this.clone(this);
+        ret=ret.pow(2).timesScalar(-0.5).exp().multiplyElement(ret.pow(2).timesScalar(sigma).minusFromScalar(1)).timesScalar(2.0/(Math.sqrt(3)*Math.pow(Math.PI, 0.25)));
+        return ret;
     }
 
     public double getMatrixVolume() {
@@ -8297,8 +8311,8 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
         return this;
     }
-    
-   /**
+
+    /**
      * tensor information of given n-dim matrix
      *
      * @param m
@@ -8308,7 +8322,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8330,7 +8344,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8341,7 +8355,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8352,7 +8366,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8364,11 +8378,7 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    
-    
-    
-    
-     /**
+    /**
      * tensor information of given n-dim matrix
      *
      * @param m
@@ -8378,8 +8388,8 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
         return this;
     }
-    
-   /**
+
+    /**
      * tensor information of given n-dim matrix
      *
      * @param m
@@ -8389,7 +8399,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8411,7 +8421,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8422,7 +8432,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8433,7 +8443,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8445,7 +8455,6 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-
     /**
      * tensor information of given n-dim matrix
      *
@@ -8456,8 +8465,8 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
         return this;
     }
-    
-   /**
+
+    /**
      * tensor information of given n-dim matrix
      *
      * @param m
@@ -8467,7 +8476,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8489,7 +8498,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8500,7 +8509,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8511,7 +8520,7 @@ public final class CMatrix implements Serializable {
         System.out.println("Matrix Shape:[" + m.length + "," + m[0].length + "," + m[0][0].length + "," + m[0][0][0].length + "]");
         return this;
     }
-    
+
     /**
      * tensor information of given n-dim matrix
      *
@@ -8523,9 +8532,6 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-
-    
-    
     /**
      * is given matrix is Vector or not
      *
