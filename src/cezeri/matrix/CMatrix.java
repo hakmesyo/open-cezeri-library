@@ -39,13 +39,23 @@
 package cezeri.matrix;
 
 import ai.djl.Model;
+import ai.djl.basicdataset.cv.classification.ImageFolder;
+import ai.djl.examples.denemeler.number_classificiation.Models;
 import ai.djl.inference.Predictor;
+import ai.djl.metric.Metrics;
 import ai.djl.modality.Classifications;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.ImageFactory;
 import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.modality.cv.translator.ImageClassificationTranslator;
+import ai.djl.ndarray.types.Shape;
+import ai.djl.training.EasyTrain;
+import ai.djl.training.Trainer;
+import ai.djl.training.TrainingConfig;
+import ai.djl.training.TrainingResult;
+import ai.djl.training.dataset.RandomAccessDataset;
+import ai.djl.training.loss.Loss;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
 import cezeri.call_back_interface.CallBackDataBase;
@@ -79,7 +89,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.Shape;
+//import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -105,6 +115,8 @@ import java.security.SecureRandom;
 import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -141,6 +153,10 @@ public final class CMatrix implements Serializable {
     private boolean isArraySet = false;
     private Translator<Image, Classifications> translator;
     private Predictor<Image, Classifications> predictor;
+    private Model model;
+    private int NUM_CHANNEL;
+    private int IMAGE_WIDTH;
+    private int IMAGE_HEIGHT;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -679,8 +695,12 @@ public final class CMatrix implements Serializable {
         if (this.shuffleIndexes != null) {
             ret.shuffleIndexes = FactoryUtils.clone(this.shuffleIndexes);
         }
-        ret.predictor=this.predictor;
-        ret.translator=this.translator;
+        ret.predictor = this.predictor;
+        ret.translator = this.translator;
+        ret.model = model;
+        ret.NUM_CHANNEL = NUM_CHANNEL;
+        ret.IMAGE_WIDTH = IMAGE_WIDTH;
+        ret.IMAGE_HEIGHT = IMAGE_HEIGHT;
         return ret;
     }
 
@@ -6253,7 +6273,7 @@ public final class CMatrix implements Serializable {
      * @param color:Color.RED i.e.
      * @return
      */
-    public CMatrix drawShape(Shape sh, int thickness, Color color) {
+    public CMatrix drawShape(java.awt.Shape sh, int thickness, Color color) {
         CMatrix ret = this.clone(this);
 
         ret.image = ImageProcess.drawShape(ret.image, sh, thickness, color);
@@ -6267,7 +6287,7 @@ public final class CMatrix implements Serializable {
      * @param color:Color.RED i.e.
      * @return
      */
-    public CMatrix fillShape(Shape sh, Color color) {
+    public CMatrix fillShape(java.awt.Shape sh, Color color) {
         CMatrix ret = this.clone(this);
 
         ret.image = ImageProcess.fillShape(ret.image, sh, color);
@@ -8811,13 +8831,24 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix setModelForInference(String modelPath, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int blockType) {
-        Model model = FactoryDJL.getModel(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
+        this.NUM_CHANNEL = NUM_CHANNEL;
+        this.IMAGE_WIDTH = IMAGE_WIDTH;
+        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
+        model = FactoryDJL.getModelForInference(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
         translator = ImageClassificationTranslator.builder()
                 .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
                 .addTransform(new ToTensor())
                 .optApplySoftmax(true)
                 .build();
         predictor = model.newPredictor(translator);
+        return this;
+    }
+
+    public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int blockType) {
+        this.NUM_CHANNEL = NUM_CHANNEL;
+        this.IMAGE_WIDTH = IMAGE_WIDTH;
+        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
+        model = FactoryDJL.getModelForTraining(modelName, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, blockType);
         return this;
     }
 
@@ -8831,7 +8862,7 @@ public final class CMatrix implements Serializable {
         }
         return predictResult.toString();
     }
-    
+
     public String predictWithLabel() {
         Image img = ImageFactory.getInstance().fromImage(this.image);
         Classifications predictResult = null;
@@ -8842,6 +8873,35 @@ public final class CMatrix implements Serializable {
         }
         String predictedLabel = predictResult.topK(1).toString().split(",")[0].split(":")[1].replace('"', ' ').trim();
         return predictedLabel;
+    }
+
+    public CMatrix trainDataSet(String trainDSDir, int BATCH_SIZE, int trainRatio, int valRatio, int EPOCHS) {
+        ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE);
+        try {
+            RandomAccessDataset[] datasets = dataset.randomSplit(trainRatio, valRatio);
+            Loss loss = Loss.softmaxCrossEntropyLoss();
+            TrainingConfig config = FactoryDJL.setupTrainingConfig(loss);
+            Trainer trainer = model.newTrainer(config);
+            trainer.setMetrics(new Metrics());
+            Shape inputShape = new Shape(1, this.NUM_CHANNEL, this.IMAGE_HEIGHT, this.IMAGE_HEIGHT);
+            trainer.initialize(inputShape);
+            EasyTrain.fit(trainer, EPOCHS, datasets[0], datasets[1]);
+            TrainingResult result = trainer.getTrainingResult();
+            model.setProperty("Epoch", String.valueOf(EPOCHS));
+            model.setProperty("Accuracy", String.format("%.5f", result.getValidateEvaluation("Accuracy")));
+            model.setProperty("Loss", String.format("%.5f", result.getValidateLoss()));
+            String path = "models/" + model.getName();
+            FactoryUtils.makeDirectory(path);
+            Path modelDir = Paths.get(path);
+            model.save(modelDir, Models.MODEL_NAME);
+            Models.saveSynset(modelDir, dataset.getSynset());
+
+        } catch (IOException ex) {
+            Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (TranslateException ex) {
+            Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return this;
     }
 
 }

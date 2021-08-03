@@ -97,5 +97,9 @@ public class CMatrixPattern {
     }
 
     private static void doTraining() {
+        CMatrix cm = CMatrix.getInstance()
+                .setModelForTrain("numnum", 3, 224, 224,10, TBlockType.MLP)
+                .trainDataSet("C:\\ai\\djl\\dataset_pdr\\dataset", 32, 9, 1, 10)
+                ;
     }
 }
