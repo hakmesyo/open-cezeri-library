@@ -118,8 +118,8 @@ public final class TrainMnistWithLSTM {
                 });
 
         return new DefaultTrainingConfig(Loss.softmaxCrossEntropyLoss())
-                .addEvaluator(new Accuracy())
-                .optInitializer(new XavierInitializer())
+                .addEvaluator(new Accuracy())                
+                .optInitializer(new XavierInitializer(),"")
                 .optDevices(Device.getDevices(arguments.getMaxGpus()))
                 .addTrainingListeners(TrainingListener.Defaults.logging(outputDir))
                 .addTrainingListeners(listener);

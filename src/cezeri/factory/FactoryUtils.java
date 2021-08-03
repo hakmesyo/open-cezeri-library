@@ -274,12 +274,12 @@ public final class FactoryUtils {
     }
 
     public static void writeOnFile(String file_name, String row) {
-        
+
         File outFile = new File(file_name);
         if (!outFile.exists()) {
             try {
-                if (!outFile.createNewFile()){
-                    System.out.println(file_name+" file was generated");
+                if (!outFile.createNewFile()) {
+                    System.out.println(file_name + " file was generated");
                     return;
                 }
             } catch (IOException ex) {
@@ -314,6 +314,46 @@ public final class FactoryUtils {
 
     public static void writeToFile(String path, String row) {
         Writer out = null;
+        try {
+            try {
+                out = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(path), "UTF-8"));
+                try {
+                    try {
+                        out.write(row);
+                        Thread.sleep(5);
+                        out.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } finally {
+                    try {
+                        out.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (FileNotFoundException ex) {
+//                new File(path).delete();
+//                System.out.println("FactoryUtils.writeToFile(path,row) metodunda hata oldu");
+//                writeToFile(path, row);
+                //Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void writeToFile(String path, String[] rows) {
+        Writer out = null;
+        String row="";
+        for (String row1 : rows) {
+            if (row1!=null) {
+                row+=row1+"\n";
+            }            
+        }
         try {
             try {
                 out = new BufferedWriter(new OutputStreamWriter(
@@ -676,6 +716,29 @@ public final class FactoryUtils {
         } catch (IOException e) {
             e.printStackTrace();
             return ret;
+        }
+        return ret;
+    }
+
+    public static String readFileUntil(String fileName, int index) {
+        String ret = "";
+        File file = new File(fileName);
+        if (!file.exists()) {
+            showMessage(fileName + " isminde bir dosya yok");
+            return ret;
+        }
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            char current;
+            int k = 0;
+            int val = 0;
+            while (fis.available() > 0 && k++ < index) {
+                val = fis.read();
+                current = (char) val;
+                ret += current;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return ret;
     }
@@ -3105,7 +3168,7 @@ public final class FactoryUtils {
         }
         return results.toArray(new File[0]);
     }
-    
+
     public static File[] getFolderListInFolder(String path) {
         ArrayList<File> results = new ArrayList<>();
         File[] files = new File(path).listFiles();
@@ -3120,7 +3183,7 @@ public final class FactoryUtils {
     public static File[] getFileListInFolderForImages(String imageFolder) {
         File dir = new File(imageFolder);
         final String[] EXTENSIONS = new String[]{
-            "gif", "png", "bmp", "jpg", "PNG", "JPG", "BMP", "GIF" // and other formats you need
+            "gif", "png", "bmp", "jpg", "PNG", "JPG", "BMP", "GIF", "jpeg", "JPEG" // and other formats you need
         };
         // filter to identify images based on their extensions
         FilenameFilter IMAGE_FILTER = new FilenameFilter() {
@@ -3709,7 +3772,7 @@ public final class FactoryUtils {
     }
 
     public static void makeDirectory(String fn) {
-        File file=new File(fn);
+        File file = new File(fn);
         if (!file.exists()) {
             file.mkdir();
         }
@@ -3812,12 +3875,12 @@ public final class FactoryUtils {
     public static boolean deleteFile(File file) {
         return file.delete();
     }
-    
+
     public static boolean deleteFile(String filePath) {
         File file = new File(filePath);
         return file.delete();
     }
-    
+
     public static boolean renameFile(String oldname, String newname) {
         // File (or directory) with old name
         File file = new File(oldname);
@@ -3901,52 +3964,56 @@ public final class FactoryUtils {
     }
 
     public static TRoi getROI(double[][] d) {
-        int nr=d.length;
-        List<Integer> lstRowFirstOccurance=new ArrayList();
-        List<Integer> lstRowLastOccurance=new ArrayList();
-        List<Integer> lstColumnFirstOccurance=new ArrayList();
-        List<Integer> lstColumnLastOccurance=new ArrayList();
+        int nr = d.length;
+        List<Integer> lstRowFirstOccurance = new ArrayList();
+        List<Integer> lstRowLastOccurance = new ArrayList();
+        List<Integer> lstColumnFirstOccurance = new ArrayList();
+        List<Integer> lstColumnLastOccurance = new ArrayList();
         for (int i = 0; i < nr; i++) {
-            lstRowFirstOccurance.add(getFirstIndex(d[i],255));
-            lstRowLastOccurance.add(getLastIndex(d[i],255));
+            lstRowFirstOccurance.add(getFirstIndex(d[i], 255));
+            lstRowLastOccurance.add(getLastIndex(d[i], 255));
         }
-        double[][] dd=FactoryMatrix.transpose(d);
-        nr=dd.length;
+        double[][] dd = FactoryMatrix.transpose(d);
+        nr = dd.length;
         for (int i = 0; i < nr; i++) {
-            lstColumnFirstOccurance.add(getFirstIndex(dd[i],255));
-            lstColumnLastOccurance.add(getLastIndex(dd[i],255));
+            lstColumnFirstOccurance.add(getFirstIndex(dd[i], 255));
+            lstColumnLastOccurance.add(getLastIndex(dd[i], 255));
         }
-        TRoi roi=new TRoi();
-        Collections.sort(lstRowFirstOccurance);int r1=lstRowFirstOccurance.get(0);
-        Collections.sort(lstRowLastOccurance);int r2=lstRowLastOccurance.get(lstRowLastOccurance.size()-1);
-        Collections.sort(lstColumnFirstOccurance);int c1=lstColumnFirstOccurance.get(0);
-        Collections.sort(lstColumnLastOccurance);int c2=lstColumnLastOccurance.get(lstColumnLastOccurance.size()-1);
+        TRoi roi = new TRoi();
+        Collections.sort(lstRowFirstOccurance);
+        int r1 = lstRowFirstOccurance.get(0);
+        Collections.sort(lstRowLastOccurance);
+        int r2 = lstRowLastOccurance.get(lstRowLastOccurance.size() - 1);
+        Collections.sort(lstColumnFirstOccurance);
+        int c1 = lstColumnFirstOccurance.get(0);
+        Collections.sort(lstColumnLastOccurance);
+        int c2 = lstColumnLastOccurance.get(lstColumnLastOccurance.size() - 1);
         //System.out.println("r1,r2,c1,c2:"+r1+","+r2+","+c1+","+c2);
-        int w=r2-r1;
-        int h=c2-c1;
-        CPoint cp=new CPoint(c1+h/2,r1+w/2);
-        roi.centerPoint=cp;
-        roi.pr=c1;
-        roi.pc=r1;
-        roi.width=w;
-        roi.height=h;
+        int w = r2 - r1;
+        int h = c2 - c1;
+        CPoint cp = new CPoint(c1 + h / 2, r1 + w / 2);
+        roi.centerPoint = cp;
+        roi.pr = c1;
+        roi.pc = r1;
+        roi.width = w;
+        roi.height = h;
         return roi;
     }
-    
-    public static int getFirstIndex(double[] d,int thr){
-        int n=d.length;
+
+    public static int getFirstIndex(double[] d, int thr) {
+        int n = d.length;
         for (int i = 0; i < n; i++) {
-            if (d[i]==thr) {
+            if (d[i] == thr) {
                 return i;
             }
         }
         return Integer.MAX_VALUE;
     }
-    
-    public static int getLastIndex(double[] d,int thr){
-        int n=d.length;
-        for (int i = n-1; i >0; i--) {
-            if (d[i]==thr) {
+
+    public static int getLastIndex(double[] d, int thr) {
+        int n = d.length;
+        for (int i = n - 1; i > 0; i--) {
+            if (d[i] == thr) {
                 return i;
             }
         }
@@ -4400,7 +4467,7 @@ public final class FactoryUtils {
         }
         return ret;
     }
-    
+
     /**
      * Reads a CSV-file from disk into a 2D double array.
      *
@@ -5183,9 +5250,9 @@ public final class FactoryUtils {
     }
 
     public static double[] vector(int from, int to) {
-        if (from<to) {
+        if (from < to) {
             return vector(from, to, 1);
-        }else{
+        } else {
             return vector(from, to, -1);
         }
 //        double[] ret = new double[to - from];
@@ -5196,7 +5263,7 @@ public final class FactoryUtils {
     }
 
     public static double[] vector(double from, double to, double incr) {
-       if (from < to && incr < 0) {
+        if (from < to && incr < 0) {
             throw new UnsupportedOperationException("incr should be positive");
         }
         if (from > to && incr > 0) {
@@ -5220,27 +5287,27 @@ public final class FactoryUtils {
     }
 
     public static boolean isVector(double[][] array) {
-        if (array.length==1 || array[0].length==1) {
+        if (array.length == 1 || array[0].length == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public static boolean isSimilarShape(double[][] d1, double[][] d2) {
-        if (d1.length==d2.length && d1[0].length==d2[0].length) {
+        if (d1.length == d2.length && d1[0].length == d2[0].length) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public static double dotVector(double[][] d1, double[][] d2) {
-        double ret=0;
-        double[] d_1=toDoubleArray1D(d1);
-        double[] d_2=toDoubleArray1D(d2);
+        double ret = 0;
+        double[] d_1 = toDoubleArray1D(d1);
+        double[] d_2 = toDoubleArray1D(d2);
         for (int i = 0; i < d_1.length; i++) {
-            ret+=d_1[i]*d_2[i];
+            ret += d_1[i] * d_2[i];
         }
         return ret;
     }
@@ -5380,12 +5447,12 @@ public final class FactoryUtils {
             } else if (ss.length == 2) {
                 double from = Double.parseDouble(ss[0]);
                 double to = Double.parseDouble(ss[1]);
-                if (from<to) {
-                    ret = vector(from, to,1);
-                }else{
-                    ret = vector(from, to,-1);
+                if (from < to) {
+                    ret = vector(from, to, 1);
+                } else {
+                    ret = vector(from, to, -1);
                 }
-                
+
             }
         }
         return ret;
@@ -5433,10 +5500,10 @@ public final class FactoryUtils {
         }
         return "127.0.0.1";
     }
-    
-    public double distanceHausDorff(double[][] d1,double[][] d2){
-        double ret=0;
-        
+
+    public double distanceHausDorff(double[][] d1, double[][] d2) {
+        double ret = 0;
+
         return ret;
     }
 

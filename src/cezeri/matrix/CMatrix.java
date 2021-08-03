@@ -38,6 +38,16 @@
  */
 package cezeri.matrix;
 
+import ai.djl.Model;
+import ai.djl.inference.Predictor;
+import ai.djl.modality.Classifications;
+import ai.djl.modality.cv.Image;
+import ai.djl.modality.cv.ImageFactory;
+import ai.djl.modality.cv.transform.Resize;
+import ai.djl.modality.cv.transform.ToTensor;
+import ai.djl.modality.cv.translator.ImageClassificationTranslator;
+import ai.djl.translate.TranslateException;
+import ai.djl.translate.Translator;
 import cezeri.call_back_interface.CallBackDataBase;
 import cezeri.deep_learning.CDL;
 import cezeri.factory.FactoryCombination;
@@ -74,9 +84,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
@@ -95,10 +102,9 @@ import weka.core.converters.ConverterUtils;
 import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
-import java.util.stream.DoubleStream;
 import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
-import static cezeri.image_processing.ImageProcess.imageToPixelsColorInt;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -133,6 +139,8 @@ public final class CMatrix implements Serializable {
     public String[] permutationPairs;
     public static CMatrix currentMatrix = null;
     private boolean isArraySet = false;
+    private Translator<Image, Classifications> translator;
+    private Predictor<Image, Classifications> predictor;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -671,6 +679,8 @@ public final class CMatrix implements Serializable {
         if (this.shuffleIndexes != null) {
             ret.shuffleIndexes = FactoryUtils.clone(this.shuffleIndexes);
         }
+        ret.predictor=this.predictor;
+        ret.translator=this.translator;
         return ret;
     }
 
@@ -3801,6 +3811,16 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix saveImage() {
+        ImageProcess.saveImage(image);
+        return this;
+    }
+
+    public CMatrix saveImageAtFolder(String folderPath) {
+        ImageProcess.saveImageAtFolder(image, folderPath);
+        return this;
+    }
+
     /**
      *
      * @param file_path
@@ -4252,11 +4272,19 @@ public final class CMatrix implements Serializable {
         return array[row][column];
     }
 
+    public CMatrix imAlphaChannel() {
+        return getAlphaChannelColor();
+    }
+
     public CMatrix getAlphaChannelColor() {
         CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getAlphaChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
+    }
+
+    public CMatrix imRedChannel() {
+        return getRedChannelColor();
     }
 
     public CMatrix getRedChannelColor() {
@@ -4266,11 +4294,19 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
+    public CMatrix imGreenChannel() {
+        return getGreenChannelColor();
+    }
+
     public CMatrix getGreenChannelColor() {
         CMatrix ret = this.clone(this);
         ret.image = ImageProcess.getGreenChannelColor(ret.image);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
         return ret;
+    }
+
+    public CMatrix imBlueChannel() {
+        return getBlueChannelColor();
     }
 
     public CMatrix getBlueChannelColor() {
@@ -4442,6 +4478,18 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix imread() {
         return readImage();
+    }
+
+    public CMatrix imsave() {
+        return saveImage();
+    }
+
+    public CMatrix imsave_atFolder(String folderPath) {
+        return saveImageAtFolder(folderPath);
+    }
+
+    public CMatrix imsave(String path) {
+        return saveImage(path);
     }
 
     /**
@@ -5093,8 +5141,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix add(CMatrix cmx) {
         CMatrix ret = this.clone(this);
-        int nr=this.getRowNumber();
-        int nc=this.getColumnNumber();
+        int nr = this.getRowNumber();
+        int nc = this.getColumnNumber();
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 ret.array[i][j] = this.array[i][j] + cmx.array[i][j];
@@ -6073,6 +6121,9 @@ public final class CMatrix implements Serializable {
     public CMatrix drawRect(int r, int c, int w, int h, int thickness, Color color) {
         CMatrix ret = this.clone(this);
 
+        if (ret.image == null) {
+            ret.image = ImageProcess.pixelsToImageColor(array);
+        }
         ret.image = ImageProcess.drawRectangle(ret.image, r, c, w, h, thickness, color);
         ret.array = ImageProcess.imageToPixelsDouble(ret.image);
 
@@ -7839,10 +7890,10 @@ public final class CMatrix implements Serializable {
 
         return h;
     }
-    
+
     public CMatrix mexicanHat1D(double sigma) {
         CMatrix ret = this.clone(this);
-        ret=ret.pow(2).timesScalar(-0.5).exp().multiplyElement(ret.pow(2).timesScalar(sigma).minusFromScalar(1)).timesScalar(2.0/(Math.sqrt(3)*Math.pow(Math.PI, 0.25)));
+        ret = ret.pow(2).timesScalar(-0.5).exp().multiplyElement(ret.pow(2).timesScalar(sigma).minusFromScalar(1)).timesScalar(2.0 / (Math.sqrt(3) * Math.pow(Math.PI, 0.25)));
         return ret;
     }
 
@@ -8753,6 +8804,44 @@ public final class CMatrix implements Serializable {
         }
         FactoryDataBase.getResultSet(sql, callBackDataBase);
         return this;
+    }
+
+    public String currentDirectory() {
+        return FactoryUtils.getDefaultDirectory();
+    }
+
+    public CMatrix setModelForInference(String modelPath, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int blockType) {
+        Model model = FactoryDJL.getModel(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
+        translator = ImageClassificationTranslator.builder()
+                .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
+                .addTransform(new ToTensor())
+                .optApplySoftmax(true)
+                .build();
+        predictor = model.newPredictor(translator);
+        return this;
+    }
+
+    public String predictWithProbabilities() {
+        Image img = ImageFactory.getInstance().fromImage(this.image);
+        Classifications predictResult = null;
+        try {
+            predictResult = predictor.predict(img);
+        } catch (TranslateException ex) {
+            Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return predictResult.toString();
+    }
+    
+    public String predictWithLabel() {
+        Image img = ImageFactory.getInstance().fromImage(this.image);
+        Classifications predictResult = null;
+        try {
+            predictResult = predictor.predict(img);
+        } catch (TranslateException ex) {
+            Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String predictedLabel = predictResult.topK(1).toString().split(",")[0].split(":")[1].replace('"', ' ').trim();
+        return predictedLabel;
     }
 
 }

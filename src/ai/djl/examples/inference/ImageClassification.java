@@ -51,7 +51,7 @@ public final class ImageClassification {
     }
 
     public static Classifications predict() throws IOException, ModelException, TranslateException {
-        Path imageFile = Paths.get("src/test/resources/0.png");
+        Path imageFile = Paths.get("images/0.png");
         Image img = ImageFactory.getInstance().fromFile(imageFile);
 
         String modelName = "mlp";

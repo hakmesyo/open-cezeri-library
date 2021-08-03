@@ -2469,6 +2469,27 @@ public final class ImageProcess {
         }
         return false;
     }
+    
+    public static boolean saveImageAtFolder(BufferedImage img,String folderPath) {
+        JFileChooser FC = new JFileChooser(folderPath);
+        int retrival = FC.showSaveDialog(null);
+        if (retrival == FC.APPROVE_OPTION) {
+            File fileToSave = FC.getSelectedFile();
+            String extension = FactoryUtils.getFileExtension(fileToSave);
+            try {
+                boolean ret = ImageIO.write(img, extension, fileToSave);
+                return ret;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
     public static boolean saveImage(BufferedImage img, String fileName) {
         File file = new File(fileName);
@@ -3073,8 +3094,10 @@ public final class ImageProcess {
      * @return
      */
     public static BufferedImage binarizeGrayScaleImage(double[][] d, int threshold) {
-        for (int i = 0; i < d.length; i++) {
-            for (int j = 0; j < d[0].length; j++) {
+        int nr=d.length;
+        int nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
                 if (d[i][j] > threshold) {
                     d[i][j] = 255;
                 } else {
