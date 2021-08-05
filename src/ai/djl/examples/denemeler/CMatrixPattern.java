@@ -285,6 +285,7 @@ public class CMatrixPattern {
                     .imread(files[i].getAbsolutePath())
                     .predictWithLabel();
             t1 = FactoryUtils.toc(t1);
+            
             System.out.println("predicted class:" + str);
             if (str.equals("close")) {
                 k++;
