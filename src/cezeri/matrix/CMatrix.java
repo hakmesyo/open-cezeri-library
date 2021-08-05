@@ -50,6 +50,7 @@ import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.modality.cv.translator.ImageClassificationTranslator;
 import ai.djl.ndarray.types.Shape;
+import ai.djl.nn.Block;
 import ai.djl.training.EasyTrain;
 import ai.djl.training.Trainer;
 import ai.djl.training.TrainingConfig;
@@ -115,10 +116,15 @@ import java.security.SecureRandom;
 import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
+import cezeri.types.TBlockType;
+import cezeri.types.TDJLModel;
+import cezeri.types.TRoi;
+import com.google.gson.Gson;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import static weka.core.Debug.DBO.p;
 
 /**
  *
@@ -154,9 +160,13 @@ public final class CMatrix implements Serializable {
     private Translator<Image, Classifications> translator;
     private Predictor<Image, Classifications> predictor;
     private Model model;
+    private String MODEL_NAME;
     private int NUM_CHANNEL;
+    private int NUM_OUTPUT;
     private int IMAGE_WIDTH;
     private int IMAGE_HEIGHT;
+    private int BLOCK_TYPE;
+    private Block BLOCK;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -701,6 +711,10 @@ public final class CMatrix implements Serializable {
         ret.NUM_CHANNEL = NUM_CHANNEL;
         ret.IMAGE_WIDTH = IMAGE_WIDTH;
         ret.IMAGE_HEIGHT = IMAGE_HEIGHT;
+        ret.NUM_OUTPUT = NUM_OUTPUT;
+        ret.BLOCK_TYPE = BLOCK_TYPE;
+        ret.BLOCK = BLOCK;
+        ret.MODEL_NAME = MODEL_NAME;
         return ret;
     }
 
@@ -4012,6 +4026,12 @@ public final class CMatrix implements Serializable {
             return this;
         }
     }
+    
+    public TRoi getROIofWeightCenteredObject(int thr, int backgroundThr, int nf) {
+        double[][] d = CMatrix.this.highPassFilter(this.array, backgroundThr).array;
+        TRoi roi = FactoryUtils.getRoiOfWeightCenteredObject(d, thr, nf);
+        return roi;
+    }
 
     public CMatrix getWeightCenteredROI() {
         double[][] d = FactoryUtils.getWeightCenteredROI(this.array);
@@ -5715,8 +5735,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix toc() {
         long t2 = System.nanoTime();
-        double elapsed = (t2 - currentTime) / 1000000000.0;
-        System.out.println("Elapsed Time:" + elapsed + " sec");
+        double elapsed = (t2 - currentTime) / 1000000.0;
+        System.out.println("Elapsed Time:" + elapsed + " ms");
         currentTime = System.nanoTime();
         return this;
     }
@@ -8830,11 +8850,45 @@ public final class CMatrix implements Serializable {
         return FactoryUtils.getDefaultDirectory();
     }
 
-    public CMatrix setModelForInference(String modelPath, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int blockType) {
-        this.NUM_CHANNEL = NUM_CHANNEL;
-        this.IMAGE_WIDTH = IMAGE_WIDTH;
-        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-        model = FactoryDJL.getModelForInference(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
+//    public CMatrix setModelForInference(String modelPath, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int blockType) {
+//        this.NUM_CHANNEL = NUM_CHANNEL;
+//        this.IMAGE_WIDTH = IMAGE_WIDTH;
+//        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
+//        model = FactoryDJL.getModelForInference(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
+//        translator = ImageClassificationTranslator.builder()
+//                .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
+//                .addTransform(new ToTensor())
+//                .optApplySoftmax(true)
+//                .build();
+//        predictor = model.newPredictor(translator);
+//        return this;
+//    }
+
+    public CMatrix setModelForInference(String modelPath) {
+        String base_dir = new File(modelPath).getParent();
+        String[] rows = FactoryUtils.readFile(base_dir + "/model_info.txt").split("\n");
+        this.NUM_CHANNEL = Integer.parseInt(rows[0].split("=")[1]);
+        this.IMAGE_WIDTH = Integer.parseInt(rows[1].split("=")[1]);
+        this.IMAGE_HEIGHT = Integer.parseInt(rows[2].split("=")[1]);
+        this.NUM_OUTPUT = Integer.parseInt(rows[3].split("=")[1]);
+        this.BLOCK_TYPE = Integer.parseInt(rows[4].split("=")[1]);
+        if (BLOCK_TYPE == TBlockType.MLP) {
+            String s = rows[5].split("=")[1].replace("[", "").replace("]", "").trim();
+            String[] ss = s.split(",");
+            int n = ss.length;
+            int[] hidden = new int[n];
+            for (int i = 0; i < n; i++) {
+                hidden[i] = Integer.parseInt(ss[i].trim());
+            }
+            Block block = FactoryDJL.getMLPBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, hidden);
+            model = FactoryDJL.getModelForInference(modelPath, block);
+        }else if(BLOCK_TYPE == TBlockType.ResNetV50){
+            String s = rows[6].split("=")[1];
+            int n=Integer.parseInt(s);
+            Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, n);
+            model = FactoryDJL.getModelForInference(modelPath, block);
+        }
+
         translator = ImageClassificationTranslator.builder()
                 .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
                 .addTransform(new ToTensor())
@@ -8844,11 +8898,27 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int blockType) {
+//    public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int blockType) {
+//        this.NUM_CHANNEL = NUM_CHANNEL;
+//        this.IMAGE_WIDTH = IMAGE_WIDTH;
+//        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
+//        this.NUM_OUTPUT = NUM_OUTPUT;
+//        this.BLOCK_TYPE = blockType;
+//        this.BLOCK = null;
+//        this.MODEL_NAME = modelName;
+//        model = FactoryDJL.getModelForTraining(modelName, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, blockType);
+//        return this;
+//    }
+    public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int block_type, Block block) {
         this.NUM_CHANNEL = NUM_CHANNEL;
         this.IMAGE_WIDTH = IMAGE_WIDTH;
         this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-        model = FactoryDJL.getModelForTraining(modelName, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, blockType);
+        this.NUM_OUTPUT = NUM_OUTPUT;
+        this.BLOCK_TYPE = block_type;
+        this.BLOCK = block;
+        this.MODEL_NAME = modelName;
+        System.out.println(block.getParameters().get(2).getValue().getName());
+        model = FactoryDJL.getModelForTraining(modelName, block);
         return this;
     }
 
@@ -8883,7 +8953,7 @@ public final class CMatrix implements Serializable {
             TrainingConfig config = FactoryDJL.setupTrainingConfig(loss);
             Trainer trainer = model.newTrainer(config);
             trainer.setMetrics(new Metrics());
-            Shape inputShape = new Shape(1, this.NUM_CHANNEL, this.IMAGE_HEIGHT, this.IMAGE_HEIGHT);
+            Shape inputShape = new Shape(1, this.NUM_CHANNEL, this.IMAGE_WIDTH, this.IMAGE_HEIGHT);
             trainer.initialize(inputShape);
             EasyTrain.fit(trainer, EPOCHS, datasets[0], datasets[1]);
             TrainingResult result = trainer.getTrainingResult();
@@ -8893,8 +8963,11 @@ public final class CMatrix implements Serializable {
             String path = "models/" + model.getName();
             FactoryUtils.makeDirectory(path);
             Path modelDir = Paths.get(path);
-            model.save(modelDir, Models.MODEL_NAME);
-            Models.saveSynset(modelDir, dataset.getSynset());
+            model.save(modelDir, MODEL_NAME);
+            FactoryDJL.saveSynset(modelDir, dataset.getSynset());
+            TDJLModel model_info = null;
+            model_info = new TDJLModel(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, BLOCK_TYPE, BLOCK);
+            FactoryDJL.saveModelParam(path + "/model_info.txt", model_info);
 
         } catch (IOException ex) {
             Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
@@ -8902,6 +8975,19 @@ public final class CMatrix implements Serializable {
             Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
         }
         return this;
+    }
+
+    public CMatrix refresh() {
+        System.gc();
+        return new CMatrix();
+    }
+
+    public CMatrix clear() {
+        return refresh();
+    }
+    
+    public CMatrix clean() {
+        return refresh();
     }
 
 }

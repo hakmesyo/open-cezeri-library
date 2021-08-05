@@ -22,6 +22,6 @@ public class TRoi {
 
     @Override
     public String toString() {
-        return centerPoint.row+","+centerPoint.column+","+pr + "," + pc + "," + width + "," + height;
+        return pr + "," + pc + "," + width + "," + height;
     }
 }

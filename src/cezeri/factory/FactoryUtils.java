@@ -302,6 +302,41 @@ public final class FactoryUtils {
     public static void writeToFile(String row) {
         writeToFile(getFileFromChooserSave(getDefaultDirectory()).getAbsolutePath(), row);
     }
+    
+    public static void writeToFile(String path, List<String> rows) {
+        String row="";
+        for (String row1 : rows) {
+            row+=row1+"\n";
+        }
+        row=row.substring(0, row.length()-1);
+        Writer out = null;
+        try {
+            try {
+                out = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(path), "UTF-8"));
+                try {
+                    try {
+                        out.write(row);
+                        Thread.sleep(5);
+                        out.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } finally {
+                    try {
+                        out.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (FileNotFoundException ex) {
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static void writeToFile(String row, boolean currentDir) {
         if (currentDir) {
@@ -3298,7 +3333,7 @@ public final class FactoryUtils {
     public static long toc(long tic) {
         long toc = System.nanoTime();
         double elapsed = (toc - tic) / (1000000.0d);
-        System.out.println("Elapsed Time:" + elapsed + " miliSecond");
+        System.out.println("Elapsed Time:" + elapsed + " ms");
         return toc;
     }
 
@@ -3347,6 +3382,29 @@ public final class FactoryUtils {
 //        } else {
 //            ret = getSubMatrix(d, new CPoint(p[1], p[0]), new CPoint(p[3], p[2]));
 //        }
+        return ret;
+    }
+    
+    public static TRoi getRoiOfWeightCenteredObject(double[][] d, int t, int nf) {
+        TRoi ret = new TRoi();
+        int[] px = getProjectedMatrixOnX(d);
+        int[] py = getProjectedMatrixOnY(d);
+        int thr = 10000;
+        CPoint[] p_x = getPotentialObjects(px, thr);
+        CPoint[] p_y = getPotentialObjects(py, thr);
+        try {
+            if (p_x.length == 0 || p_y.length == 0) {
+                return null;
+            }else{
+                ret.pr=p_y[0].row;
+                ret.pc=p_x[0].row;
+                ret.height=p_y[0].column-ret.pr;
+                ret.width=p_x[0].column-ret.pc;
+            }
+            //ret = getSubMatrix(d, new CPoint(p_y[0].row, p_x[0].row), new CPoint(p_y[0].column, p_x[0].column));
+        } catch (Exception ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return ret;
     }
 
