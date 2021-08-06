@@ -12,7 +12,13 @@ import cezeri.matrix.CMatrix;
 import cezeri.types.TBlockType;
 import cezeri.types.TRoi;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -20,10 +26,9 @@ import java.util.Arrays;
  */
 public class CMatrixPattern {
 
-    private static String path = "C:\\ai\\djl\\dataset_pdr\\mixed\\";
-
     public static void main(String[] args) {
 //        trainWithResNet();
+//        extractMultipleID();
 //        predictTCNumbers();
 
 //        trainGenderWithMLP();
@@ -32,7 +37,9 @@ public class CMatrixPattern {
 //        trainPistachioWithMLP();
 //        predictPistachioWithMLPBlock();
 //        trainPistachioWithResNet();
-        predictPistachioWithResNet();
+//        predictPistachioWithResNet();
+
+        resizeImages();
     }
 
     private static void extractNumbers(CMatrix[] numbers, CMatrix cm, int p) {
@@ -45,6 +52,66 @@ public class CMatrixPattern {
     }
 
     private static void predictTCNumbers() {
+        final String path = "C:\\ai\\djl\\dataset_pdr\\AnonimTC\\male";
+        String str = "male";
+        File[] files = FactoryUtils.getFileListInFolder(path);
+        System.out.println("size:" + files.length);
+        String[] tc = new String[files.length];
+        CMatrix cm_tc = CMatrix.getInstance().setModelForInference("models/tc_numbers/tc_numbers-0030.params");
+        int n = 11;
+        CMatrix[] numbers = new CMatrix[n];
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = CMatrix.getInstance();
+        }
+        long t1 = FactoryUtils.tic();
+        for (int i = 0; i < files.length; i++) {
+            System.out.println("file index:" + i);
+            if (i % 10 == 0) {
+                cm_tc = null;
+                System.gc();
+                cm_tc = CMatrix.getInstance().setModelForInference("models/tc_numbers/tc_numbers-0030.params");
+            }
+            if (str.equals("female")) {
+                cm_tc = cm_tc
+                        .imread(files[i].getAbsolutePath())
+                        .cmd("0:30", "217:387")
+                        .imresize(20) //.imshow()
+                        ;
+
+                extractNumbers(numbers, cm_tc, 0);
+                String s = "";
+                for (CMatrix number : numbers) {
+                    s += number.predictWithLabel();
+                }
+                tc[i] = s;
+
+            } else {
+                cm_tc = cm_tc
+                        .imread(files[i].getAbsolutePath())
+                        .cmd("0:30", "220:390")
+                        .imresize(20) //.imshow()
+                        ;
+
+                extractNumbers(numbers, cm_tc, 60);
+                String s = "";
+                for (CMatrix number : numbers) {
+                    s += number.predictWithLabel();
+                }
+                tc[i] = s;
+            }
+            t1 = FactoryUtils.toc(t1);
+
+        }
+        //Arrays.asList(tc).forEach(System.out::println);
+        String[] rows = new String[tc.length];
+        for (int i = 0; i < tc.length; i++) {
+            rows[i] = str + ";" + tc[i];
+        }
+        FactoryUtils.writeToFile("models/tc_numbers/tcno_male.csv", rows);
+    }
+
+    private static void predictTCNumbersWithGender() {
+        final String path = "C:\\ai\\djl\\dataset_pdr\\mixed\\";
         File[] files = FactoryUtils.getFileListInFolder(path);
         System.out.println("size:" + files.length);
         String[] tc = new String[files.length];
@@ -229,11 +296,9 @@ public class CMatrixPattern {
                     //.imshow()
                     .imresize(224, 224)
                     //.imshow()
-                    .imsave("C:\\ai\\djl\\resized_pistachio_test\\open\\"+files[i].getName())
-                    ;
+                    .imsave("C:\\ai\\djl\\resized_pistachio_test\\open\\" + files[i].getName());
         }
-        
-        
+
 //        CMatrix cm = CMatrix.getInstance().tic().imread(DATA_SET + "/open/282493955742600.jpg")
 //                .rgb2gray()
 //                //.cmd("20:460", "100:540")
@@ -285,7 +350,7 @@ public class CMatrixPattern {
                     .imread(files[i].getAbsolutePath())
                     .predictWithLabel();
             t1 = FactoryUtils.toc(t1);
-            
+
             System.out.println("predicted class:" + str);
             if (str.equals("close")) {
                 k++;
@@ -293,5 +358,62 @@ public class CMatrixPattern {
         }
         double accuracy = 1.0 * k / t * 100;
         System.out.println("accuracy = " + accuracy);
+    }
+
+    private static void extractMultipleID() {
+        final String DATA_SET = "C:\\ai\\djl\\dataset_pdr\\AnonimTC\\male";
+        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        String[] tc_gender = FactoryUtils.readFromFileAsString1D("models/tc_numbers/tcno_male.csv");
+        double[] tc = new double[tc_gender.length];
+        List lst = new ArrayList();
+        for (int i = 0; i < tc.length; i++) {
+            tc[i] = Double.parseDouble(tc_gender[i].split(";")[1]);
+            lst.add(tc[i]);
+        }
+        List<Double> UniqueNumbers
+                = (List<Double>) lst.stream().distinct().collect(
+                        Collectors.toList());
+        List lst_multiple = new ArrayList();
+        for (int i = 0; i < UniqueNumbers.size(); i++) {
+            int occurrences = Collections.frequency(lst, UniqueNumbers.get(i));
+            if (occurrences > 1) {
+                System.out.println(UniqueNumbers.get(i) + ":" + occurrences);
+                lst_multiple.add(UniqueNumbers.get(i));
+                int n = 0;
+                for (int j = 0; j < occurrences; j++) {
+                    n = getNextIndex(n, lst, UniqueNumbers.get(i));
+                    FactoryUtils.makeDirectory(DATA_SET + "/multiple/" + String.format("%.0f", UniqueNumbers.get(i)));
+                    FactoryUtils.copyFile(files[n].getAbsoluteFile(), new File(DATA_SET + "/multiple/" + String.format("%.0f", UniqueNumbers.get(i)) + "/" + files[n].getName()));
+                }
+            }
+        }
+    }
+
+    private static int getNextIndex(int next, List lst, Double num) {
+        for (int i = next + 1; i < lst.size(); i++) {
+            if (lst.get(i).equals(num)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static void resizeImages() {
+        final String DATA_SET = "C:\\ai\\djl\\dataset_pdr\\AnonimTC\\male";
+        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        String[] tc_gender = FactoryUtils.readFromFileAsString1D("models/tc_numbers/tcno_male.csv");
+        double[] tc = new double[tc_gender.length];
+        for (int i = 0; i < tc.length; i++) {
+            tc[i] = Double.parseDouble(tc_gender[i].split(";")[1]);
+        }
+        for (int i = 0; i < files.length; i++) {
+            CMatrix cm = CMatrix.getInstance()
+                    .tic()
+                    .imread(files[i].getAbsolutePath())
+                    .imresize(800, 480)
+                    .imsave(DATA_SET + "/resized_male/" + files[i].getName())
+                    .toc(i + ".index=");
+        }
+
     }
 }

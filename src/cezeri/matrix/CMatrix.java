@@ -408,6 +408,17 @@ public final class CMatrix implements Serializable {
      * @param d: array of int
      * @return CMatrix double type
      */
+    public static CMatrix getInstance(long[] d) {
+        return new CMatrix(d);
+    }
+
+    /**
+     * generate single row of matrix where number of colums equals to the length
+     * of the array
+     *
+     * @param d: array of int
+     * @return CMatrix double type
+     */
     public static CMatrix getInstance(byte[] d) {
         return new CMatrix(d);
     }
@@ -441,6 +452,16 @@ public final class CMatrix implements Serializable {
      * @return CMatrix double type
      */
     public static CMatrix getInstance(int[][] d) {
+        return new CMatrix(d);
+    }
+
+    /**
+     * generate a matrix that has d.length of rows and d[0].length of columns
+     *
+     * @param d: double array of int
+     * @return CMatrix double type
+     */
+    public static CMatrix getInstance(long[][] d) {
         return new CMatrix(d);
     }
 
@@ -786,6 +807,13 @@ public final class CMatrix implements Serializable {
     }
 
     private CMatrix(int[] d) {
+        double[][] m = new double[1][d.length];
+        m[0] = FactoryUtils.toDoubleArray1D(d);
+        this.array = FactoryUtils.transpose(m);
+        this.returnedValue = new CReturn();
+    }
+
+    private CMatrix(long[] d) {
         double[][] m = new double[1][d.length];
         m[0] = FactoryUtils.toDoubleArray1D(d);
         this.array = FactoryUtils.transpose(m);

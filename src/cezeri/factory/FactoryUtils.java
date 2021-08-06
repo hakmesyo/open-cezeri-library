@@ -1350,6 +1350,14 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static double[] toDoubleArray1D(long[] m) {
+        double[] ret = new double[m.length];
+        for (int i = 0; i < m.length; i++) {
+            ret[i] = m[i] * 1.0;
+        }
+        return ret;
+    }
+
     public static double[] toDoubleArray1D(byte[] m) {
         double[] ret = new double[m.length];
         for (int i = 0; i < m.length; i++) {
