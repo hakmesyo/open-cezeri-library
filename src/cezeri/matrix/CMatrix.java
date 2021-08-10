@@ -60,7 +60,7 @@ import ai.djl.training.loss.Loss;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
 import cezeri.call_back_interface.CallBackDataBase;
-import cezeri.deep_learning.CDL;
+import cezeri.deep_learning_app_server.CDL;
 import cezeri.factory.FactoryCombination;
 import cezeri.factory.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
@@ -114,6 +114,7 @@ import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
 import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.types.TBlockType;
@@ -8821,17 +8822,17 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
-    public CMatrix startWebSocket(CallBackWebSocket icb) {
+    public CMatrix startWebSocket(InterfaceCallBack icb) {
         FactorySocket.startJavaWebSocketServer(icb);
         return this;
     }
 
-    public CMatrix startWebSocket(int port, CallBackWebSocket icb) {
+    public CMatrix startWebSocket(int port, InterfaceCallBack icb) {
         FactorySocket.startJavaWebSocketServer(FactoryUtils.getLocalIP(), 8887, icb);
         return this;
     }
 
-    public CMatrix startWebSocket(String ip, int port, CallBackWebSocket icb) {
+    public CMatrix startWebSocket(String ip, int port, InterfaceCallBack icb) {
         FactorySocket.startJavaWebSocketServer(ip, port, icb);
         return this;
     }

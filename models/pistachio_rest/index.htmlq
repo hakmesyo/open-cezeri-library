@@ -1,0 +1,63 @@
+<div>Teachable Machine Image Model - p5.js and ml5.js</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+<script type="text/javascript">
+	// Model URL
+	let classifier;
+	let imageModelURL = './model/';
+	let img;
+	let currentIndex = 0;
+	let allImages = [];
+	let predictions = [];  
+	let label = "";
+
+	// Load the model first
+	function preload() {
+	  console.log("merhaba\n");
+	  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
+	}
+	// The function below will determine and setup the image sizes, get the results as image.
+	function setup() {
+	 createCanvas(224, 224);
+	 background(0);
+	 loadImage('./images/close/'+currentIndex+'.jpg', imageReady);
+	}
+
+	function imageReady(img) {
+	  image(img, 0, 0);
+	  classifier.classify(img, gotResult);
+	}
+
+	function savePredictions() {
+	  predictionsJSON = {
+		predictions: predictions
+	  };
+	  saveJSON(predictionsJSON, 'predictions.json');
+	}
+
+	// When we get the results
+	function gotResult(err, results) {
+	  // If there is an error, show in the console
+	  if (err) {
+		console.error(err);
+	  }
+
+	  information = {
+		name: allImages[currentIndex],
+		result: results
+	  };
+
+	  predictions.push(information);
+	  createDiv('ID: ' + currentIndex);
+	  createDiv('Label: ' + results[0].label);
+	  createDiv('Confidence: ' + nf(results[0].confidence, 0, 2));
+	  
+	  currentIndex++;
+	  if (currentIndex <= 392) {
+		loadImage('./images/close/'+currentIndex+'.jpg', imageReady);
+	  } else {
+		//savePredictions();
+	  }
+	}
+</script>

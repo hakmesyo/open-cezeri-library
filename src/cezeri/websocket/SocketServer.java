@@ -14,15 +14,17 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.factory.FactoryUtils;
 
 public class SocketServer extends WebSocketServer {
 
     public static boolean isClientConnectedNow = false;
     public static CallBackWebSocket icbf = null;
 
-    public SocketServer(String ip, int port, CallBackWebSocket icb) throws UnknownHostException {
+    public SocketServer(String ip, int port, InterfaceCallBack icb) throws UnknownHostException {
         super(new InetSocketAddress(new InetSocketAddress(ip, port).getAddress(), port));
-        icbf=icb;
+        FactoryUtils.icbf=icb;
     }
 
     public SocketServer(int port) throws UnknownHostException {
@@ -59,10 +61,9 @@ public class SocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        icbf.onMessageReceived(message);
+        FactoryUtils.icbf.onMessageReceived(message);
         if (message.equals("stop")) {
             running.set(false);
-
         }
     }
 

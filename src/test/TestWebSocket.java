@@ -6,7 +6,8 @@
 package test;
 
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning.CDL_Utils;
+import cezeri.deep_learning_app_server.CDL_Utils;
+import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
 import cezeri.matrix.CMatrix;
 
 /**
@@ -17,7 +18,7 @@ public class TestWebSocket {
 
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                .startWebSocket(new CallBackWebSocket() {
+                .startWebSocket(new InterfaceCallBack() {
                     @Override
                     public void onMessageReceived(String str) {
                         System.out.println("str = " + str);

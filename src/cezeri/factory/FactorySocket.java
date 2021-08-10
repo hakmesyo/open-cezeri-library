@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.java_websocket.client.WebSocketClient;
 import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
 
 /**
  *
@@ -31,11 +32,11 @@ public class FactorySocket {
     public static final AtomicBoolean running = new AtomicBoolean(false);
     public static int nAttempts = 0;
 
-    public static void startJavaWebSocketServer(CallBackWebSocket icb) {
+    public static void startJavaWebSocketServer(InterfaceCallBack icb) {
         startJavaWebSocketServer("127.0.0.1", 8887,icb);
     }
 
-    public static void startJavaWebSocketServer(String ip, int port,CallBackWebSocket icb) {
+    public static void startJavaWebSocketServer(String ip, int port,InterfaceCallBack icb) {
         new Thread(() -> {
             try {
                 server = new SocketServer(ip, port,icb);
@@ -81,7 +82,7 @@ public class FactorySocket {
     }
     
     public static void main(String[] args) {
-        startJavaWebSocketServer("127.0.0.1",1111,new CallBackWebSocket() {
+        startJavaWebSocketServer("127.0.0.1",1111,new InterfaceCallBack() {
             @Override
             public void onMessageReceived(String str) {
                 System.out.println(str);

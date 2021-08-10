@@ -5,6 +5,9 @@
 package cezeri.factory;
 
 import au.com.bytecode.opencsv.CSVReader;
+import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.utils.SerialType;
+import static cezeri.factory.FactorySocket.server;
 import cezeri.types.TDeviceState;
 import cezeri.types.TWord;
 import cezeri.types.TLearningType;
@@ -16,6 +19,7 @@ import cezeri.utils.CustomComparatorForCPoint;
 import cezeri.utils.MersenneTwister;
 import cezeri.utils.ReaderCSV;
 import cezeri.utils.UniqueRandomNumbers;
+import cezeri.websocket.SocketServer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -25,6 +29,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -42,6 +50,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -55,6 +64,9 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.drafts.Draft_6455;
+import org.java_websocket.handshake.ServerHandshake;
 import org.w3c.dom.Element;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -65,6 +77,48 @@ import weka.core.converters.ConverterUtils;
  * @author venap3
  */
 public final class FactoryUtils {
+    public static boolean stopServer = false;
+    public static boolean isConnectPythonServer = false;
+    public static SocketServer server;
+    public static WebSocketClient client;
+    public static String currDir = System.getProperty("user.dir");
+    public static final AtomicBoolean running = new AtomicBoolean(false);
+    public static InterfaceCallBack icbf = null;
+    public static int nAttempts = 0;
+    private static final String key = String.valueOf(new char[]{'2', '6', 'k', 'o', 'z', 'Q', 'a', 'K', 'w', 'R', 'u', 'N', 'J', '2', '4', 't'});
+    private static final String initVector = String.valueOf(new char[]{'8', 'C', '7', '7', 'E', 'E', 'F', 'E', '9', '8', '6', '8', 'F', '5', '4', '8'});
+
+    public static String getMacAddress() {
+        InetAddress ip;
+        StringBuilder sb = new StringBuilder();;
+        try {
+            ip = InetAddress.getLocalHost();
+//            System.out.println("Current IP address : " + ip.getHostAddress());
+            NetworkInterface network = NetworkInterface.getByInetAddress(ip);
+            byte[] mac = network.getHardwareAddress();
+            System.out.print("Current MAC address : ");
+            for (int i = 0; i < mac.length; i++) {
+                sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+            }
+//            System.out.println(sb.toString());
+            return sb.toString();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    public static String getIPAddress() {
+        InetAddress ip = null;
+        try {
+            ip = InetAddress.getLocalHost();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ip.getHostAddress();
+    }
 
     /**
      * deserialize to Object from given file. We use the general Object so as
@@ -3222,6 +3276,11 @@ public final class FactoryUtils {
         }
         return results.toArray(new File[0]);
     }
+    
+    public static File[] getDirectories(String path) {
+        File[] directories = new File(path).listFiles(File::isDirectory);
+        return directories;
+    }
 
     public static File[] getFileListInFolderForImages(String imageFolder) {
         File dir = new File(imageFolder);
@@ -5573,4 +5632,149 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static void startJavaServer() {
+        new Thread(() -> {
+            try {
+                int port = 8887;
+                server = new SocketServer(port);
+                server.start();
+                System.out.println("Java WebSocket Server started on port: " + server.getPort());
+                BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
+                running.set(true);
+                while (running.get()) {
+                    try {
+                        if (sysin.ready()) {
+                            String in;
+                            try {
+                                in = sysin.readLine();
+                                //server.broadcast(in);
+                                if (in.equals("exit")) {
+                                    try {
+                                        server.stop(1000);
+                                        System.out.println("Java Server is stopping");
+                                    } catch (InterruptedException ex) {
+                                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    break;
+                                }
+                            } catch (IOException ex) {
+                                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                        Thread.sleep(1);
+                    } catch (IOException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+                System.out.println("Java Server was stopped");
+                server.stop();
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
+    }
+
+    public static void stopWebsocketServer() {
+        System.out.println("stop server command stop server flag is true");
+        stopServer = true;
+    }
+
+    public static WebSocketClient connectToPythonServer(InterfaceCallBack cb) {
+        icbf = cb;
+        isConnectPythonServer = true;
+        try {
+            client = new WebSocketClient(new URI("ws://localhost:8888"), new Draft_6455()) {
+
+                @Override
+                public void onMessage(String message) {
+//                    System.out.println("incoming message from python server = " + message);
+                    icbf.onMessageReceived(message);
+                }
+
+                @Override
+                public void onOpen(ServerHandshake handshake) {
+                    System.out.println("You connected to python server: " + getURI() + "\n");
+                }
+
+                @Override
+                public void onClose(int code, String reason, boolean remote) {
+                    System.out.println("You have been disconnected from: " + getURI() + "; Code: " + code + " " + reason + "\n");
+                }
+
+                @Override
+                public void onError(Exception ex) {
+                    System.out.println("Can't connect to python server:8888");
+                }
+            };
+            client.connect();
+        } catch (URISyntaxException ex) {
+            System.out.println("ws://localhost:8888" + " is not a valid WebSocket URI\n");
+            isConnectPythonServer = false;
+        }
+        return client;
+    }
+    
+    public static void delay(int n) {
+        try {
+            Thread.sleep(n);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static void executeCmdCommand(String cmd) {
+        executeCommand("cmd.exe", cmd, true);
+    }
+
+    public static void executeCmdCommand(String cmd, boolean isClosedAfter) {
+        executeCommand("cmd.exe", cmd, isClosedAfter);
+    }
+    
+    public static void executeCommand(String program, String command, boolean isClosed) {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (isClosed) {
+            processBuilder.command(program, "/c", command);
+        } else {
+            processBuilder.command(program, command);
+        }
+        try {
+            Process process = processBuilder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            int exitCode = process.waitFor();
+            System.out.println("\nExited with error code : " + exitCode);
+            if (exitCode == 1) {
+                BufferedReader error = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String errorString = error.readLine();
+                while (errorString != null) {
+                    System.out.println("errorString = " + errorString);
+                    errorString = error.readLine();
+                }
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void sendDataToSerialPort(SerialType st, String s1) {
+        String s = s1 + "\n";
+        try {
+            st.output.write(s.getBytes());
+            st.output.flush();
+            System.out.println("message was sent to arduino:" + s1);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
 }

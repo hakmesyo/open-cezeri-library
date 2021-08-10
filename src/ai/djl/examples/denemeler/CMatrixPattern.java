@@ -39,7 +39,9 @@ public class CMatrixPattern {
 //        trainPistachioWithResNet();
 //        predictPistachioWithResNet();
 
-        resizeImages();
+//        resizeImages();
+
+//        reIndexImages();
     }
 
     private static void extractNumbers(CMatrix[] numbers, CMatrix cm, int p) {
@@ -415,5 +417,18 @@ public class CMatrixPattern {
                     .toc(i + ".index=");
         }
 
+    }
+
+    private static void reIndexImages() {
+        final String DATA_SET = "C:\\Users\\cezerilab\\Downloads\\pist\\images\\open";
+        File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
+        for (int i = 0; i < files.length; i++) {
+            CMatrix cm = CMatrix.getInstance()
+                    .tic()
+                    .imread(files[i].getAbsolutePath())
+                    .imsave(DATA_SET + "/" + i+".jpg")
+                    .toc(i + ".index=");
+            
+        }
     }
 }

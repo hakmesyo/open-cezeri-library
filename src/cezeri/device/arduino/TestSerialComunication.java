@@ -1,5 +1,7 @@
 package cezeri.device.arduino;
 
+import cezeri.utils.SerialLib;
+import cezeri.utils.SerialType;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;

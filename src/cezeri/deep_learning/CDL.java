@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.deep_learning;
+package cezeri.deep_learning_app_server;
 
 import cezeri.matrix.CMatrix;
 
