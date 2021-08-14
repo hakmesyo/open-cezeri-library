@@ -8975,7 +8975,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix trainDataSet(String trainDSDir, int BATCH_SIZE, int trainRatio, int valRatio, int EPOCHS) {
-        ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE);
+        ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE,IMAGE_WIDTH,IMAGE_HEIGHT);
         try {
             RandomAccessDataset[] datasets = dataset.randomSplit(trainRatio, valRatio);
             Loss loss = Loss.softmaxCrossEntropyLoss();

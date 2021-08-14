@@ -36,7 +36,7 @@ public class CMatrixPattern {
 //        preparePistachioDataSet();
 //        trainPistachioWithMLP();
 //        predictPistachioWithMLPBlock();
-//        trainPistachioWithResNet();
+        trainPistachioWithResNet();
 //        predictPistachioWithResNet();
 
 //        resizeImages();
@@ -321,15 +321,18 @@ public class CMatrixPattern {
 
     private static void trainPistachioWithResNet() {
         final int NUM_CHANNEL = 3;
-        final int IMAGE_WIDTH = 224;
-        final int IMAGE_HEIGHT = 224;
+//        final int IMAGE_WIDTH = 224;
+//        final int IMAGE_HEIGHT = 224;
+        final int IMAGE_WIDTH = 128;
+        final int IMAGE_HEIGHT = 128;
         final int NUM_OUTPUT = 2;
         final int EPOCH = 30;
         final int BATCH_SIZE = 32;
         final int TRAIN_RATIO = 10;
         final int VAL_RATIO = 0;
         final String MODEL_NAME = "pistachio_resnet";
-        final String DATA_SET = "C:\\ai\\djl\\resized_pistachio_train";
+//        final String DATA_SET = "C:\\ai\\djl\\resized_pistachio_train";
+        final String DATA_SET = "models/pistachio_rest/images";
 
         Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, 50);
         CMatrix cm = CMatrix.getInstance()

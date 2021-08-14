@@ -10,6 +10,7 @@ import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
 import ai.djl.basicmodelzoo.basic.Mlp;
 import ai.djl.basicmodelzoo.cv.classification.ResNetV1;
+import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.nn.Block;
@@ -168,13 +169,13 @@ public class FactoryDJL {
         return modelName;
     }
 
-    public static ImageFolder initDataset(String dsDir, int BATCH_SIZE) {
+    public static ImageFolder initDataset(String dsDir, int BATCH_SIZE, int IMAGE_WIDTH,int IMAGE_HEIGHT) {
         ImageFolder dataset
                 = ImageFolder.builder()
                         // retrieve the data
                         .setRepositoryPath(Paths.get(dsDir))
                         .optMaxDepth(10)
-                        //.addTransform(new Resize(Models.IMAGE_WIDTH, Models.IMAGE_HEIGHT))
+                        .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
                         .addTransform(new ToTensor())
                         // random sampling; don't process the data in order
                         .setSampling(BATCH_SIZE, true)
