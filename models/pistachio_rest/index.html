@@ -3,47 +3,38 @@
 <script src="../scripts/p5.dom.min.js"></script>
 <script src="../scripts/ml5.min.js"></script>
 <script type="text/javascript">
-	// Model URL
 	let classifier;
 	let imageModelURL = './model/';
 	let img;
 	let imgName;
-	let temp_imgName;
-	let currentIndex = -2;
+	let currentIndex = 0;
 	let allImages = [];
 	let predictions = [];  
 	let label = "";
 
 	var connection = new WebSocket('ws://127.0.0.1:8887');
 	connection.onopen = function () {
-	  //connection.send('Ping from js');
 	  connection.send('restart');
 	};    
  connection.onmessage = function (event) {
    imgName=event.data;
-   temp_imgName=(' ' + imgName).slice(1);
-	  currentIndex++;
-   if (!imgName.includes('Welcome to the server!') && !imgName.includes('[new client connection]: 127.0.0.1') ) {
-		loadImage(temp_imgName, imageReady);
+   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') ) {
+	        connection.send(imgName);
 	  }else{
-		loadImage('../temp.jpg', imageReady);
+	    loadImage(imgName, imageReady);
 	   }
-	  createDiv('image: ' +currentIndex+':'+ temp_imgName+':'+label);
-	  console.log(temp_imgName+':'+label);
-	  connection.send(temp_imgName+':'+label);
  };    
 	// Load the model first
 	function preload() {
-	  currentIndex=-2;
+	  currentIndex=0;
 	  console.log("merhaba\n");
 	  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
 	}
 	// The function below will determine and setup the image sizes, get the results as image.
 	function setup() {
-	  currentIndex=-2;
+	  currentIndex=0;
 	  createCanvas(224, 224);
 	  background(0);
-	  loadImage('../temp.jpg', imageReady);
 	}
 
 	function imageReady(img) {
@@ -70,7 +61,11 @@
 		result: results
 	  };
 
+	  currentIndex++;
 	  label=results[0].label;
+	  createDiv('image: ' +currentIndex+':'+ imgName+':'+label);
+	  console.log(imgName+':'+label);
+	  connection.send(imgName+':'+label);
 	  
 	}
 </script>

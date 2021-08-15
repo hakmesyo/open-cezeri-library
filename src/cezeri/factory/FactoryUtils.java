@@ -77,6 +77,7 @@ import weka.core.converters.ConverterUtils;
  * @author venap3
  */
 public final class FactoryUtils {
+
     public static boolean stopServer = false;
     public static boolean isConnectPythonServer = false;
     public static SocketServer server;
@@ -356,13 +357,13 @@ public final class FactoryUtils {
     public static void writeToFile(String row) {
         writeToFile(getFileFromChooserSave(getDefaultDirectory()).getAbsolutePath(), row);
     }
-    
+
     public static void writeToFile(String path, List<String> rows) {
-        String row="";
+        String row = "";
         for (String row1 : rows) {
-            row+=row1+"\n";
+            row += row1 + "\n";
         }
-        row=row.substring(0, row.length()-1);
+        row = row.substring(0, row.length() - 1);
         Writer out = null;
         try {
             try {
@@ -434,14 +435,14 @@ public final class FactoryUtils {
             Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void writeToFile(String path, String[] rows) {
         Writer out = null;
-        String row="";
+        String row = "";
         for (String row1 : rows) {
-            if (row1!=null) {
-                row+=row1+"\n";
-            }            
+            if (row1 != null) {
+                row += row1 + "\n";
+            }
         }
         try {
             try {
@@ -3276,10 +3277,43 @@ public final class FactoryUtils {
         }
         return results.toArray(new File[0]);
     }
-    
+
     public static File[] getDirectories(String path) {
         File[] directories = new File(path).listFiles(File::isDirectory);
         return directories;
+    }
+
+    public static File[] getFileListDataSetForImageClassification(String imageMainFolder) {
+        final String[] EXTENSIONS = new String[]{
+            "gif", "png", "bmp", "jpg", "PNG", "JPG", "BMP", "GIF", "jpeg", "JPEG" // and other formats you need
+        };
+        // filter to identify images based on their extensions
+        FilenameFilter IMAGE_FILTER = new FilenameFilter() {
+
+            @Override
+            public boolean accept(final File dir, final String name) {
+                for (final String ext : EXTENSIONS) {
+                    if (name.endsWith("." + ext)) {
+                        return (true);
+                    }
+                }
+                return (false);
+            }
+        };
+        File[] dirs = getFolderListInFolder(imageMainFolder);
+        List<File> lst=new ArrayList();
+        for (int i = 0; i < dirs.length; i++) {
+            File dir = new File(dirs[i].getAbsolutePath());
+            File[] files = dir.listFiles(IMAGE_FILTER);
+            for (int j = 0; j < files.length ; j++) {
+                lst.add(files[j]);
+            }
+        }
+        File[] ret=new File[lst.size()];
+        for (int i = 0; i < lst.size(); i++) {
+            ret[i]=lst.get(i);
+        }
+        return ret;
     }
 
     public static File[] getFileListInFolderForImages(String imageFolder) {
@@ -3451,7 +3485,7 @@ public final class FactoryUtils {
 //        }
         return ret;
     }
-    
+
     public static TRoi getRoiOfWeightCenteredObject(double[][] d, int t, int nf) {
         TRoi ret = new TRoi();
         int[] px = getProjectedMatrixOnX(d);
@@ -3462,11 +3496,11 @@ public final class FactoryUtils {
         try {
             if (p_x.length == 0 || p_y.length == 0) {
                 return null;
-            }else{
-                ret.pr=p_y[0].row;
-                ret.pc=p_x[0].row;
-                ret.height=p_y[0].column-ret.pr;
-                ret.width=p_x[0].column-ret.pc;
+            } else {
+                ret.pr = p_y[0].row;
+                ret.pc = p_x[0].row;
+                ret.height = p_y[0].column - ret.pr;
+                ret.width = p_x[0].column - ret.pc;
             }
             //ret = getSubMatrix(d, new CPoint(p_y[0].row, p_x[0].row), new CPoint(p_y[0].column, p_x[0].column));
         } catch (Exception ex) {
@@ -5437,6 +5471,13 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static File[] shuffle(File[] files,Random rnd) {
+        List<File> lst = Arrays.asList(files);
+        Collections.shuffle(lst,rnd);
+        files=lst.toArray(files);
+        return files;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -5720,7 +5761,7 @@ public final class FactoryUtils {
         }
         return client;
     }
-    
+
     public static void delay(int n) {
         try {
             Thread.sleep(n);
@@ -5728,7 +5769,7 @@ public final class FactoryUtils {
             Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void executeCmdCommand(String cmd) {
         executeCommand("cmd.exe", cmd, true);
     }
@@ -5736,7 +5777,7 @@ public final class FactoryUtils {
     public static void executeCmdCommand(String cmd, boolean isClosedAfter) {
         executeCommand("cmd.exe", cmd, isClosedAfter);
     }
-    
+
     public static void executeCommand(String program, String command, boolean isClosed) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (isClosed) {
