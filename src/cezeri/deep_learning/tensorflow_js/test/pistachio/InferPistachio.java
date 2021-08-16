@@ -10,7 +10,6 @@ import cezeri.deep_learning.tensorflow_js.enums.EnumBackEnd;
 import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
 import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
 import cezeri.deep_learning.tensorflow_js.interfaces.Configuration;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceConfiguration;
 import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceDeepLearning;
 import cezeri.factory.FactoryUtils;
@@ -30,12 +29,12 @@ public class InferPistachio implements InterfaceDeepLearning {
 
     private final static String strML5 = ""
             + "<div>Teachable Machine Image Model - p5.js and ml5.js</div>\n"
-            //            + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js\"></script>\n"
-            //            + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js\"></script>\n"
-            //            + "<script src=\"https://unpkg.com/ml5@latest/dist/ml5.min.js\"></script>\n"
-            + "<script src=\"../scripts/p5.min.js\"></script>\n"
-            + "<script src=\"../scripts/p5.dom.min.js\"></script>\n"
-            + "<script src=\"../scripts/ml5.min.js\"></script>\n"
+                        + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js\"></script>\n"
+                        + "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js\"></script>\n"
+                        + "<script src=\"https://unpkg.com/ml5@latest/dist/ml5.min.js\"></script>\n"
+//            + "<script src=\"../scripts/p5.min.js\"></script>\n"
+//            + "<script src=\"../scripts/p5.dom.min.js\"></script>\n"
+//            + "<script src=\"../scripts/ml5.min.js\"></script>\n"
             + "<script type=\"text/javascript\">\n"
             + "	let classifier;\n"
             + "	let imageModelURL = './model/';\n"
@@ -133,6 +132,8 @@ public class InferPistachio implements InterfaceDeepLearning {
     public void execute(int port) {
         try {
             Runtime.getRuntime().exec("cmd /c http-server -p " + port);
+            //FOR LINUX
+//            Runtime.getRuntime().exec("/bin/bash -c http-server -p " + port);
         } catch (IOException ex) {
             Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -148,6 +149,8 @@ public class InferPistachio implements InterfaceDeepLearning {
                 folder = folder.substring(folder.lastIndexOf("\\") + 1);
                 try {
                     Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome http://localhost:" + port + "/models/" + folder});
+                    //FOR LINUX
+//                  Runtime.getRuntime().exec(new String[]{"bash", "-c", "chromium-browser http://localhost:" + port + "/models/" + folder});
                 } catch (IOException ex) {
                     Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -160,11 +163,11 @@ public class InferPistachio implements InterfaceDeepLearning {
 
     public static void main(String[] args) {
         System.out.println("user dir:" + FactoryUtils.getDefaultDirectory());
-//        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/close";
+//        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/test";
 //        files = FactoryUtils.getFileListInFolderForImages(imgPath);
-        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images";
+        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/test";
         files = FactoryUtils.getFileListDataSetForImageClassification(imgPath);
-        files = FactoryUtils.shuffle(files, new Random(123));
+        files = FactoryUtils.shuffle(files, new Random(new Random().nextInt()));
         InferPistachio jdlp = new InferPistachio();
         Configuration config = new ConfigurationJavaScript()
                 .setTestFolderPath(imgPath)

@@ -283,22 +283,25 @@ public class CMatrixPattern {
     }
 
     private static void preparePistachioDataSet() {
-        final String DATA_SET = "C:\\ai\\djl\\pistachio_test";
+//        final String DATA_SET = "C:\\ai\\djl\\pistachio_test";
+        final String DATA_SET = "data/pistachio/train";
         File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET + "/open");
         for (int i = 0; i < files.length; i++) {
             TRoi roi = CMatrix.getInstance()
                     .imread(files[i].getAbsolutePath())
                     .rgb2gray()
-                    //.imshow()
-                    .getROIofWeightCenteredObject(40, 20, 1);
+                    .thresholdOtsu()
+                    .imshow()
+//                    .getROIofWeightCenteredObject(40, 20, 1);
+                    .getROIofWeightCenteredObject(255, 0, 1);
             System.out.println("roi = " + roi);
             CMatrix cm2 = CMatrix.getInstance()
                     .imread(files[i].getAbsolutePath())
                     .cmd(roi.pr + ":" + (roi.pr + roi.height), roi.pc + ":" + (roi.pc + roi.width))
-                    //.imshow()
+//                    .imshow()
                     .imresize(224, 224)
-                    //.imshow()
-                    .imsave("C:\\ai\\djl\\resized_pistachio_test\\open\\" + files[i].getName());
+//                    .imshow()
+                    .imsave("models/pistachio_rest/images/train/open/" + files[i].getName());
         }
 
 //        CMatrix cm = CMatrix.getInstance().tic().imread(DATA_SET + "/open/282493955742600.jpg")
@@ -321,18 +324,18 @@ public class CMatrixPattern {
 
     private static void trainPistachioWithResNet() {
         final int NUM_CHANNEL = 3;
-//        final int IMAGE_WIDTH = 224;
-//        final int IMAGE_HEIGHT = 224;
-        final int IMAGE_WIDTH = 128;
-        final int IMAGE_HEIGHT = 128;
+        final int IMAGE_WIDTH = 224;
+        final int IMAGE_HEIGHT = 224;
+//        final int IMAGE_WIDTH = 150;
+//        final int IMAGE_HEIGHT = 150;
         final int NUM_OUTPUT = 2;
         final int EPOCH = 30;
-        final int BATCH_SIZE = 32;
+        final int BATCH_SIZE = 8;
         final int TRAIN_RATIO = 10;
         final int VAL_RATIO = 0;
         final String MODEL_NAME = "pistachio_resnet";
-//        final String DATA_SET = "C:\\ai\\djl\\resized_pistachio_train";
-        final String DATA_SET = "models/pistachio_rest/images";
+        final String DATA_SET = "C:\\ai\\djl\\resized_pistachio_train";
+//        final String DATA_SET = "models/pistachio_rest/images";
 
         Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, 50);
         CMatrix cm = CMatrix.getInstance()
@@ -343,6 +346,7 @@ public class CMatrixPattern {
     private static void predictPistachioWithResNet() {
         final String MODEL_PATH = "models/pistachio_resnet/pistachio_resnet-0030.params";
         final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
+//        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\open";
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 

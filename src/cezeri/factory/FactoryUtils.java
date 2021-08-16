@@ -3301,19 +3301,31 @@ public final class FactoryUtils {
             }
         };
         File[] dirs = getFolderListInFolder(imageMainFolder);
-        List<File> lst=new ArrayList();
-        for (int i = 0; i < dirs.length; i++) {
-            File dir = new File(dirs[i].getAbsolutePath());
+        List<File> lst = new ArrayList();
+        if (dirs.length == 0) {
+            File dir = new File(imageMainFolder);
             File[] files = dir.listFiles(IMAGE_FILTER);
-            for (int j = 0; j < files.length ; j++) {
-                lst.add(files[j]);
+            File[] ret = new File[files.length];
+            for (int j = 0; j < files.length; j++) {
+                ret[j]=files[j];
             }
+            return ret;
+
+        } else {
+            for (int i = 0; i < dirs.length; i++) {
+                File dir = new File(dirs[i].getAbsolutePath());
+                File[] files = dir.listFiles(IMAGE_FILTER);
+                for (int j = 0; j < files.length; j++) {
+                    lst.add(files[j]);
+                }
+            }
+            File[] ret = new File[lst.size()];
+            for (int i = 0; i < lst.size(); i++) {
+                ret[i] = lst.get(i);
+            }
+            return ret;
         }
-        File[] ret=new File[lst.size()];
-        for (int i = 0; i < lst.size(); i++) {
-            ret[i]=lst.get(i);
-        }
-        return ret;
+        
     }
 
     public static File[] getFileListInFolderForImages(String imageFolder) {
@@ -5471,10 +5483,10 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static File[] shuffle(File[] files,Random rnd) {
+    public static File[] shuffle(File[] files, Random rnd) {
         List<File> lst = Arrays.asList(files);
-        Collections.shuffle(lst,rnd);
-        files=lst.toArray(files);
+        Collections.shuffle(lst, rnd);
+        files = lst.toArray(files);
         return files;
     }
 
