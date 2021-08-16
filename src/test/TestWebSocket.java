@@ -6,8 +6,7 @@
 package test;
 
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning_app_server.CDL_Utils;
-import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.matrix.CMatrix;
 
 /**

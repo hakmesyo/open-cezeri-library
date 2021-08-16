@@ -40,7 +40,7 @@ package cezeri.matrix;
 
 import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
-import ai.djl.examples.denemeler.number_classificiation.Models;
+import cezeri.deep_learning.ai.djl.examples.denemeler.number_classificiation.Models;
 import ai.djl.inference.Predictor;
 import ai.djl.metric.Metrics;
 import ai.djl.modality.Classifications;
@@ -60,7 +60,6 @@ import ai.djl.training.loss.Loss;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
 import cezeri.call_back_interface.CallBackDataBase;
-import cezeri.deep_learning_app_server.CDL;
 import cezeri.factory.FactoryCombination;
 import cezeri.factory.FactoryMatrix;
 import cezeri.types.TMatrixOperator;
@@ -114,7 +113,7 @@ import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.types.TBlockType;
@@ -8315,9 +8314,9 @@ public final class CMatrix implements Serializable {
         return ret;
     }
 
-    public CDL switchToDeepLearning() {
-        return CDL.getInstance(this);
-    }
+//    public CDL switchToDeepLearning() {
+//        return CDL.getInstance(this);
+//    }
 
     public CMatrix distinct() {
         CMatrix ret = this.clone(this);

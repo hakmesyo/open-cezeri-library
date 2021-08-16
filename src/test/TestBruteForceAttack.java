@@ -20,8 +20,6 @@ public class TestBruteForceAttack {
 //            CMatrix cm = 
                     CMatrix.getInstance()
                     .bruteForceAttack(pool, pass, false)
-                    .switchToDeepLearning()
-                    .checkWebSocketStatus()
                     ;
 //        }
     }

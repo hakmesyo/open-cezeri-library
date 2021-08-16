@@ -5,7 +5,7 @@
 package cezeri.factory;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.utils.SerialType;
 import static cezeri.factory.FactorySocket.server;
 import cezeri.types.TDeviceState;

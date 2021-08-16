@@ -10,7 +10,7 @@ import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.Mnist;
 import ai.djl.basicmodelzoo.basic.Mlp;
-import ai.djl.examples.training.util.Arguments;
+import cezeri.deep_learning.ai.djl.examples.training.util.Arguments;
 import ai.djl.inference.Predictor;
 import ai.djl.metric.Metrics;
 import ai.djl.modality.Classifications;

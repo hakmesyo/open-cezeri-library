@@ -14,7 +14,7 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
 
 public class SocketServer extends WebSocketServer {

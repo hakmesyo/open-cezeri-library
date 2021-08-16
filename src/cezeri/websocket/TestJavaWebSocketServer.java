@@ -1,6 +1,6 @@
 package cezeri.websocket;
 
-import cezeri.deep_learning_rest.interfaces.InterfaceCallBack;
+import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
 import java.util.logging.Level;
 import java.util.logging.Logger;
