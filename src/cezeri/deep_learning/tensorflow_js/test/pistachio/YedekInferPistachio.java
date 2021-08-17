@@ -266,7 +266,7 @@ public class YedekInferPistachio implements InterfaceDeepLearning {
             Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        FactoryUtils.startJavaServer();
+        FactoryUtils.startJavaServer(8887);
         FactoryUtils.icbf = config.getCall_back();
 
         FactoryUtils.delay(1000);

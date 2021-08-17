@@ -5685,10 +5685,10 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static void startJavaServer() {
+    public static void startJavaServer(int port) {
         new Thread(() -> {
             try {
-                int port = 8887;
+                //int port = 8887;
                 server = new SocketServer(port);
                 server.start();
                 System.out.println("Java WebSocket Server started on port: " + server.getPort());

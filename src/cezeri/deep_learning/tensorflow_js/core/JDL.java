@@ -34,7 +34,7 @@ public final class JDL {
     
 
     private JDL(InterfaceCallBack cb) {
-        FactoryUtils.startJavaServer();
+        FactoryUtils.startJavaServer(8887);
         FactoryUtils.icbf=cb;
         FactoryUtils.delay(1000);
     }

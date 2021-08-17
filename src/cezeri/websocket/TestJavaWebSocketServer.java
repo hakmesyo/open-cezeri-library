@@ -34,7 +34,7 @@ public class TestJavaWebSocketServer {
     }
 
     public static void main(String[] args) {
-        FactoryUtils.startJavaServer();
+        FactoryUtils.startJavaServer(8887);
         FactoryUtils.icbf=new InterfaceCallBack() {
             @Override
             public void onMessageReceived(String str) {

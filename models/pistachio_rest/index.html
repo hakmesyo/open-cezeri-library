@@ -8,7 +8,9 @@
 	let img;
 	let imgName;
 	let currentIndex = 0;
+	let index = 0;
 	let allImages = [];
+	let images = [];
 	let predictions = [];  
 	let label = "";
 
@@ -18,9 +20,11 @@
 	};    
  connection.onmessage = function (event) {
    imgName=event.data;
-   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') ) {
+   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {
 	        connection.send(imgName);
 	  }else{
+	    images[index]=imgName;
+	    index++;
 	    loadImage(imgName, imageReady);
 	   }
  };    
@@ -61,11 +65,13 @@
 		result: results
 	  };
 
-	  currentIndex++;
 	  label=results[0].label;
-	  createDiv('image: ' +currentIndex+':'+ imgName+':'+label);
-	  console.log(imgName+':'+label);
-	  connection.send(imgName+':'+label);
+	  createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);
+	  console.log(images[currentIndex]+':'+label);
+	  connection.send(images[currentIndex]+':'+label);
+   console.log(new Date().toLocaleTimeString());
+   //images.shift();
+	  currentIndex++;
 	  
 	}
 </script>

@@ -159,7 +159,7 @@ public class InferPistachio_1 implements InterfaceDeepLearning {
             Logger.getLogger(InferPistachio_1.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        FactoryUtils.startJavaServer();
+        FactoryUtils.startJavaServer(8887);
         FactoryUtils.icbf = config.getCall_back();
 
         FactoryUtils.delay(1000);

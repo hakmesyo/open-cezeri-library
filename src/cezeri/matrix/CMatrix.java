@@ -4599,6 +4599,11 @@ public final class CMatrix implements Serializable {
         return readImage(path);
     }
 
+    public CMatrix imremove(String path) {
+        FactoryUtils.deleteFile(path);
+        return this;
+    }
+
     public CMatrix readImage() {
         File fl = ImageProcess.readImage();
         BufferedImage bf = ImageProcess.readImageFromFile(fl);
