@@ -13,19 +13,28 @@
 	let images = [];
 	let predictions = [];  
 	let label = "";
+ let startTime, endTime;
 
 	var connection = new WebSocket('ws://127.0.0.1:8887');
 	connection.onopen = function () {
+   startTime=new Date();
+	  images = [];
 	  connection.send('restart');
 	};    
  connection.onmessage = function (event) {
    imgName=event.data;
    if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {
 	        connection.send(imgName);
+	  }else if(imgName.includes('son')){
+	    console.log(imgName+' message received index count is '+index);
+	    for(let i=0;i<index;i++){
+	      imgName=images[i];
+	      loadImage(imgName, imageReady);
+	    }
 	  }else{
 	    images[index]=imgName;
+	    console.log(images[index]);
 	    index++;
-	    loadImage(imgName, imageReady);
 	   }
  };    
 	// Load the model first
@@ -42,7 +51,6 @@
 	}
 
 	function imageReady(img) {
-	  image(img, 0, 0);
 	  classifier.classify(img, gotResult);
 	}
 
@@ -66,10 +74,8 @@
 	  };
 
 	  label=results[0].label;
-	  createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);
 	  console.log(images[currentIndex]+':'+label);
 	  connection.send(images[currentIndex]+':'+label);
-   console.log(new Date().toLocaleTimeString());
    //images.shift();
 	  currentIndex++;
 	  

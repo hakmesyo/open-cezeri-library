@@ -13,20 +13,17 @@ import cezeri.deep_learning.tensorflow_js.interfaces.Configuration;
 import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceConfiguration;
 import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceDeepLearning;
 import cezeri.factory.FactoryUtils;
-import cezeri.image_processing.ImageProcess;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 
 /**
  *
- * @author cezerilab
+ * @author cezerilab linux ubuntuda yani jetsn nano da cpu ve gpu utilization
+ * için sudo jtop çalıştır
+ *
  */
 public class InferPistachio implements InterfaceDeepLearning {
 
@@ -50,9 +47,12 @@ public class InferPistachio implements InterfaceDeepLearning {
             + "	let images = [];\n"
             + "	let predictions = [];  \n"
             + "	let label = \"\";\n"
+            + " let startTime, endTime;\n"
             + "\n"
             + "	var connection = new WebSocket('ws://127.0.0.1:8887');\n"
             + "	connection.onopen = function () {\n"
+            + "   startTime=new Date();\n"
+            + "	  images = [];\n"
             + "	  connection.send('restart');\n"
             + "	};    \n"
             + " connection.onmessage = function (event) {\n"
@@ -61,10 +61,16 @@ public class InferPistachio implements InterfaceDeepLearning {
             //            + "	  console.log(imgName);\n"
             + "   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {\n"
             + "	        connection.send(imgName);\n"
+            + "	  }else if(imgName.includes('son')){\n"
+            + "	    console.log(imgName+' message received index count is '+index);\n"
+            + "	    for(let i=0;i<index;i++){\n"
+            + "	      imgName=images[i];\n"
+            + "	      loadImage(imgName, imageReady);\n"
+            + "	    }\n"
             + "	  }else{\n"
             + "	    images[index]=imgName;\n"
+            + "	    console.log(images[index]);\n"
             + "	    index++;\n"
-            + "	    loadImage(imgName, imageReady);\n"
             + "	   }\n"
             + " };    \n"
             + "	// Load the model first\n"
@@ -82,7 +88,7 @@ public class InferPistachio implements InterfaceDeepLearning {
             + "	}\n"
             + "\n"
             + "	function imageReady(img) {\n"
-            + "	  image(img, 0, 0);\n"
+            //            + "	  image(img, 0, 0);\n"
             + "	  classifier.classify(img, gotResult);\n"
             + "	}\n"
             + "\n"
@@ -108,10 +114,13 @@ public class InferPistachio implements InterfaceDeepLearning {
             //            + "	  predictions.push(information);\n"
             //            + "	  createDiv('ID: ' + temp_imgName);\n"
             + "	  label=results[0].label;\n"
-            + "	  createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);\n"
+            //            + "	  createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);\n"
             + "	  console.log(images[currentIndex]+':'+label);\n"
             + "	  connection.send(images[currentIndex]+':'+label);\n"
-            + "   console.log(new Date().toLocaleTimeString());\n"
+//            + "   console.log(new Date().toLocaleTimeString());\n"
+//            + "   endTime=new Date();\n"
+////            + "   interval=endTime-startTime;\n"
+//            + "   console.log('interval:'+interval);\n"
             + "   //images.shift();\n"
             + "	  currentIndex++;\n"
             + "	  \n"
@@ -135,7 +144,7 @@ public class InferPistachio implements InterfaceDeepLearning {
             }
         }
         String folder = config.getModelPath();
-        scriptFilePath = folder + "\\index.html";
+        scriptFilePath = folder + "/index.html";
         FactoryUtils.writeToFile(scriptFilePath, str);
     }
 
@@ -157,11 +166,11 @@ public class InferPistachio implements InterfaceDeepLearning {
             @Override
             public void run() {
                 String folder = config.getModelPath();
-                folder = folder.substring(folder.lastIndexOf("\\") + 1);
+                folder = folder.substring(folder.lastIndexOf("/") + 1);
                 try {
                     Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome http://localhost:" + port + "/models/" + folder});
                     //FOR LINUX
-//                  Runtime.getRuntime().exec(new String[]{"bash", "-c", "chromium-browser http://localhost:" + port + "/models/" + folder});
+//                    Runtime.getRuntime().exec(new String[]{"bash", "-c", "chromium-browser http://localhost:" + port + "/models/" + folder});
                 } catch (IOException ex) {
                     Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -176,16 +185,18 @@ public class InferPistachio implements InterfaceDeepLearning {
         System.out.println("user dir:" + FactoryUtils.getDefaultDirectory());
 //        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/test";
 //        files = FactoryUtils.getFileListInFolderForImages(imgPath);
-        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/mixed";
+        String imgPath = FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest/images/test";
         files = FactoryUtils.getFileListDataSetForImageClassification(imgPath);
-        files = FactoryUtils.shuffle(files, new Random(123));
+//        files = FactoryUtils.shuffle(files, new Random(123));
+        files = FactoryUtils.shuffle(files, new Random());
+        System.out.println("files size:" + files.length);
         InferPistachio jdlp = new InferPistachio();
         Configuration config = new ConfigurationJavaScript()
                 .setTestFolderPath(imgPath)
                 .setBackEnd(EnumBackEnd.CPU)
                 .setDataSource(EnumDataSource.IMAGE_FILE)
                 .setLearningMode(EnumLearningMode.TEST)
-                .setModelPath(FactoryUtils.getDefaultDirectory() + "\\models\\pistachio_rest")
+                .setModelPath(FactoryUtils.getDefaultDirectory() + "/models/pistachio_rest")
                 .setCallBackFunction(InferPistachio::invokeMethod);
 //                .setCallBackFunction(new InterfaceCallBack() {
 //                    @Override
@@ -199,36 +210,48 @@ public class InferPistachio implements InterfaceDeepLearning {
         jdlp.build();
         jdlp.execute(8080);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
-                }
-//                int i=0;
-                for (int i=0;i<files.length;i++) {
-                    String s = files[i].getAbsolutePath();
-                    s = "./" +s.replace(FactoryUtils.currDir + "\\models\\pistachio_rest\\", "");
-                    System.out.println("tensorflowjs'ye giden mesaj: = " + s);
-                    FactoryUtils.server.broadcast(s);
-                    try {
-                        Thread.sleep(30);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    //i=i%files.length;
-                }
-            }
-        }).start();
-
     }
 
     private static int hit = 0;
     private static int err = 0;
     private static double acc = 0;
     private static long t1 = FactoryUtils.tic();
+
+    private static void newJob() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                int i=0;
+                long t1 = 0;
+                String s="";
+                for (int i = 0; i < files.length; i++) {
+//                    t1 = FactoryUtils.toc(t1);
+//                    int n=(int)(Math.random()*files.length);
+                    System.out.println("n = " + i);
+                    s = files[i].getAbsolutePath();
+                    //FOR WINDOWS
+                    s = "./" +s.replace(FactoryUtils.currDir + "\\models\\pistachio_rest\\", "");
+                    //FOR LINUX
+//                    s = "./" + s.replace(FactoryUtils.currDir + "/models/pistachio_rest/", "");
+                    System.out.println("tensorflowjs'ye giden mesaj: = " + s);
+                    FactoryUtils.server.broadcast(s);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    //i=i%files.length;
+                }
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                FactoryUtils.server.broadcast("son");
+            }
+        }).start();
+
+    }
 
     /**
      * aşağıdaki kodlarda buradaki bilgilerden faydalanılmıştır: amacımız java
@@ -248,30 +271,31 @@ public class InferPistachio implements InterfaceDeepLearning {
     private static void invokeMethod(String str) {
         t1 = FactoryUtils.toc(t1);
         System.out.println("str gelen= " + str);
-        if (str.contains("Welcome to the server!")) {
+        if (str.contains("Welcome to the server!") || str.contains("[new client connection]: 127.0.0.1")) {
         } else {
             if (str.equals("restart")) {
                 currentIndex = 0;
                 hit = err = 0;
+                newJob();
                 FactoryUtils.server.broadcast("baslayabilirsin");
                 return;
-            }
-            if (currentIndex >= files.length - 1) {
-                acc = 1.0 * hit / files.length * 100;
-                System.out.println("accuracy = " + acc);
-                System.out.println("hit = " + hit);
-                System.out.println("err = " + err);
             } else {
                 if (str.split(":").length > 1) {
                     String path = str.split(":")[0];
                     String label = str.split(":")[1];
                     if (path.contains(label)) {
                         hit++;
-                        System.out.println("hit = " + hit);
                     } else {
                         err++;
-                        System.out.println("err = " + err);
                     }
+                    System.out.println("hit = " + hit);
+                    System.out.println("err = " + err);
+                }
+                if (currentIndex++ >= files.length) {
+                    acc = 1.0 * hit / files.length * 100;
+                    System.out.println("accuracy = " + acc);
+                    System.out.println("hit = " + hit);
+                    System.out.println("err = " + err);
                 }
 //                String s = files[currentIndex].getAbsolutePath();
 //                s = s.replace(FactoryUtils.currDir+"\\models\\pistachio_rest\\", "");
@@ -290,9 +314,10 @@ public class InferPistachio implements InterfaceDeepLearning {
 //                String base64String = Base64.getEncoder().encodeToString(byteArray);
 //                FactoryUtils.server.broadcast(base64String);
 //                canSend = false;
-                currentIndex++;
+
             }
         }
     }
 
 }
+
