@@ -5,11 +5,13 @@
  */
 package cezeri.factory;
 
+import ai.djl.Device;
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
 import ai.djl.basicmodelzoo.basic.Mlp;
 import ai.djl.basicmodelzoo.cv.classification.ResNetV1;
+import ai.djl.engine.Engine;
 import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.ndarray.types.Shape;
@@ -192,8 +194,12 @@ public class FactoryDJL {
     }
 
     public static TrainingConfig setupTrainingConfig(Loss loss) {
+        Device[] devices= new Device[]{Device.cpu()};
+        System.out.println("gpu count:"+Device.getGpuCount());
         return new DefaultTrainingConfig(loss)
                 .addEvaluator(new Accuracy())
+//                .optDevices(Device.getDevices())
+                .optDevices(devices)
                 .addTrainingListeners(TrainingListener.Defaults.logging());
     }
 

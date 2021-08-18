@@ -36,12 +36,12 @@ public class CMatrixPattern {
 //        preparePistachioDataSet();
 //        trainPistachioWithMLP();
 //        predictPistachioWithMLPBlock();
-//        trainPistachioWithResNet();
+        trainPistachioWithResNet();
 //        predictPistachioWithResNet();
 
 //        resizeImages();
 
-        reIndexImages();
+//        reIndexImages();
     }
 
     private static void extractNumbers(CMatrix[] numbers, CMatrix cm, int p) {
