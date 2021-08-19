@@ -95,8 +95,8 @@ public class InferPistachio implements InterfaceDeepLearning {
             "         clearInterval(checkExist);\n" +
             "         loadImage(images[currentIndex], imageReady);;\n" +
             "       }\n" +
-            "     }, 5); // check every 100ms"
-            + "	  //if(currentIndex<images.length) loadImage(images[currentIndex], imageReady);\n"
+            "     }, 1);\n"
+//            + "	  if(currentIndex<images.length) loadImage(images[currentIndex], imageReady);\n"
             + "	}\n"
             + "</script>\n"
             + "";
@@ -177,7 +177,7 @@ public class InferPistachio implements InterfaceDeepLearning {
         jdlp.build();
         jdlp.execute(8080);
         try {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException ex) {
             Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -197,13 +197,17 @@ public class InferPistachio implements InterfaceDeepLearning {
             public void run() {
                 long t1 = 0;
                 String s = "";
-                int i = 0;
-                for (;;) {
+//                int i = 0;
+                for (int i=0;i<files.length;i++) {
+//                for (;;) {
+//                    if (i>560) {
+//                        break;
+//                    }
 //                    int n = (int) (Math.random() * files.length);
 //                    System.out.println("randomly selected index = " + n);
                     System.out.println("i = " + i);
-                    s = files[i++].getAbsolutePath();
-                    i = i % files.length;
+                    s = files[i].getAbsolutePath();
+//                    i = i % files.length;
                     //FOR WINDOWS
                     s = "./" + s.replace(FactoryUtils.currDir + "\\models\\pistachio_rest\\", "");
                     //FOR LINUX
@@ -211,11 +215,11 @@ public class InferPistachio implements InterfaceDeepLearning {
                     System.out.println("tensorflowjs'ye giden mesaj: = " + s);
                     FactoryUtils.server.broadcast(s);
                     try {
-                        Thread.sleep(30);
+                        Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(InferPistachio.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    t1 = FactoryUtils.toc(t1);
+//                    t1 = FactoryUtils.toc(t1);
                 }
             }
         }).start();
