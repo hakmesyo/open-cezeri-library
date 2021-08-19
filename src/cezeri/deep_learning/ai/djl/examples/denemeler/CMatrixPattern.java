@@ -36,12 +36,12 @@ public class CMatrixPattern {
 //        preparePistachioDataSet();
 //        trainPistachioWithMLP();
 //        predictPistachioWithMLPBlock();
-        trainPistachioWithResNet();
+//        trainPistachioWithResNet();
 //        predictPistachioWithResNet();
 
 //        resizeImages();
 
-//        reIndexImages();
+        reIndexImages();
     }
 
     private static void extractNumbers(CMatrix[] numbers, CMatrix cm, int p) {
@@ -428,7 +428,7 @@ public class CMatrixPattern {
 
     private static void reIndexImages() {
 //        final String DATA_SET = "C:\\Users\\cezerilab\\Downloads\\pist\\images\\open";
-        final String DATA_SET = "models\\pistachio_rest\\images\\test\\mixed";
+        final String DATA_SET = "models\\pistachio_rest\\images\\train\\close";
         File[] files = FactoryUtils.getFileListInFolderForImages(DATA_SET);
         for (int i = 0; i < files.length; i++) {
             CMatrix cm = CMatrix.getInstance()

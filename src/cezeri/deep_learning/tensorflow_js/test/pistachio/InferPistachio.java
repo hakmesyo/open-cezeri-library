@@ -26,6 +26,50 @@ import java.util.logging.Logger;
  *
  */
 public class InferPistachio implements InterfaceDeepLearning {
+    String python_script="# -*- coding: utf-8 -*-\n" +
+"\"\"\"\n" +
+"Created on Thu Aug 19 15:37:07 2021\n" +
+"\n" +
+"@author: cezerilab\n" +
+"\"\"\"\n" +
+"import tensorflow as tf\n" +
+"import keras\n" +
+"from keras import backend as K\n" +
+"from keras.layers.core import Dense, Activation\n" +
+"from keras.optimizers import Adam\n" +
+"from keras.metrics import categorical_crossentropy\n" +
+"from keras.preprocessing.image import ImageDataGenerator\n" +
+"from keras.preprocessing import image\n" +
+"from keras.models import Model\n" +
+"from keras.applications import imagenet_utils\n" +
+"from keras.layers import Dense,GlobalAveragePooling2D\n" +
+"from keras.applications import MobileNet\n" +
+"from keras.applications.mobilenet import preprocess_input\n" +
+"import numpy as np\n" +
+"from IPython.display import Image\n" +
+"from keras.optimizers import Adam\n" +
+"import timeit\n" +
+"\n" +
+"\n" +
+"print(tf.__version__)\n" +
+"\n" +
+"mobile = keras.applications.mobilenet.MobileNet()\n" +
+"def prepare_image(file):\n" +
+"    img_path = ''\n" +
+"    img = image.load_img(img_path + file, target_size=(224, 224))\n" +
+"    img_array = image.img_to_array(img)\n" +
+"    img_array_expanded_dims = np.expand_dims(img_array, axis=0)\n" +
+"    return keras.applications.mobilenet.preprocess_input(img_array_expanded_dims)\n" +
+"\n" +
+"start = timeit.default_timer()\n" +
+"for i in range(50):\n" +
+"    preprocessed_image = prepare_image('./images/mixed/'+str(i)+'.jpg')\n" +
+"    predictions = mobile.predict(preprocessed_image)\n" +
+"    results = imagenet_utils.decode_predictions(predictions)\n" +
+"    print(results[0][0])\n" +
+"\n" +
+"stop = timeit.default_timer()\n" +
+"print('Time: ', stop - start,' seconds')  ";
 
 //    private static boolean canSend = false;
     private final static String strML5 = "\n"

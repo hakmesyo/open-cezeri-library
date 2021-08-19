@@ -23,15 +23,22 @@
 	 createCanvas(224, 224);
 	 background(0);
 	 console.log(new Date().toLocaleTimeString());
-	 //for(let i=0;i<1440;i++){
-	    let path='./images/test/mixed/'+currentIndex+'.jpg';
-	    //let path='./images/test/mixed/'+i+'.jpg';
+	 for(let i=0;i<562;i++){
+	    let path='./images/mixed/'+i+'.jpg';
 		console.log(path);
 		loadImage(path, imageReady);
-	 //}
-	 //console.log(new Date().toLocaleTimeString());
+	 }
 	}
-
+	/*
+	function setup() {
+	 createCanvas(224, 224);
+	 background(0);
+	 console.log(new Date().toLocaleTimeString());
+     let path='./images/mixed/'+currentIndex+'.jpg';
+     console.log(path);
+	 loadImage(path, imageReady);
+	}
+	*/
 	function imageReady(img) {
 	  //console.log(path);
 	  image(img, 0, 0);
@@ -64,13 +71,13 @@
 	  
 	  currentIndex++;
 	  console.log(new Date().toLocaleTimeString());
-	  
-	  if (currentIndex <= 1440) {
-		loadImage('./images/test/mixed/'+currentIndex+'.jpg', imageReady);
+	  /*
+	  if (currentIndex < 500) {
+		loadImage('./images/mixed/'+currentIndex+'.jpg', imageReady);
 	  } else {
 		//savePredictions();
 	  }
-	  
+	  */
 	  
 	}
 </script>
