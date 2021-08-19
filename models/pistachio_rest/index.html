@@ -1,42 +1,17 @@
-<div>Teachable Machine Image Model - p5.js and ml5.js</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
-<script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
-<script type="text/javascript">
+
+ <div>Teachable Machine Image Model - p5.js and ml5.js</div>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+ <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+ <script type="text/javascript">
 	let classifier;
 	let imageModelURL = './model/';
-	let img;
 	let imgName;
 	let currentIndex = 0;
 	let index = 0;
-	let allImages = [];
 	let images = [];
-	let predictions = [];  
-	let label = "";
- let startTime, endTime;
-
-	var connection = new WebSocket('ws://127.0.0.1:8887');
-	connection.onopen = function () {
-   startTime=new Date();
-	  images = [];
-	  connection.send('restart');
-	};    
- connection.onmessage = function (event) {
-   imgName=event.data;
-   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {
-	        connection.send(imgName);
-	  }else if(imgName.includes('son')){
-	    console.log(imgName+' message received index count is '+index);
-	    for(let i=0;i<index;i++){
-	      imgName=images[i];
-	      loadImage(imgName, imageReady);
-	    }
-	  }else{
-	    images[index]=imgName;
-	    console.log(images[index]);
-	    index++;
-	   }
- };    
+	let label = '';
+ 
 	// Load the model first
 	function preload() {
 	  currentIndex=0;
@@ -49,35 +24,43 @@
 	  createCanvas(224, 224);
 	  background(0);
 	}
+	var connection = new WebSocket('ws://127.0.0.1:8887');
+	connection.onopen = function () {
+   startTime=new Date();
+	  images = [];
+	  connection.send('restart');
+	};
+ connection.onmessage = function (event) {
+   imgName=event.data;
+   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {
+     connection.send(imgName);
+	  }else{
+	    images[index]=imgName;
+	    if (index==0) loadImage(imgName, imageReady);
+	    index++;
+	   }
+ };
 
 	function imageReady(img) {
+	  image(img, 0, 0);
 	  classifier.classify(img, gotResult);
-	}
-
-	function savePredictions() {
-	  predictionsJSON = {
-		predictions: predictions
-	  };
-	  saveJSON(predictionsJSON, 'predictions.json');
 	}
 
 	// When we get the results
 	function gotResult(err, results) {
-	  // If there is an error, show in the console
 	  if (err) {
 		console.error(err);
 	  }
-
-	  information = {
-		name: allImages[currentIndex],
-		result: results
-	  };
-
 	  label=results[0].label;
-	  console.log(images[currentIndex]+':'+label);
+	  createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);
 	  connection.send(images[currentIndex]+':'+label);
-   //images.shift();
+   console.log(new Date().toLocaleTimeString());
 	  currentIndex++;
-	  
+   var checkExist = setInterval(function() {
+       if (images.length>currentIndex) {
+         clearInterval(checkExist);
+         loadImage(images[currentIndex], imageReady);;
+       }
+     }, 5); // check every 100ms	  //if(currentIndex<images.length) loadImage(images[currentIndex], imageReady);
 	}
 </script>
