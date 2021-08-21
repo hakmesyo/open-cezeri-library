@@ -81,7 +81,7 @@ public class Main implements Classifier {
 
         //String modelDir = "/home/user/JavaProjects/TensorFlowJavaProject"; // Ubuntu
 //        String modelAndTestImagesDir = "D:\\JavaProjects\\TensorFlowJavaProject"; // Windows
-        String modelAndTestImagesDir = "E:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
+        String modelAndTestImagesDir = "C:\\Dropbox\\NetbeansProjects\\YOLO_JAVA_1"; // Windows
         String imageFile = modelAndTestImagesDir + File.separator + "images\\test_2.jpg"; // 416x416 test image
 //        String imageFile = "images\\yuzler.jpg"; // 416x416 test image
 

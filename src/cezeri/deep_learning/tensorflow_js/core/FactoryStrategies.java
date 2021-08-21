@@ -5,17 +5,16 @@
  */
 package cezeri.deep_learning.tensorflow_js.core;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumBackEnd;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
-import cezeri.deep_learning.tensorflow_js.interfaces.Configuration;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.enums.EnumBackEnd;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumLearningMode;
+import cezeri.interfaces.Configuration;
+import cezeri.interfaces.InterfaceCallBack;
 import cezeri.deep_learning.tensorflow_js.utils.Settings;
+import cezeri.enums.EnumOperatingSystem;
 import cezeri.utils.SerialType;
 import cezeri.factory.FactoryUtils;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -107,10 +106,11 @@ public class FactoryStrategies {
                     }
                 });
         jdlp.setConfiguration(config);
-        jdlp.build();
+//        jdlp.build(8887);
         //websocket aşağıdaki icbf üzerinden haberleşebiliyor o nedenle aşağıdaki komut çok önemlidir.
         FactoryUtils.icbf = config.getCall_back();
-        jdlp.execute(8080);
+//        jdlp.execute(EnumOperatingSystem.WINDOWS, 8080,8887);
+        jdlp.execute();
     }
 
     private static String[] readClassLabels(String modelPath) {

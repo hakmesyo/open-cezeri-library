@@ -6,6 +6,8 @@
 package cezeri.deep_learning.ai.djl.examples.denemeler;
 
 import ai.djl.nn.Block;
+import cezeri.enums.EnumEngine;
+import cezeri.enums.EnumOperatingSystem;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryUtils;
 import cezeri.matrix.CMatrix;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class CMatrixPattern {
 
     public static void main(String[] args) {
+        // djl ye yeni modeller nasıl eklenir http://djl.ai/docs/paddlepaddle/how_to_create_paddlepaddle_model.html
 //        trainWithResNet();
 //        extractMultipleID();
 //        predictTCNumbers();
@@ -37,11 +40,11 @@ public class CMatrixPattern {
 //        trainPistachioWithMLP();
 //        predictPistachioWithMLPBlock();
 //        trainPistachioWithResNet();
-//        predictPistachioWithResNet();
+        predictPistachioWithResNet();
+//        predictPistachioWithMobileNetV3();
 
 //        resizeImages();
-
-        reIndexImages();
+//        reIndexImages();
     }
 
     private static void extractNumbers(CMatrix[] numbers, CMatrix cm, int p) {
@@ -59,7 +62,7 @@ public class CMatrixPattern {
         File[] files = FactoryUtils.getFileListInFolder(path);
         System.out.println("size:" + files.length);
         String[] tc = new String[files.length];
-        CMatrix cm_tc = CMatrix.getInstance().setModelForInference("models/tc_numbers/tc_numbers-0030.params");
+        CMatrix cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
         int n = 11;
         CMatrix[] numbers = new CMatrix[n];
         for (int i = 0; i < numbers.length; i++) {
@@ -71,7 +74,7 @@ public class CMatrixPattern {
             if (i % 10 == 0) {
                 cm_tc = null;
                 System.gc();
-                cm_tc = CMatrix.getInstance().setModelForInference("models/tc_numbers/tc_numbers-0030.params");
+                cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
             }
             if (str.equals("female")) {
                 cm_tc = cm_tc
@@ -119,8 +122,8 @@ public class CMatrixPattern {
         String[] tc = new String[files.length];
         String[] gender = new String[files.length];
         CMatrix cm_1 = CMatrix.getInstance();
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference("models/gender/gender-0030.params");
-        CMatrix cm_tc = CMatrix.getInstance().setModelForInference("models/tc_numbers/tc_numbers-0030.params");
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/gender/gender-0030.params",null);
+        CMatrix cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
         CMatrix[] numbers = new CMatrix[11];
         for (int i = 0; i < numbers.length; i++) {
             numbers[i] = CMatrix.getInstance();
@@ -235,7 +238,7 @@ public class CMatrixPattern {
         final String MODEL_PATH = "models/gender/gender-0030.params";
         final String IMAGE_PATH = "C:\\ai\\djl\\gender\\male\\1.jpg";
 
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(MODEL_PATH);
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         for (int i = 0; i < 100; i++) {
             long t1 = FactoryUtils.tic();
             String str = cm_gender
@@ -267,18 +270,25 @@ public class CMatrixPattern {
 
     private static void predictPistachioWithMLPBlock() {
         final String MODEL_PATH = "models/pistachio_mlp/pistachio_mlp-0030.params";
-        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\open";
+        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(MODEL_PATH);
+        CMatrix cm = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        int k = 0;
+        int t = files.length;
         for (int i = 0; i < files.length; i++) {
             long t1 = FactoryUtils.tic();
-            String str = cm_gender
+            String str = cm
                     .imread(files[i].getAbsolutePath())
                     .predictWithLabel();
             t1 = FactoryUtils.toc(t1);
             System.out.println("predicted class:" + str);
+            if (str.equals("close")) {
+                k++;
+            }
+            double accuracy = 1.0 * k / t * 100;
+            System.out.println("accuracy = " + accuracy);
         }
     }
 
@@ -292,15 +302,15 @@ public class CMatrixPattern {
                     .rgb2gray()
                     .thresholdOtsu()
                     .imshow()
-//                    .getROIofWeightCenteredObject(40, 20, 1);
+                    //                    .getROIofWeightCenteredObject(40, 20, 1);
                     .getROIofWeightCenteredObject(255, 0, 1);
             System.out.println("roi = " + roi);
             CMatrix cm2 = CMatrix.getInstance()
                     .imread(files[i].getAbsolutePath())
                     .cmd(roi.pr + ":" + (roi.pr + roi.height), roi.pc + ":" + (roi.pc + roi.width))
-//                    .imshow()
+                    //                    .imshow()
                     .imresize(224, 224)
-//                    .imshow()
+                    //                    .imshow()
                     .imsave("models/pistachio_rest/images/train/open/" + files[i].getName());
         }
 
@@ -350,7 +360,33 @@ public class CMatrixPattern {
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(MODEL_PATH);
+        CMatrix cm = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        int k = 0;
+        int t = files.length;
+        for (int i = 0; i < files.length; i++) {
+            long t1 = FactoryUtils.tic();
+            String str = cm
+                    .imread(files[i].getAbsolutePath())
+                    .predictWithLabel();
+            t1 = FactoryUtils.toc(t1);
+
+            System.out.println("predicted class:" + str);
+            if (str.equals("close")) {
+                k++;
+            }
+        }
+        double accuracy = 1.0 * k / t * 100;
+        System.out.println("accuracy = " + accuracy);
+    }
+
+    private static void predictPistachioWithMobileNetV3() {
+        final String MODEL_PATH = "models/pistachio_mobilenet_v3/mobilenet.zip";
+        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\close";
+//        final String IMAGE_PATH = "C:\\ai\\djl\\resized_pistachio_test\\open";
+
+        File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
+
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
         int t = files.length;
         for (int i = 0; i < files.length; i++) {
@@ -434,11 +470,11 @@ public class CMatrixPattern {
             CMatrix cm = CMatrix.getInstance()
                     .tic()
                     .imread(files[i].getAbsolutePath())
-//                    .imsave(DATA_SET + "/" + System.nanoTime()+".jpg")
-                    .imsave(DATA_SET + "/" + i+".jpg")
+                    //                    .imsave(DATA_SET + "/" + System.nanoTime()+".jpg")
+                    .imsave(DATA_SET + "/" + i + ".jpg")
                     .imremove(files[i].getAbsolutePath())
                     .toc(i + ".index=");
-            
+
         }
     }
 }

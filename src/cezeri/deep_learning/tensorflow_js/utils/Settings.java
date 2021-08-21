@@ -5,13 +5,13 @@
  */
 package cezeri.deep_learning.tensorflow_js.utils;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumBackEnd;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDatasetType;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDevelopmentPlatform;
-import cezeri.deep_learning.tensorflow_js.enums.EnumInferenceType;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningType;
+import cezeri.enums.EnumBackEnd;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumDatasetType;
+import cezeri.enums.EnumDevelopmentPlatform;
+import cezeri.enums.EnumInferenceType;
+import cezeri.enums.EnumLearningMode;
+import cezeri.enums.EnumLearningType;
 
 /**
  *

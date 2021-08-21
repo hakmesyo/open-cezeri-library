@@ -1,7 +1,8 @@
 package cezeri.websocket;
 
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,9 +33,17 @@ public class TestJavaWebSocketServer {
 
         
     }
-
+    
+    private static SocketServer server = null;
+    
     public static void main(String[] args) {
-        FactoryUtils.startJavaServer(8887);
+        
+        try {
+            server = new SocketServer(8887);
+            FactoryUtils.startJavaServer(server);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
         FactoryUtils.icbf=new InterfaceCallBack() {
             @Override
             public void onMessageReceived(String str) {
@@ -44,7 +53,7 @@ public class TestJavaWebSocketServer {
                 } catch (InterruptedException ex) {
                     Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                FactoryUtils.server.broadcast("broadcast mesaj serverdan gitti");
+                server.broadcast("broadcast mesaj serverdan gitti");
             }
         };
     }

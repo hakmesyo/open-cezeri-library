@@ -5,8 +5,8 @@
  */
 package cezeri.deep_learning.tensorflow_js.core;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumDevelopmentPlatform;
-import cezeri.deep_learning.tensorflow_js.interfaces.Configuration;
+import cezeri.enums.EnumDevelopmentPlatform;
+import cezeri.interfaces.Configuration;
 
 
 /**

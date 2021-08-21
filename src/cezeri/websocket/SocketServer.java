@@ -14,21 +14,27 @@ import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
 
 public class SocketServer extends WebSocketServer {
 
-    public static boolean isClientConnectedNow = false;
-    public static CallBackWebSocket icbf = null;
+    public boolean isClientConnectedNow = false;
+    public InterfaceCallBack icbf = null;
 
     public SocketServer(String ip, int port, InterfaceCallBack icb) throws UnknownHostException {
         super(new InetSocketAddress(new InetSocketAddress(ip, port).getAddress(), port));
-        FactoryUtils.icbf=icb;
+        //FactoryUtils.icbf=icb;
+        icbf=icb;
     }
 
     public SocketServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
+    }
+
+    public SocketServer(int port, InterfaceCallBack icb) throws UnknownHostException {
+        super(new InetSocketAddress(port));
+        icbf=icb;
     }
 
     public SocketServer(InetSocketAddress address) {
@@ -61,7 +67,8 @@ public class SocketServer extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        FactoryUtils.icbf.onMessageReceived(message);
+//        FactoryUtils.icbf.onMessageReceived(message);
+        icbf.onMessageReceived(message);
         if (message.equals("stop")) {
             running.set(false);
         }

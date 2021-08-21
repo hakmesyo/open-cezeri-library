@@ -5,13 +5,16 @@
  */
 package cezeri.deep_learning.tensorflow_js.core;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceConfiguration;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceDeepLearning;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumLearningMode;
+import cezeri.interfaces.InterfaceConfiguration;
+import cezeri.interfaces.InterfaceDeepLearning;
+import cezeri.enums.EnumOperatingSystem;
 import cezeri.factory.FactoryUtils;
+import cezeri.websocket.SocketServer;
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -392,70 +395,81 @@ public class JDL_JavaScript implements InterfaceDeepLearning {
 
     String scriptFilePath = "";
     ConfigurationJavaScript config = null;
+    private int HTTP_SERVER_PORT;
+    private int WEB_SOCKET_PORT;
+    private String MODEL_PATH;
+    private EnumOperatingSystem OS;
 
     @Override
     public void setConfiguration(InterfaceConfiguration cnf) {
         this.config = (ConfigurationJavaScript) cnf;
     }
 
-    @Override
-    public void build() {
-        String str = "";
-        if (config.getLearningMode() == EnumLearningMode.TEST) {
-            if (config.getDataSource() == EnumDataSource.CAMERA) {
-                str = strJSWebCam;
-            } else if (config.getDataSource() == EnumDataSource.IMAGE_FILE) {
-                str=strML5ImageClassification;
-                /*
-                str = strJSImageFile;
-                File[] dirs = FactoryUtils.getDirectories(config.getTestFolderPath());
-                String ek = "class_names = [";
-                for (int i = 0; i < dirs.length; i++) {
-                    ek += "'" + dirs[i].getName() + "',";
-                }
-                ek = ek.substring(0, ek.length() - 1);
-                ek = ek + "]\n";
-                ek += "test_path=r'" + config.getTestFolderPath() + "'\n"
-                        + "hist_hit=np.zeros(len(class_names))\n"
-                        + "hist_error=np.zeros(len(class_names))\n";
+//    @Override
+//    public void build(int socketPort) {
+//        String str = "";
+//        if (config.getLearningMode() == EnumLearningMode.TEST) {
+//            if (config.getDataSource() == EnumDataSource.CAMERA) {
+//                str = strJSWebCam;
+//            } else if (config.getDataSource() == EnumDataSource.IMAGE_FILE) {
+//                str=strML5ImageClassification;
+//                /*
+//                str = strJSImageFile;
+//                File[] dirs = FactoryUtils.getDirectories(config.getTestFolderPath());
+//                String ek = "class_names = [";
+//                for (int i = 0; i < dirs.length; i++) {
+//                    ek += "'" + dirs[i].getName() + "',";
+//                }
+//                ek = ek.substring(0, ek.length() - 1);
+//                ek = ek + "]\n";
+//                ek += "test_path=r'" + config.getTestFolderPath() + "'\n"
+//                        + "hist_hit=np.zeros(len(class_names))\n"
+//                        + "hist_error=np.zeros(len(class_names))\n";
+//
+//                str += ek;
+//                */
+//            } else if (config.getDataSource() == EnumDataSource.SCALAR) {
+//                str=strTensorRegression;
+//            }
+//        }
+//        String folder = config.getModelPath();
+//        scriptFilePath = folder + "\\index.html";
+//        FactoryUtils.writeToFile(scriptFilePath, str);
+////        FactoryUtils.executeCmdCommand("dir",true);
+////        FactoryUtils.executeCommand("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "localhost:8080", true);
+//    }
 
-                str += ek;
-                */
-            } else if (config.getDataSource() == EnumDataSource.SCALAR) {
-                str=strTensorRegression;
-            }
-        }
-        String folder = config.getModelPath();
-        scriptFilePath = folder + "\\index.html";
-        FactoryUtils.writeToFile(scriptFilePath, str);
-//        FactoryUtils.executeCmdCommand("dir",true);
-//        FactoryUtils.executeCommand("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "localhost:8080", true);
-    }
-
     @Override
-    public void execute(int port) {
+    public SocketServer execute() {
         try {
-            Runtime.getRuntime().exec("cmd /c http-server -p "+port);
-        } catch (IOException ex) {
+            try {
+                Runtime.getRuntime().exec("cmd /c http-server -p "+HTTP_SERVER_PORT);
+            } catch (IOException ex) {
+                Logger.getLogger(JDL_JavaScript.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            SocketServer server=new SocketServer(WEB_SOCKET_PORT);
+            FactoryUtils.startJavaServer(server);
+            FactoryUtils.icbf = config.getCall_back();
+            
+            FactoryUtils.delay(1000);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String folder = config.getModelPath();
+                    folder = folder.substring(folder.lastIndexOf("\\") + 1);
+                    try {
+                        Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome http://localhost:"+HTTP_SERVER_PORT+"/models/js/" + folder});
+                    } catch (IOException ex) {
+                        Logger.getLogger(JDL_JavaScript.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
+            return server;
+        } catch (UnknownHostException ex) {
             Logger.getLogger(JDL_JavaScript.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        FactoryUtils.startJavaServer(8887);
-        FactoryUtils.icbf = config.getCall_back();
-
-        FactoryUtils.delay(1000);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String folder = config.getModelPath();
-                folder = folder.substring(folder.lastIndexOf("\\") + 1);
-                try {
-                    Runtime.getRuntime().exec(new String[]{"cmd", "/c", "start chrome http://localhost:"+port+"/models/js/" + folder});
-                } catch (IOException ex) {
-                    Logger.getLogger(JDL_JavaScript.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }).start();
+        return null;
     }
 
     private String getClassNames(String[] classLabels) {

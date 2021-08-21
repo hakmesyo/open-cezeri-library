@@ -5,11 +5,13 @@
  */
 package cezeri.deep_learning.tensorflow_js.core;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceConfiguration;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceDeepLearning;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumLearningMode;
+import cezeri.interfaces.InterfaceConfiguration;
+import cezeri.interfaces.InterfaceDeepLearning;
+import cezeri.enums.EnumOperatingSystem;
 import cezeri.factory.FactoryUtils;
+import cezeri.websocket.SocketServer;
 import java.io.File;
 
 
@@ -135,36 +137,36 @@ public class JDL_Python implements InterfaceDeepLearning {
         this.config = (ConfigurationPythonScript) cnf;
     }
 
-    @Override
-    public void build() {
-        String str = "";
-        if (config.getLearningMode() == EnumLearningMode.TEST) {
-            str = strImportLibrary + "model = tensorflow.keras.models.load_model(r'" + config.getModelPath() + "')\n";
-            if (config.getDataSource() == EnumDataSource.CAMERA) {
-                str +=  strConnectWebSocket+getClassNames(config.getClassLabels()) + strOpenWebCam;
-            } else if (config.getDataSource() == EnumDataSource.IMAGE_FOLDER) {
-                File[] dirs = FactoryUtils.getDirectories(config.getTestFolderPath());
-                String ek = strConnectWebSocket+"class_names = [";
-                for (int i = 0; i < dirs.length; i++) {
-                    ek += "'" + dirs[i].getName() + "',";
-                }
-                ek = ek.substring(0, ek.length() - 1);
-                ek = ek + "]\n";
-                ek +=     "test_path=r'" + config.getTestFolderPath() + "'\n"
-                        + "hist_hit=np.zeros(len(class_names))\n"
-                        + "hist_error=np.zeros(len(class_names))\n";
+//    @Override
+//    public void build(int socketPort) {
+//        String str = "";
+//        if (config.getLearningMode() == EnumLearningMode.TEST) {
+//            str = strImportLibrary + "model = tensorflow.keras.models.load_model(r'" + config.getModelPath() + "')\n";
+//            if (config.getDataSource() == EnumDataSource.CAMERA) {
+//                str +=  strConnectWebSocket+getClassNames(config.getClassLabels()) + strOpenWebCam;
+//            } else if (config.getDataSource() == EnumDataSource.IMAGE_FOLDER) {
+//                File[] dirs = FactoryUtils.getDirectories(config.getTestFolderPath());
+//                String ek = strConnectWebSocket+"class_names = [";
+//                for (int i = 0; i < dirs.length; i++) {
+//                    ek += "'" + dirs[i].getName() + "',";
+//                }
+//                ek = ek.substring(0, ek.length() - 1);
+//                ek = ek + "]\n";
+//                ek +=     "test_path=r'" + config.getTestFolderPath() + "'\n"
+//                        + "hist_hit=np.zeros(len(class_names))\n"
+//                        + "hist_error=np.zeros(len(class_names))\n";
+//
+//                str += ek + strOfflineTest;
+//            }else if(config.getDataSource() == EnumDataSource.IMAGE_FILE){
+//                str += strConnectWebSocket+strPredictOneByOne;
+//            }
+//        }
+//        scriptFilePath = FactoryUtils.currDir + "\\scripts\\python\\tmp.py";
+//        FactoryUtils.writeToFile(scriptFilePath, str);
+//    }
 
-                str += ek + strOfflineTest;
-            }else if(config.getDataSource() == EnumDataSource.IMAGE_FILE){
-                str += strConnectWebSocket+strPredictOneByOne;
-            }
-        }
-        scriptFilePath = FactoryUtils.currDir + "\\scripts\\python\\tmp.py";
-        FactoryUtils.writeToFile(scriptFilePath, str);
-    }
-
     @Override
-    public void execute(int port) {
+    public SocketServer execute() {
         FactoryUtils.icbf=config.getCall_back();
         new Thread(new Runnable() {
             @Override
@@ -172,6 +174,7 @@ public class JDL_Python implements InterfaceDeepLearning {
                 FactoryUtils.executeCmdCommand("python " + scriptFilePath);
             }
         }).start();
+        return null;
     }
 
     private String getClassNames(String[] classLabels) {

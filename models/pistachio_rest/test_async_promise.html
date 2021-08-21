@@ -1,0 +1,30 @@
+<script>
+
+function hesapla(n){
+  let t=0;
+  for (let i=0;i<n;i++){
+    for(let j=0;j<n;j++){
+      t=t+i;
+	}
+  }
+  return t;
+}
+
+function testAsync(){
+    return new Promise((resolve,reject)=>{
+			toplam=hesapla(50000);
+            console.log("Hello from inside the testAsync function");
+            resolve();
+        
+    });
+}
+
+async function callerFun(){
+    console.log("Caller");
+    await testAsync();
+	console.log("toplam:"+toplam);
+    console.log("After waiting");
+}
+
+callerFun();
+</script>

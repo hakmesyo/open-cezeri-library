@@ -5,9 +5,9 @@
  */
 package cezeri.deep_learning.tensorflow_js.utils;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumBackEnd;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDevelopmentPlatform;
+import cezeri.enums.EnumBackEnd;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumDevelopmentPlatform;
 import cezeri.factory.FactoryUtils;
 import java.io.File;
 

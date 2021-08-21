@@ -5,15 +5,16 @@
  */
 package cezeri.deep_learning.tensorflow_js.core;
 
-import cezeri.deep_learning.tensorflow_js.enums.EnumBackEnd;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDataSource;
-import cezeri.deep_learning.tensorflow_js.enums.EnumDevelopmentPlatform;
-import cezeri.deep_learning.tensorflow_js.enums.EnumInferenceType;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningMode;
-import cezeri.deep_learning.tensorflow_js.enums.EnumLearningType;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.enums.EnumBackEnd;
+import cezeri.enums.EnumDataSource;
+import cezeri.enums.EnumDevelopmentPlatform;
+import cezeri.enums.EnumInferenceType;
+import cezeri.enums.EnumLearningMode;
+import cezeri.enums.EnumLearningType;
+import cezeri.interfaces.InterfaceCallBack;
 import cezeri.deep_learning.tensorflow_js.utils.FactoryScripts;
 import cezeri.factory.FactoryUtils;
+import cezeri.websocket.SocketServer;
 
 
 /**
@@ -34,7 +35,8 @@ public final class JDL {
     
 
     private JDL(InterfaceCallBack cb) {
-        FactoryUtils.startJavaServer(8887);
+        SocketServer server=null;
+        FactoryUtils.startJavaServer(server);
         FactoryUtils.icbf=cb;
         FactoryUtils.delay(1000);
     }

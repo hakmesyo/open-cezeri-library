@@ -38,6 +38,8 @@
  */
 package cezeri.matrix;
 
+import ai.djl.Application;
+import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
 import cezeri.deep_learning.ai.djl.examples.denemeler.number_classificiation.Models;
@@ -46,11 +48,17 @@ import ai.djl.metric.Metrics;
 import ai.djl.modality.Classifications;
 import ai.djl.modality.cv.Image;
 import ai.djl.modality.cv.ImageFactory;
+import ai.djl.modality.cv.transform.Normalize;
 import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.modality.cv.translator.ImageClassificationTranslator;
+import ai.djl.ndarray.NDList;
+import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.nn.Block;
+import ai.djl.repository.zoo.Criteria;
+import ai.djl.repository.zoo.ModelNotFoundException;
+import ai.djl.repository.zoo.ZooModel;
 import ai.djl.training.EasyTrain;
 import ai.djl.training.Trainer;
 import ai.djl.training.TrainingConfig;
@@ -113,13 +121,18 @@ import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
 import cezeri.call_back_interface.CallBackWebSocket;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.interfaces.InterfaceCallBack;
+import cezeri.enums.EnumEngine;
+import cezeri.enums.EnumOperatingSystem;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
+import cezeri.factory.FactoryTensorFlowJS;
 import cezeri.types.TBlockType;
 import cezeri.types.TDJLModel;
 import cezeri.types.TRoi;
+import cezeri.websocket.SocketServer;
 import com.google.gson.Gson;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -167,6 +180,8 @@ public final class CMatrix implements Serializable {
     private int IMAGE_HEIGHT;
     private int BLOCK_TYPE;
     private Block BLOCK;
+    public SocketServer TENSORFLOW_JS_SERVER;
+    public InterfaceCallBack icbf;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -736,6 +751,8 @@ public final class CMatrix implements Serializable {
         ret.BLOCK_TYPE = BLOCK_TYPE;
         ret.BLOCK = BLOCK;
         ret.MODEL_NAME = MODEL_NAME;
+        ret.icbf=icbf;
+        ret.TENSORFLOW_JS_SERVER=TENSORFLOW_JS_SERVER;
         return ret;
     }
 
@@ -4054,7 +4071,7 @@ public final class CMatrix implements Serializable {
             return this;
         }
     }
-    
+
     public TRoi getROIofWeightCenteredObject(int thr, int backgroundThr, int nf) {
         double[][] d = CMatrix.this.highPassFilter(this.array, backgroundThr).array;
         TRoi roi = FactoryUtils.getRoiOfWeightCenteredObject(d, thr, nf);
@@ -8322,7 +8339,6 @@ public final class CMatrix implements Serializable {
 //    public CDL switchToDeepLearning() {
 //        return CDL.getInstance(this);
 //    }
-
     public CMatrix distinct() {
         CMatrix ret = this.clone(this);
         double[] d = ret.toDoubleArray1D();
@@ -8883,65 +8899,89 @@ public final class CMatrix implements Serializable {
         return FactoryUtils.getDefaultDirectory();
     }
 
-//    public CMatrix setModelForInference(String modelPath, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int blockType) {
-//        this.NUM_CHANNEL = NUM_CHANNEL;
-//        this.IMAGE_WIDTH = IMAGE_WIDTH;
-//        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-//        model = FactoryDJL.getModelForInference(modelPath, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, blockType);
-//        translator = ImageClassificationTranslator.builder()
-//                .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
-//                .addTransform(new ToTensor())
-//                .optApplySoftmax(true)
-//                .build();
-//        predictor = model.newPredictor(translator);
-//        return this;
-//    }
+    public CMatrix setModelForInference(EnumOperatingSystem OS, EnumEngine engine, String modelPath, InterfaceCallBack callBackFunction, int... params) {
+        if (engine == EnumEngine.MXNET) {
+            if (!modelPath.contains("zip")) {
+                String base_dir = new File(modelPath).getParent();
+                String[] rows = FactoryUtils.readFile(base_dir + "/model_info.txt").split("\n");
+                this.NUM_CHANNEL = Integer.parseInt(rows[0].split("=")[1]);
+                this.IMAGE_WIDTH = Integer.parseInt(rows[1].split("=")[1]);
+                this.IMAGE_HEIGHT = Integer.parseInt(rows[2].split("=")[1]);
+                this.NUM_OUTPUT = Integer.parseInt(rows[3].split("=")[1]);
+                this.BLOCK_TYPE = Integer.parseInt(rows[4].split("=")[1]);
+                if (BLOCK_TYPE == TBlockType.MLP) {
+                    String s = rows[5].split("=")[1].replace("[", "").replace("]", "").trim();
+                    String[] ss = s.split(",");
+                    int n = ss.length;
+                    int[] hidden = new int[n];
+                    for (int i = 0; i < n; i++) {
+                        hidden[i] = Integer.parseInt(ss[i].trim());
+                    }
+                    Block block = FactoryDJL.getMLPBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, hidden);
+                    model = FactoryDJL.getModelForInference(modelPath, block);
+                } else if (BLOCK_TYPE == TBlockType.ResNetV50) {
+                    String s = rows[6].split("=")[1];
+                    int n = Integer.parseInt(s);
+                    Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, n);
+                    model = FactoryDJL.getModelForInference(modelPath, block);
+                }
 
-    public CMatrix setModelForInference(String modelPath) {
-        String base_dir = new File(modelPath).getParent();
-        String[] rows = FactoryUtils.readFile(base_dir + "/model_info.txt").split("\n");
-        this.NUM_CHANNEL = Integer.parseInt(rows[0].split("=")[1]);
-        this.IMAGE_WIDTH = Integer.parseInt(rows[1].split("=")[1]);
-        this.IMAGE_HEIGHT = Integer.parseInt(rows[2].split("=")[1]);
-        this.NUM_OUTPUT = Integer.parseInt(rows[3].split("=")[1]);
-        this.BLOCK_TYPE = Integer.parseInt(rows[4].split("=")[1]);
-        if (BLOCK_TYPE == TBlockType.MLP) {
-            String s = rows[5].split("=")[1].replace("[", "").replace("]", "").trim();
-            String[] ss = s.split(",");
-            int n = ss.length;
-            int[] hidden = new int[n];
-            for (int i = 0; i < n; i++) {
-                hidden[i] = Integer.parseInt(ss[i].trim());
+                translator = ImageClassificationTranslator.builder()
+                        .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
+                        .addTransform(new ToTensor())
+                        .optApplySoftmax(true)
+                        .build();
+                predictor = model.newPredictor(translator);
+            } else {
+                // load model
+                Criteria<Image, Classifications> criteria;
+                try {
+                    translator = ImageClassificationTranslator.builder()
+                            .addTransform(new Resize(224, 224))
+                            .addTransform(new ToTensor()) // HWC -> CHW div(255)
+                            .addTransform(
+                                    new Normalize(
+                                            new float[]{0.5f, 0.5f, 0.5f},
+                                            new float[]{1.0f, 1.0f, 1.0f}))
+                            .addTransform(nd -> nd.flip(0)) // RGB -> GBR
+                            .build();
+                    criteria = Criteria.builder()
+                            .optApplication(Application.CV.IMAGE_CLASSIFICATION)
+                            .setTypes(Image.class, Classifications.class)
+                            .optEngine("PaddlePaddle")
+                            .optModelPath(Paths.get(modelPath))
+                            .optModelName("mobilenet")
+                            .optTranslator(translator)
+                            .build();
+                    model = criteria.loadModel();
+//                translator = ImageClassificationTranslator.builder()
+//                        .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
+//                        .addTransform(new ToTensor())
+//                        .optApplySoftmax(true)
+//                        .build();
+                    predictor = model.newPredictor(translator);
+//                NDManager manager = NDManager.newBaseManager();
+//                NDList list=null; // the input for your models as pure NDArray
+//                predictor.predict(list);
+                } catch (MalformedURLException ex) {
+                    Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ModelNotFoundException ex) {
+                    Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (MalformedModelException ex) {
+                    Logger.getLogger(CMatrix.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
             }
-            Block block = FactoryDJL.getMLPBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, hidden);
-            model = FactoryDJL.getModelForInference(modelPath, block);
-        }else if(BLOCK_TYPE == TBlockType.ResNetV50){
-            String s = rows[6].split("=")[1];
-            int n=Integer.parseInt(s);
-            Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, n);
-            model = FactoryDJL.getModelForInference(modelPath, block);
+        } else if (engine == EnumEngine.TENSORFLOW_JS) {
+            FactoryTensorFlowJS tjs = FactoryTensorFlowJS.getInstance();
+            TENSORFLOW_JS_SERVER = tjs.startTensorFlowJS(OS, modelPath, params[0], params[1], callBackFunction);
+            icbf=callBackFunction;
         }
-
-        translator = ImageClassificationTranslator.builder()
-                .addTransform(new Resize(IMAGE_WIDTH, IMAGE_HEIGHT))
-                .addTransform(new ToTensor())
-                .optApplySoftmax(true)
-                .build();
-        predictor = model.newPredictor(translator);
         return this;
     }
 
-//    public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int blockType) {
-//        this.NUM_CHANNEL = NUM_CHANNEL;
-//        this.IMAGE_WIDTH = IMAGE_WIDTH;
-//        this.IMAGE_HEIGHT = IMAGE_HEIGHT;
-//        this.NUM_OUTPUT = NUM_OUTPUT;
-//        this.BLOCK_TYPE = blockType;
-//        this.BLOCK = null;
-//        this.MODEL_NAME = modelName;
-//        model = FactoryDJL.getModelForTraining(modelName, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, blockType);
-//        return this;
-//    }
     public CMatrix setModelForTrain(String modelName, int NUM_CHANNEL, int IMAGE_WIDTH, int IMAGE_HEIGHT, int NUM_OUTPUT, int block_type, Block block) {
         this.NUM_CHANNEL = NUM_CHANNEL;
         this.IMAGE_WIDTH = IMAGE_WIDTH;
@@ -8968,6 +9008,7 @@ public final class CMatrix implements Serializable {
 
     public String predictWithLabel() {
         Image img = ImageFactory.getInstance().fromImage(this.image);
+        System.out.println("img.width = " + img.getWidth() + " img.height = " + img.getHeight());
         Classifications predictResult = null;
         try {
             predictResult = predictor.predict(img);
@@ -8979,7 +9020,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix trainDataSet(String trainDSDir, int BATCH_SIZE, int trainRatio, int valRatio, int EPOCHS) {
-        ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE,IMAGE_WIDTH,IMAGE_HEIGHT);
+        ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT);
         try {
             RandomAccessDataset[] datasets = dataset.randomSplit(trainRatio, valRatio);
             Loss loss = Loss.softmaxCrossEntropyLoss();
@@ -9018,7 +9059,7 @@ public final class CMatrix implements Serializable {
     public CMatrix clear() {
         return refresh();
     }
-    
+
     public CMatrix clean() {
         return refresh();
     }

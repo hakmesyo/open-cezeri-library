@@ -5,7 +5,7 @@
 package cezeri.factory;
 
 import au.com.bytecode.opencsv.CSVReader;
-import cezeri.deep_learning.tensorflow_js.interfaces.InterfaceCallBack;
+import cezeri.interfaces.InterfaceCallBack;
 import cezeri.utils.SerialType;
 import static cezeri.factory.FactorySocket.server;
 import cezeri.types.TDeviceState;
@@ -80,7 +80,7 @@ public final class FactoryUtils {
 
     public static boolean stopServer = false;
     public static boolean isConnectPythonServer = false;
-    public static SocketServer server;
+//    public static SocketServer server;
     public static WebSocketClient client;
     public static String currDir = System.getProperty("user.dir");
     public static final AtomicBoolean running = new AtomicBoolean(false);
@@ -5685,11 +5685,11 @@ public final class FactoryUtils {
         return ret;
     }
 
-    public static void startJavaServer(int port) {
+    public static void startJavaServer(final SocketServer server) {
         new Thread(() -> {
             try {
+                //server = new SocketServer(port);
                 //int port = 8887;
-                server = new SocketServer(port);
                 server.start();
                 System.out.println("Java WebSocket Server started on port: " + server.getPort());
                 BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
@@ -5774,9 +5774,9 @@ public final class FactoryUtils {
         return client;
     }
 
-    public static void delay(int n) {
+    public static void delay(int milliSeconds) {
         try {
-            Thread.sleep(n);
+            Thread.sleep(milliSeconds);
         } catch (InterruptedException ex) {
             Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
