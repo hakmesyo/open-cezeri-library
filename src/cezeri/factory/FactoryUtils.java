@@ -84,7 +84,7 @@ public final class FactoryUtils {
     public static WebSocketClient client;
     public static String currDir = System.getProperty("user.dir");
     public static final AtomicBoolean running = new AtomicBoolean(false);
-    public static InterfaceCallBack icbf = null;
+//    public static InterfaceCallBack icbf = null;
     public static int nAttempts = 0;
     private static final String key = String.valueOf(new char[]{'2', '6', 'k', 'o', 'z', 'Q', 'a', 'K', 'w', 'R', 'u', 'N', 'J', '2', '4', 't'});
     private static final String initVector = String.valueOf(new char[]{'8', 'C', '7', '7', 'E', 'E', 'F', 'E', '9', '8', '6', '8', 'F', '5', '4', '8'});
@@ -5740,7 +5740,7 @@ public final class FactoryUtils {
     }
 
     public static WebSocketClient connectToPythonServer(InterfaceCallBack cb) {
-        icbf = cb;
+        //icbf = cb;
         isConnectPythonServer = true;
         try {
             client = new WebSocketClient(new URI("ws://localhost:8888"), new Draft_6455()) {
@@ -5748,7 +5748,7 @@ public final class FactoryUtils {
                 @Override
                 public void onMessage(String message) {
 //                    System.out.println("incoming message from python server = " + message);
-                    icbf.onMessageReceived(message);
+                    cb.onMessageReceived(message);
                 }
 
                 @Override

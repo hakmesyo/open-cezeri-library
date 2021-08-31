@@ -30,6 +30,7 @@ public class SocketServer extends WebSocketServer {
 
     public SocketServer(int port) throws UnknownHostException {
         super(new InetSocketAddress(port));
+        System.err.println("you did not specify call back function, you can use another constructor");
     }
 
     public SocketServer(int port, InterfaceCallBack icb) throws UnknownHostException {

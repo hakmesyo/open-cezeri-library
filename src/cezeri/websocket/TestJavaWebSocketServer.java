@@ -44,7 +44,7 @@ public class TestJavaWebSocketServer {
         } catch (UnknownHostException ex) {
             Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        FactoryUtils.icbf=new InterfaceCallBack() {
+        InterfaceCallBack icbf=new InterfaceCallBack() {
             @Override
             public void onMessageReceived(String str) {
                 messageReceived(str);

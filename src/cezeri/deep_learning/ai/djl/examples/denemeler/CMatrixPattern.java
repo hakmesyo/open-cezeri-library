@@ -62,7 +62,7 @@ public class CMatrixPattern {
         File[] files = FactoryUtils.getFileListInFolder(path);
         System.out.println("size:" + files.length);
         String[] tc = new String[files.length];
-        CMatrix cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
+        CMatrix cm_tc = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
         int n = 11;
         CMatrix[] numbers = new CMatrix[n];
         for (int i = 0; i < numbers.length; i++) {
@@ -74,7 +74,7 @@ public class CMatrixPattern {
             if (i % 10 == 0) {
                 cm_tc = null;
                 System.gc();
-                cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
+                cm_tc = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
             }
             if (str.equals("female")) {
                 cm_tc = cm_tc
@@ -86,7 +86,7 @@ public class CMatrixPattern {
                 extractNumbers(numbers, cm_tc, 0);
                 String s = "";
                 for (CMatrix number : numbers) {
-                    s += number.predictWithLabel();
+                    s += number.predictWithLabelDJL();
                 }
                 tc[i] = s;
 
@@ -100,7 +100,7 @@ public class CMatrixPattern {
                 extractNumbers(numbers, cm_tc, 60);
                 String s = "";
                 for (CMatrix number : numbers) {
-                    s += number.predictWithLabel();
+                    s += number.predictWithLabelDJL();
                 }
                 tc[i] = s;
             }
@@ -122,8 +122,8 @@ public class CMatrixPattern {
         String[] tc = new String[files.length];
         String[] gender = new String[files.length];
         CMatrix cm_1 = CMatrix.getInstance();
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/gender/gender-0030.params",null);
-        CMatrix cm_tc = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/gender/gender-0030.params",null);
+        CMatrix cm_tc = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, "models/tc_numbers/tc_numbers-0030.params",null);
         CMatrix[] numbers = new CMatrix[11];
         for (int i = 0; i < numbers.length; i++) {
             numbers[i] = CMatrix.getInstance();
@@ -142,7 +142,7 @@ public class CMatrixPattern {
                     .imresize(224, 224) //.toc()
                     ;
             //t1=FactoryUtils.toc(t1);
-            String str = cm_gender.setImage(cm_1.getImage()).predictWithLabel();
+            String str = cm_gender.setImage(cm_1.getImage()).predictWithLabelDJL();
             System.out.println(str);
             //t1=FactoryUtils.toc(t1);
 
@@ -157,7 +157,7 @@ public class CMatrixPattern {
                 extractNumbers(numbers, cm_tc, 0);
                 String s = "";
                 for (CMatrix number : numbers) {
-                    s += number.predictWithLabel();
+                    s += number.predictWithLabelDJL();
                 }
                 tc[i] = s;
 
@@ -171,7 +171,7 @@ public class CMatrixPattern {
                 extractNumbers(numbers, cm_tc, 60);
                 String s = "";
                 for (CMatrix number : numbers) {
-                    s += number.predictWithLabel();
+                    s += number.predictWithLabelDJL();
                 }
                 tc[i] = s;
             }
@@ -212,7 +212,7 @@ public class CMatrixPattern {
         Block block = FactoryDJL.getMLPBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, HIDDEN);
         CMatrix cm = CMatrix.getInstance()
                 .setModelForTrain(MODEL_NAME, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, TBlockType.MLP, block)
-                .trainDataSet(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
+                .trainDataSetDJL(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
     }
 
     private static void trainWithResNet() {
@@ -231,19 +231,19 @@ public class CMatrixPattern {
         Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, NUM_LAYER);
         CMatrix cm = CMatrix.getInstance()
                 .setModelForTrain(MODEL_NAME, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, TBlockType.ResNetV50, block)
-                .trainDataSet(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
+                .trainDataSetDJL(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
     }
 
     private static void predictGenderWithMLPBlock() {
         final String MODEL_PATH = "models/gender/gender-0030.params";
         final String IMAGE_PATH = "C:\\ai\\djl\\gender\\male\\1.jpg";
 
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         for (int i = 0; i < 100; i++) {
             long t1 = FactoryUtils.tic();
             String str = cm_gender
                     .imread(IMAGE_PATH)
-                    .predictWithLabel();
+                    .predictWithLabelDJL();
             t1 = FactoryUtils.toc(t1);
             System.out.println("predicted class:" + str);
         }
@@ -265,7 +265,7 @@ public class CMatrixPattern {
         Block block = FactoryDJL.getMLPBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, HIDDEN);
         CMatrix cm = CMatrix.getInstance()
                 .setModelForTrain(MODEL_NAME, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, TBlockType.MLP, block)
-                .trainDataSet(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
+                .trainDataSetDJL(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
     }
 
     private static void predictPistachioWithMLPBlock() {
@@ -274,14 +274,14 @@ public class CMatrixPattern {
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 
-        CMatrix cm = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        CMatrix cm = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
         int t = files.length;
         for (int i = 0; i < files.length; i++) {
             long t1 = FactoryUtils.tic();
             String str = cm
                     .imread(files[i].getAbsolutePath())
-                    .predictWithLabel();
+                    .predictWithLabelDJL();
             t1 = FactoryUtils.toc(t1);
             System.out.println("predicted class:" + str);
             if (str.equals("close")) {
@@ -350,7 +350,7 @@ public class CMatrixPattern {
         Block block = FactoryDJL.getResNetBlock(NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, 50);
         CMatrix cm = CMatrix.getInstance()
                 .setModelForTrain(MODEL_NAME, NUM_CHANNEL, IMAGE_WIDTH, IMAGE_HEIGHT, NUM_OUTPUT, TBlockType.ResNetV50, block)
-                .trainDataSet(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
+                .trainDataSetDJL(DATA_SET, BATCH_SIZE, TRAIN_RATIO, VAL_RATIO, EPOCH);
     }
 
     private static void predictPistachioWithResNet() {
@@ -360,14 +360,14 @@ public class CMatrixPattern {
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 
-        CMatrix cm = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        CMatrix cm = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
         int t = files.length;
         for (int i = 0; i < files.length; i++) {
             long t1 = FactoryUtils.tic();
             String str = cm
                     .imread(files[i].getAbsolutePath())
-                    .predictWithLabel();
+                    .predictWithLabelDJL();
             t1 = FactoryUtils.toc(t1);
 
             System.out.println("predicted class:" + str);
@@ -386,14 +386,14 @@ public class CMatrixPattern {
 
         File[] files = FactoryUtils.getFileListInFolderForImages(IMAGE_PATH);
 
-        CMatrix cm_gender = CMatrix.getInstance().setModelForInference(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
+        CMatrix cm_gender = CMatrix.getInstance().setModelForInferenceDJL(EnumOperatingSystem.WINDOWS, EnumEngine.MXNET, MODEL_PATH,null);
         int k = 0;
         int t = files.length;
         for (int i = 0; i < files.length; i++) {
             long t1 = FactoryUtils.tic();
             String str = cm_gender
                     .imread(files[i].getAbsolutePath())
-                    .predictWithLabel();
+                    .predictWithLabelDJL();
             t1 = FactoryUtils.toc(t1);
 
             System.out.println("predicted class:" + str);

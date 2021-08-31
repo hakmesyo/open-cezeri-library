@@ -124,6 +124,7 @@ import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.enums.EnumEngine;
 import cezeri.enums.EnumOperatingSystem;
+import cezeri.enums.EnumRunTime;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.factory.FactoryTensorFlowJS;
@@ -8899,7 +8900,7 @@ public final class CMatrix implements Serializable {
         return FactoryUtils.getDefaultDirectory();
     }
 
-    public CMatrix setModelForInference(EnumOperatingSystem OS, EnumEngine engine, String modelPath, InterfaceCallBack callBackFunction, int... params) {
+    public CMatrix setModelForInferenceDJL(EnumOperatingSystem OS, EnumEngine engine, String modelPath, InterfaceCallBack callBackFunction) {
         if (engine == EnumEngine.MXNET) {
             if (!modelPath.contains("zip")) {
                 String base_dir = new File(modelPath).getParent();
@@ -8974,9 +8975,14 @@ public final class CMatrix implements Serializable {
                 }
 
             }
-        } else if (engine == EnumEngine.TENSORFLOW_JS) {
+        } 
+        return this;
+    }
+    
+    public CMatrix setModelForInferenceTensorFlowJS(EnumRunTime RUNTIME, EnumOperatingSystem OS, EnumEngine engine, String modelPath, InterfaceCallBack callBackFunction, int httpServerPort, int webSocketPort) {
+        if (engine == EnumEngine.TENSORFLOW_JS) {
             FactoryTensorFlowJS tjs = FactoryTensorFlowJS.getInstance();
-            TENSORFLOW_JS_SERVER = tjs.startTensorFlowJS(OS, modelPath, params[0], params[1], callBackFunction);
+            TENSORFLOW_JS_SERVER = tjs.startTensorFlowJS(RUNTIME,OS, modelPath, httpServerPort, webSocketPort, callBackFunction);
             icbf=callBackFunction;
         }
         return this;
@@ -8995,7 +9001,7 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
-    public String predictWithProbabilities() {
+    public String predictWithProbabilitiesDJL() {
         Image img = ImageFactory.getInstance().fromImage(this.image);
         Classifications predictResult = null;
         try {
@@ -9006,7 +9012,7 @@ public final class CMatrix implements Serializable {
         return predictResult.toString();
     }
 
-    public String predictWithLabel() {
+    public String predictWithLabelDJL() {
         Image img = ImageFactory.getInstance().fromImage(this.image);
         System.out.println("img.width = " + img.getWidth() + " img.height = " + img.getHeight());
         Classifications predictResult = null;
@@ -9019,7 +9025,7 @@ public final class CMatrix implements Serializable {
         return predictedLabel;
     }
 
-    public CMatrix trainDataSet(String trainDSDir, int BATCH_SIZE, int trainRatio, int valRatio, int EPOCHS) {
+    public CMatrix trainDataSetDJL(String trainDSDir, int BATCH_SIZE, int trainRatio, int valRatio, int EPOCHS) {
         ImageFolder dataset = FactoryDJL.initDataset(trainDSDir, BATCH_SIZE, IMAGE_WIDTH, IMAGE_HEIGHT);
         try {
             RandomAccessDataset[] datasets = dataset.randomSplit(trainRatio, valRatio);

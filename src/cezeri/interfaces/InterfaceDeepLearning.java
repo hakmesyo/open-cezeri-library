@@ -13,6 +13,5 @@ import cezeri.websocket.SocketServer;
  * @author DELL LAB
  */
 public interface InterfaceDeepLearning {
-    void setConfiguration(InterfaceConfiguration cnf);
     SocketServer execute();
 }
