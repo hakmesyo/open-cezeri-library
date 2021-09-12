@@ -31,12 +31,12 @@ public class TestInference {
         files = FactoryUtils.shuffle(files, new Random(123));
 //        files = FactoryUtils.shuffle(files, new Random());
         System.out.println("files size:" + files.length);
-//        int n = files.length / 5;
-//        for (int i = 0; i < 5; i++) {
-//            new TestInference().generateInference((i + 1), 8060 + i, 8787 + i, i * n, i * n + n);
-//        }
+        int n = files.length / 5;
+        for (int i = 0; i < 5; i++) {
+            new TestInference().generateInference((i + 1), 8060 + i, 8787 + i, i * n, i * n + n);
+        }
 
-        new TestInference().generateInference(1, 8080, 8887, 0, files.length-1);
+//        new TestInference().generateInference(1, 8080, 8887, 0, files.length-1);
 //        new TestInferenceAsCMatrixApproach().generateInference(2,8081,8888,0,files.length-1);
 //        new TestInferenceAsCMatrixApproach().generateInference(3,8082,8889,0,files.length-1);
 //        new TestInferenceAsCMatrixApproach().generateInference(4,8083,8890,0,files.length-1);
@@ -49,7 +49,7 @@ public class TestInference {
     private void generateInference(int ch, int http_server_port, int web_socket_port, int from, int to) {
         channel = ch;
         CMatrix cm = CMatrix.getInstance()
-                .setModelForInferenceTensorFlowJS(EnumRunTime.RUN, EnumOperatingSystem.WINDOWS, EnumEngine.TENSORFLOW_JS, "models/trafficsign_tfjs", this::invokeMethod, http_server_port, web_socket_port);
+                .setModelForInferenceTensorFlowJS(EnumRunTime.DEBUG, EnumOperatingSystem.WINDOWS, EnumEngine.TENSORFLOW_JS, "models/trafficsign_tfjs", this::invokeMethod, http_server_port, web_socket_port);
         SocketServer server = cm.TENSORFLOW_JS_SERVER;
 
         String s = "";

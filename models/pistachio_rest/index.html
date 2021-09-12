@@ -3,6 +3,8 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script>
  <script type="text/javascript">
 	let classifier;
 	let imageModelURL = './model/';
@@ -11,9 +13,11 @@
 	let index = 0;
 	let images = [];
 	let label = '';
+	let isDebug = 0;
  
 	// Load the model first
 	function preload() {
+   tf.setBackend('webgl');
 	  currentIndex=0;
 	  console.log("merhaba\n");
 	  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
@@ -22,9 +26,10 @@
 	function setup() {
 	  currentIndex=0;
 	  createCanvas(224, 224);
+	  createDiv('OUTPUTS');
 	  background(0);
 	}
-	var connection = new WebSocket('ws://127.0.0.1:8887');
+	var connection = new WebSocket('ws://127.0.0.1:8889');
 	connection.onopen = function () {
    startTime=new Date();
 	  images = [];
@@ -32,8 +37,16 @@
 	};
  connection.onmessage = function (event) {
    imgName=event.data;
-   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1') || imgName.includes('baslayabilirsin' )) {
+	  //console.log(imgName);
+   if (imgName.includes('Welcome to the server!') || imgName.includes('[new client connection]: 127.0.0.1')) {
      connection.send(imgName);
+	  }else if(imgName.includes('baslayabilirsin')){
+	    console.log(imgName);
+     connection.send(imgName);
+	    str=imgName.split(':')[1];
+	    console.log(str);
+	    if(str==='DEBUG') isDebug=1;
+	    if(str==='RUN') isDebug=0;
 	  }else{
 	    images[index]=imgName;
 	    if (index==0) loadImage(imgName, imageReady);
@@ -52,6 +65,10 @@
 		console.error(err);
 	  }
 	  label=results[0].label;
+	  if(isDebug == 1){
+	    createDiv('<img src='+images[currentIndex].replace(/ /g, '%20')+' alt='+images[currentIndex]+':'+label+' width=224 height=224></img>');
+	    createDiv('image: ' +currentIndex+':'+ images[currentIndex]+':'+label);
+	  }
 	  connection.send(images[currentIndex]+':'+label);
    console.log(new Date().toLocaleTimeString());
 	  currentIndex++;

@@ -48,33 +48,106 @@ from keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
 import timeit
+import threading
 
 # Load the model
 model = load_model('keras_model.h5')
 
-start = timeit.default_timer()
-for i in range(50):
-    # Create the array of the right shape to feed into the keras model
-    # The 'length' or number of images you can put into the array is
-    # determined by the first position in the shape tuple, in this case 1.
-    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    # Replace this with the path to your image
-    image = Image.open('./images/mixed/'+str(i)+'.jpg')
-    #resize the image to a 224x224 with the same strategy as in TM2:
-    #resizing the image to be at least 224x224 and then cropping from the center
-    size = (224, 224)
-    image = ImageOps.fit(image, size, Image.ANTIALIAS)
+def thr1(n):
+    # start = timeit.default_timer()
+    for i in range(n):
+        # Create the array of the right shape to feed into the keras model
+        # The 'length' or number of images you can put into the array is
+        # determined by the first position in the shape tuple, in this case 1.
+        data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+        # Replace this with the path to your image
+        image = Image.open('./images/mixed/'+str(i)+'.jpg')
+        #resize the image to a 224x224 with the same strategy as in TM2:
+        #resizing the image to be at least 224x224 and then cropping from the center
+        size = (224, 224)
+        image = ImageOps.fit(image, size, Image.ANTIALIAS)
+        
+        #turn the image into a numpy array
+        image_array = np.asarray(image)
+        # Normalize the image
+        normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+        # Load the image into the array
+        data[0] = normalized_image_array
+        
+        # run the inference
+        prediction = model.predict(data)
+        print(prediction)
+    # stop = timeit.default_timer()
+    # print('Time: ', stop - start,' seconds')  
     
-    #turn the image into a numpy array
-    image_array = np.asarray(image)
-    # Normalize the image
-    normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
-    # Load the image into the array
-    data[0] = normalized_image_array
-    
-    # run the inference
-    prediction = model.predict(data)
-    print(prediction)
-stop = timeit.default_timer()
-print('Time: ', stop - start,' seconds')  
+def thr2(n):
+    # start = timeit.default_timer()
+    for i in range(n):
+        # Create the array of the right shape to feed into the keras model
+        # The 'length' or number of images you can put into the array is
+        # determined by the first position in the shape tuple, in this case 1.
+        data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+        # Replace this with the path to your image
+        image = Image.open('./images/mixed/'+str(i)+'.jpg')
+        #resize the image to a 224x224 with the same strategy as in TM2:
+        #resizing the image to be at least 224x224 and then cropping from the center
+        size = (224, 224)
+        image = ImageOps.fit(image, size, Image.ANTIALIAS)
+        
+        #turn the image into a numpy array
+        image_array = np.asarray(image)
+        # Normalize the image
+        normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+        # Load the image into the array
+        data[0] = normalized_image_array
+        
+        # run the inference
+        prediction = model.predict(data)
+        print(prediction)
+    # stop = timeit.default_timer()
+    # print('Time: ', stop - start,' seconds')  
 
+def thr3(n):
+    # start = timeit.default_timer()
+    for i in range(n):
+        # Create the array of the right shape to feed into the keras model
+        # The 'length' or number of images you can put into the array is
+        # determined by the first position in the shape tuple, in this case 1.
+        data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+        # Replace this with the path to your image
+        image = Image.open('./images/mixed/'+str(i)+'.jpg')
+        #resize the image to a 224x224 with the same strategy as in TM2:
+        #resizing the image to be at least 224x224 and then cropping from the center
+        size = (224, 224)
+        image = ImageOps.fit(image, size, Image.ANTIALIAS)
+        
+        #turn the image into a numpy array
+        image_array = np.asarray(image)
+        # Normalize the image
+        normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+        # Load the image into the array
+        data[0] = normalized_image_array
+        
+        # run the inference
+        prediction = model.predict(data)
+        print(prediction)
+    # stop = timeit.default_timer()
+    # print('Time: ', stop - start,' seconds')
+
+start = timeit.default_timer()
+k=562
+t1 = threading.Thread(target=thr1, args=(k,))
+t2 = threading.Thread(target=thr2, args=(k,))
+t3 = threading.Thread(target=thr3, args=(k,))
+
+t1.start()
+t2.start()
+t3.start()
+
+t1.join()
+t2.join()
+t3.join()
+
+print("Done")
+stop = timeit.default_timer()
+print('Time: ', stop - start,' seconds')
