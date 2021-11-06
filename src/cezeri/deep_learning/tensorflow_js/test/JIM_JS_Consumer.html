@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>TODO supply a title</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,
+         initial-scale=1.0">
+
+      <script type="text/javascript">
+         var uri = 'ws://127.0.0.1:8887';
+         var websocket = null;
+         var message = "";
+         function openConnection() {
+            websocket = new WebSocket(uri);
+            websocket.onmessage = function (event) {
+               var node = document.getElementById('fromServer');
+               var newNode = document.createElement('h1');
+               newNode.appendChild(document.
+                  createTextNode(event.data));
+               node.appendChild(newNode);
+            };
+         }
+
+         function closeConnection() {
+            websocket.close();
+         }
+
+         function sendMessage() {
+            var msg = document.getElementById('messageText').value;
+            websocket.send(msg);
+         }
+      </script>
+
+   </head>
+   <body onload="openConnection();" onunload="closeConnection();">
+      <div>
+         <p>Client Message: <input id="messageText" type="text"/>
+            <input id="sendButton" type="button" value="Send"
+               onclick="sendMessage();"/>
+         </p>
+         <div id="fromServer"></div>
+      </div>
+   </body>
+</html>

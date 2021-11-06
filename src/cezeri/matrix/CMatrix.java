@@ -42,7 +42,6 @@ import ai.djl.Application;
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
 import ai.djl.basicdataset.cv.classification.ImageFolder;
-import cezeri.deep_learning.ai.djl.examples.denemeler.number_classificiation.Models;
 import ai.djl.inference.Predictor;
 import ai.djl.metric.Metrics;
 import ai.djl.modality.Classifications;
@@ -52,13 +51,10 @@ import ai.djl.modality.cv.transform.Normalize;
 import ai.djl.modality.cv.transform.Resize;
 import ai.djl.modality.cv.transform.ToTensor;
 import ai.djl.modality.cv.translator.ImageClassificationTranslator;
-import ai.djl.ndarray.NDList;
-import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.nn.Block;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ModelNotFoundException;
-import ai.djl.repository.zoo.ZooModel;
 import ai.djl.training.EasyTrain;
 import ai.djl.training.Trainer;
 import ai.djl.training.TrainingConfig;
@@ -120,7 +116,6 @@ import weka.core.converters.ConverterUtils;
 import weka.core.matrix.EigenvalueDecomposition;
 import weka.core.matrix.Matrix;
 import java.security.SecureRandom;
-import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.enums.EnumEngine;
 import cezeri.enums.EnumOperatingSystem;
@@ -132,13 +127,11 @@ import cezeri.types.TBlockType;
 import cezeri.types.TDJLModel;
 import cezeri.types.TRoi;
 import cezeri.websocket.SocketServer;
-import com.google.gson.Gson;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
-import static weka.core.Debug.DBO.p;
 
 /**
  *
@@ -752,8 +745,8 @@ public final class CMatrix implements Serializable {
         ret.BLOCK_TYPE = BLOCK_TYPE;
         ret.BLOCK = BLOCK;
         ret.MODEL_NAME = MODEL_NAME;
-        ret.icbf=icbf;
-        ret.TENSORFLOW_JS_SERVER=TENSORFLOW_JS_SERVER;
+        ret.icbf = icbf;
+        ret.TENSORFLOW_JS_SERVER = TENSORFLOW_JS_SERVER;
         return ret;
     }
 
@@ -3891,6 +3884,11 @@ public final class CMatrix implements Serializable {
         return this;
     }
 
+    public CMatrix saveImage(String path, String file_name) {
+        ImageProcess.saveImage(image, path + "/" + file_name);
+        return this;
+    }
+
     public CMatrix saveImage() {
         ImageProcess.saveImage(image);
         return this;
@@ -4566,16 +4564,33 @@ public final class CMatrix implements Serializable {
         return readImage();
     }
 
+    /**
+     * Matlab and Python compatible command::read image file
+     *
+     * @return CMatrix
+     */
+    public CMatrix imread(File file) {
+        return readImage(file.getAbsolutePath());
+    }
+
     public CMatrix imsave() {
         return saveImage();
     }
 
-    public CMatrix imsave_atFolder(String folderPath) {
-        return saveImageAtFolder(folderPath);
+    public CMatrix imsave_atFolder(String folderPath, String fileName) {
+        return saveImageAtFolder(folderPath + "/" + fileName);
+    }
+
+    public CMatrix imsave_atFolder(String withFolderPath) {
+        return saveImageAtFolder(withFolderPath);
     }
 
     public CMatrix imsave(String path) {
         return saveImage(path);
+    }
+
+    public CMatrix imsave(String folderPath, String fileName) {
+        return saveImage(folderPath, fileName);
     }
 
     /**
@@ -5861,6 +5876,44 @@ public final class CMatrix implements Serializable {
         int w = (int) (this.getColumnNumber() * ratio);
         int h = (int) (this.getRowNumber() * ratio);
         return imresize(w, h);
+    }
+
+    /**
+     * resize image keeping aspect ratio but for the desired square size which
+     * is suitable for example mobilenet 224x224 input images
+     *
+     * @param ratio
+     * @return
+     */
+    public CMatrix imresizeWithAspectRatio(int size) {
+        CMatrix cm = this.clone(this);
+        int w = cm.getColumnNumber();
+        int h = cm.getRowNumber();
+        int d_w = w - size;
+        int d_h = h - size;
+        double ratio = 0;
+        if (d_h < d_w) {
+            ratio = 1.0 * size / h;
+        } else {
+            ratio = 1.0 * size / w;
+        }
+        cm = cm.imresize(ratio);
+        w = cm.getColumnNumber();
+        h = cm.getRowNumber();
+        if (w <= size && h <= size) {
+            cm = cm.imresize(size+1, size+1);
+        } else if (w <= size) {
+            cm = cm.imresize(size+1, h);
+        } else if (h<=size) {
+            cm = cm.imresize(w, size+1);
+            
+        }
+        w = cm.getColumnNumber();
+        h = cm.getRowNumber();
+        int pr = (h - size) / 2;
+        int pc = (w - size) / 2;
+        cm = cm.cmd(pr + ":" + (pr + size), pc + ":" + (pc + size));
+        return cm;
     }
 
     public CMatrix imblend(CMatrix cm, double alpha) {
@@ -8975,15 +9028,15 @@ public final class CMatrix implements Serializable {
                 }
 
             }
-        } 
+        }
         return this;
     }
-    
+
     public CMatrix setModelForInferenceTensorFlowJS(EnumRunTime RUNTIME, EnumOperatingSystem OS, EnumEngine engine, String modelPath, InterfaceCallBack callBackFunction, int httpServerPort, int webSocketPort) {
         if (engine == EnumEngine.TENSORFLOW_JS) {
             FactoryTensorFlowJS tjs = FactoryTensorFlowJS.getInstance();
-            TENSORFLOW_JS_SERVER = tjs.startTensorFlowJS(RUNTIME,OS, modelPath, httpServerPort, webSocketPort, callBackFunction);
-            icbf=callBackFunction;
+            TENSORFLOW_JS_SERVER = tjs.startTensorFlowJS(RUNTIME, OS, modelPath, httpServerPort, webSocketPort, callBackFunction);
+            icbf = callBackFunction;
         }
         return this;
     }

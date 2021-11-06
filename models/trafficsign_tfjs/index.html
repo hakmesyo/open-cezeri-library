@@ -3,6 +3,8 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/dist/tf-backend-wasm.js"></script>
  <script type="text/javascript">
 	let classifier;
 	let imageModelURL = './model/';
@@ -15,6 +17,7 @@
  
 	// Load the model first
 	function preload() {
+   tf.setBackend('webgl');
 	  currentIndex=0;
 	  console.log("merhaba\n");
 	  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
@@ -26,7 +29,7 @@
 	  createDiv('OUTPUTS');
 	  background(0);
 	}
-	var connection = new WebSocket('ws://127.0.0.1:8791');
+	var connection = new WebSocket('ws://127.0.0.1:8888');
 	connection.onopen = function () {
    startTime=new Date();
 	  images = [];

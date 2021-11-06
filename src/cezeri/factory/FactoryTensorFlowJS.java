@@ -5,7 +5,7 @@
  */
 package cezeri.factory;
 
-import cezeri.deep_learning.tensorflow_js.test.traffic_sign.TestInference;
+import cezeri.deep_learning.tensorflow_js.test.traffic_sign.TrafficSignInferenceTfjs;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.interfaces.InterfaceDeepLearning;
 import cezeri.enums.EnumOperatingSystem;
@@ -196,7 +196,7 @@ public class FactoryTensorFlowJS implements InterfaceDeepLearning {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(TestInference.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TrafficSignInferenceTfjs.class.getName()).log(Level.SEVERE, null, ex);
         }
         String ek=(RUNTIME==EnumRunTime.DEBUG)?"DEBUG":"RUN";
         server.broadcast("baslayabilirsin:"+ek);

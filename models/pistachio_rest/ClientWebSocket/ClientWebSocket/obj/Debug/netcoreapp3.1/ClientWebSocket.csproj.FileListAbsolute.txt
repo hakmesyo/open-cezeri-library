@@ -1,0 +1,15 @@
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.csprojAssemblyReference.cache
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.AssemblyInfoInputs.cache
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.AssemblyInfo.cs
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.csproj.CoreCompileInputs.cache
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.exe
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.deps.json
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.runtimeconfig.json
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.runtimeconfig.dev.json
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.dll
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\ClientWebSocket.pdb
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\bin\Debug\netcoreapp3.1\websocket-sharp.dll
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.csproj.CopyComplete
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.dll
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.pdb
+C:\Users\cezerilab\source\repos\ClientWebSocket\ClientWebSocket\obj\Debug\netcoreapp3.1\ClientWebSocket.genruntimeconfig.cache

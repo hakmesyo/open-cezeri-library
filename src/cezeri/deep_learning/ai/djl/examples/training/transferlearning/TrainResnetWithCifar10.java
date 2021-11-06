@@ -61,7 +61,8 @@ import org.slf4j.LoggerFactory;
 /**
  * An example of training an image classification (ResNet for Cifar10) model.
  *
- * <p>See this <a
+ * <p>
+ * See this <a
  * href="https://github.com/awslabs/djl/blob/master/examples/docs/train_cifar10_resnet.md">doc</a>
  * for information about this example.
  */
@@ -69,9 +70,11 @@ public final class TrainResnetWithCifar10 {
 
     private static final Logger logger = LoggerFactory.getLogger(TrainResnetWithCifar10.class);
 
-    private TrainResnetWithCifar10() {}
+    private TrainResnetWithCifar10() {
+    }
 
     public static void main(String[] args) throws ModelException, IOException, TranslateException {
+        System.setProperty("DJL_CACHE_DIR", "c:/ai/djl");
         TrainResnetWithCifar10.runExample(args);
     }
 
@@ -125,8 +128,8 @@ public final class TrainResnetWithCifar10 {
         boolean isSymbolic = arguments.isSymbolic();
         boolean preTrained = arguments.isPreTrained();
         Map<String, String> options = arguments.getCriteria();
-        Criteria.Builder<Image, Classifications> builder =
-                Criteria.builder()
+        Criteria.Builder<Image, Classifications> builder
+                = Criteria.builder()
                         .optApplication(Application.CV.IMAGE_CLASSIFICATION)
                         .setTypes(Image.class, Classifications.class)
                         .optProgress(new ProgressBar())
@@ -170,8 +173,8 @@ public final class TrainResnetWithCifar10 {
         } else {
             // construct new ResNet50 without pre-trained weights
             Model model = Model.newInstance("resnetv1");
-            Block resNet50 =
-                    ResNetV1.builder()
+            Block resNet50
+                    = ResNetV1.builder()
                             .setImageShape(new Shape(3, 32, 32))
                             .setNumLayers(50)
                             .setOutSize(10)
@@ -183,10 +186,10 @@ public final class TrainResnetWithCifar10 {
 
     private static Classifications testSaveParameters(Block block, Path path)
             throws IOException, ModelException, TranslateException {
-        String synsetUrl =
-                "https://mlrepo.djl.ai/model/cv/image_classification/ai/djl/mxnet/synset_cifar10.txt";
-        ImageClassificationTranslator translator =
-                ImageClassificationTranslator.builder()
+        String synsetUrl
+                = "https://mlrepo.djl.ai/model/cv/image_classification/ai/djl/mxnet/synset_cifar10.txt";
+        ImageClassificationTranslator translator
+                = ImageClassificationTranslator.builder()
                         .addTransform(new ToTensor())
                         .addTransform(new Normalize(Cifar10.NORMALIZE_MEAN, Cifar10.NORMALIZE_STD))
                         .optSynsetUrl(synsetUrl)
@@ -195,8 +198,8 @@ public final class TrainResnetWithCifar10 {
 
         Image img = ImageFactory.getInstance().fromUrl("src/test/resources/airplane1.png");
 
-        Criteria<Image, Classifications> criteria =
-                Criteria.builder()
+        Criteria<Image, Classifications> criteria
+                = Criteria.builder()
                         .setTypes(Image.class, Classifications.class)
                         .optModelUrls(path.toUri().toString())
                         .optTranslator(translator)
@@ -213,18 +216,19 @@ public final class TrainResnetWithCifar10 {
     private static DefaultTrainingConfig setupTrainingConfig(Arguments arguments) {
         return new DefaultTrainingConfig(Loss.softmaxCrossEntropyLoss())
                 .addEvaluator(new Accuracy())
-                .optDevices(Device.getDevices(arguments.getMaxGpus()))
+                //.optDevices(Device.getDevices(arguments.getMaxGpus()))
+                .optDevices(Device.getDevices(2))
                 .addTrainingListeners(TrainingListener.Defaults.logging(arguments.getOutputDir()));
     }
 
     private static RandomAccessDataset getDataset(Dataset.Usage usage, Arguments arguments)
             throws IOException {
-        Pipeline pipeline =
-                new Pipeline(
+        Pipeline pipeline
+                = new Pipeline(
                         new ToTensor(),
                         new Normalize(Cifar10.NORMALIZE_MEAN, Cifar10.NORMALIZE_STD));
-        Cifar10 cifar10 =
-                Cifar10.builder()
+        Cifar10 cifar10
+                = Cifar10.builder()
                         .optUsage(usage)
                         .setSampling(arguments.getBatchSize(), true)
                         .optLimit(arguments.getLimit())

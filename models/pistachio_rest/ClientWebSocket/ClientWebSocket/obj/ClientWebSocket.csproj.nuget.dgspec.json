@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\ClientWebSocket.csproj": {}
+  },
+  "projects": {
+    "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\ClientWebSocket.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\ClientWebSocket.csproj",
+        "projectName": "ClientWebSocket",
+        "projectPath": "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\ClientWebSocket.csproj",
+        "packagesPath": "C:\\Users\\cezerilab\\.nuget\\packages\\",
+        "outputPath": "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\cezerilab\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "WebSocketSharp": {
+              "target": "Package",
+              "version": "[1.0.3-rc11, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.104\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win7-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}

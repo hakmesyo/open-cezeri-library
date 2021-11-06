@@ -44,18 +44,25 @@ Created on Thu Aug 19 15:37:07 2021
 # stop = timeit.default_timer()
 # print('Time: ', stop - start,' seconds')  
 
-from keras.models import load_model
+from tensorflow.keras.models import load_model
 from PIL import Image, ImageOps
 import numpy as np
 import timeit
 import threading
+import tensorflow as tf
 
+from tensorflow.python.client import device_lib
+def get_available_gpus():
+    local_device_protos = device_lib.list_local_devices()
+    return [x.name for x in local_device_protos if x.device_type == 'GPU']
+print(get_available_gpus())
 # Load the model
 model = load_model('keras_model.h5')
 
 def thr1(n):
     # start = timeit.default_timer()
     for i in range(n):
+        start = timeit.default_timer()
         # Create the array of the right shape to feed into the keras model
         # The 'length' or number of images you can put into the array is
         # determined by the first position in the shape tuple, in this case 1.
@@ -76,13 +83,16 @@ def thr1(n):
         
         # run the inference
         prediction = model.predict(data)
-        print(prediction)
+        # print(prediction)
+        stop = timeit.default_timer()
+        print('thr1 Time: ', (stop - start)*1000,' mili seconds')  
     # stop = timeit.default_timer()
     # print('Time: ', stop - start,' seconds')  
     
 def thr2(n):
     # start = timeit.default_timer()
     for i in range(n):
+        start = timeit.default_timer()
         # Create the array of the right shape to feed into the keras model
         # The 'length' or number of images you can put into the array is
         # determined by the first position in the shape tuple, in this case 1.
@@ -103,13 +113,16 @@ def thr2(n):
         
         # run the inference
         prediction = model.predict(data)
-        print(prediction)
+        # print(prediction)
+        stop = timeit.default_timer()
+        print('thr2 Time: ', (stop - start)*1000,' mili seconds')  
     # stop = timeit.default_timer()
     # print('Time: ', stop - start,' seconds')  
 
 def thr3(n):
     # start = timeit.default_timer()
     for i in range(n):
+        start = timeit.default_timer()
         # Create the array of the right shape to feed into the keras model
         # The 'length' or number of images you can put into the array is
         # determined by the first position in the shape tuple, in this case 1.
@@ -130,23 +143,32 @@ def thr3(n):
         
         # run the inference
         prediction = model.predict(data)
-        print(prediction)
+        # print(prediction)
+        stop = timeit.default_timer()
+        print('thr3 Time: ', (stop - start)*1000,' mili seconds')  
     # stop = timeit.default_timer()
     # print('Time: ', stop - start,' seconds')
 
 start = timeit.default_timer()
 k=562
+# thr1(k)
 t1 = threading.Thread(target=thr1, args=(k,))
 t2 = threading.Thread(target=thr2, args=(k,))
 t3 = threading.Thread(target=thr3, args=(k,))
+# t4 = threading.Thread(target=thr3, args=(k,))
+# t5 = threading.Thread(target=thr3, args=(k,))
 
 t1.start()
 t2.start()
 t3.start()
+# t4.start()
+# t5.start()
 
 t1.join()
 t2.join()
 t3.join()
+# t4.join()
+# t5.join()
 
 print("Done")
 stop = timeit.default_timer()

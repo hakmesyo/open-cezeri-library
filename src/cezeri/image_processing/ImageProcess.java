@@ -935,17 +935,20 @@ public final class ImageProcess {
     public static double[][] bufferedImageToArray2D(BufferedImage img) {
         double[][] ret = null;
         if (img.getColorModel().getNumComponents() == 4) {
-            WritableRaster raster = img.getRaster();
-            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-            byte[] d = data.getData();
-            double[] r = FactoryUtils.byte2Double(d);
-            double[] t = new double[r.length / 4];
-            int size = t.length;
-            for (int i = 0; i < size; i++) {
-                t[i] = (int) ((r[4 * i + 1] + r[4 * i + 2] + r[4 * i + 3]) / 3);
-            }
-            ret = FactoryMatrix.reshapeBasedOnRows(t, img.getHeight(), img.getWidth());
-            return ret;
+            img = convertToBufferedImageTypes(img, 5);
+            ret = convertBufferedImageTo2D(img);
+
+//            WritableRaster raster = img.getRaster();
+//            DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
+//            byte[] d = data.getData();
+//            double[] r = FactoryUtils.byte2Double(d);
+//            double[] t = new double[r.length / 4];
+//            int size = t.length;
+//            for (int i = 0; i < size; i++) {
+//                t[i] = (int) ((r[4 * i + 1] + r[4 * i + 2] + r[4 * i + 3]) / 3);
+//            }
+//            ret = FactoryMatrix.reshapeBasedOnRows(t, img.getHeight(), img.getWidth());
+//            return ret;
         } else if (img.getColorModel().getNumComponents() == 1 && !img.getColorModel().hasAlpha()) {
 //            int w=img.getWidth();
 //            int h=img.getHeight();
@@ -2469,8 +2472,8 @@ public final class ImageProcess {
         }
         return false;
     }
-    
-    public static boolean saveImageAtFolder(BufferedImage img,String folderPath) {
+
+    public static boolean saveImageAtFolder(BufferedImage img, String folderPath) {
         JFileChooser FC = new JFileChooser(folderPath);
         int retrival = FC.showSaveDialog(null);
         if (retrival == FC.APPROVE_OPTION) {
@@ -3094,8 +3097,8 @@ public final class ImageProcess {
      * @return
      */
     public static BufferedImage binarizeGrayScaleImage(double[][] d, int threshold) {
-        int nr=d.length;
-        int nc=d[0].length;
+        int nr = d.length;
+        int nc = d[0].length;
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 if (d[i][j] > threshold) {

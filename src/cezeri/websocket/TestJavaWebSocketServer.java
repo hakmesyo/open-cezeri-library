@@ -31,30 +31,29 @@ public class TestJavaWebSocketServer {
 //            t1 = FactoryUtils.toc(t1);
 //        }
 
-        
     }
-    
+
     private static SocketServer server = null;
-    
+
     public static void main(String[] args) {
-        
+
         try {
-            server = new SocketServer(8887);
+            InterfaceCallBack icbf = new InterfaceCallBack() {
+                @Override
+                public void onMessageReceived(String str) {
+                    messageReceived(str);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    server.broadcast("broadcast mesaj serverdan gitti");
+                }
+            };
+            server = new SocketServer(8887,icbf);
             FactoryUtils.startJavaServer(server);
         } catch (UnknownHostException ex) {
             Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
         }
-        InterfaceCallBack icbf=new InterfaceCallBack() {
-            @Override
-            public void onMessageReceived(String str) {
-                messageReceived(str);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(TestJavaWebSocketServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                server.broadcast("broadcast mesaj serverdan gitti");
-            }
-        };
     }
 }

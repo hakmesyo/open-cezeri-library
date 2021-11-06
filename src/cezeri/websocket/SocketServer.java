@@ -16,6 +16,7 @@ import org.java_websocket.server.WebSocketServer;
 import cezeri.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
+import java.nio.charset.StandardCharsets;
 
 public class SocketServer extends WebSocketServer {
 
@@ -28,10 +29,10 @@ public class SocketServer extends WebSocketServer {
         icbf=icb;
     }
 
-    public SocketServer(int port) throws UnknownHostException {
-        super(new InetSocketAddress(port));
-        System.err.println("you did not specify call back function, you can use another constructor");
-    }
+//    public SocketServer(int port) throws UnknownHostException {
+//        super(new InetSocketAddress(port));
+//        System.err.println("you did not specify call back function, you can use another constructor");
+//    }
 
     public SocketServer(int port, InterfaceCallBack icb) throws UnknownHostException {
         super(new InetSocketAddress(port));
@@ -78,7 +79,9 @@ public class SocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
 //		broadcast( message.array() );
-        System.out.println(conn + " bak hele: " + message);
+//        System.out.println(conn + " bak hele: " + message);
+        String s = StandardCharsets.UTF_8.decode(message).toString();
+        icbf.onMessageReceived(s);
     }
 
     @Override

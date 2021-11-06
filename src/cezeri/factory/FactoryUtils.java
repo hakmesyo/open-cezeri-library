@@ -7,7 +7,6 @@ package cezeri.factory;
 import au.com.bytecode.opencsv.CSVReader;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.utils.SerialType;
-import static cezeri.factory.FactorySocket.server;
 import cezeri.types.TDeviceState;
 import cezeri.types.TWord;
 import cezeri.types.TLearningType;
@@ -53,7 +52,6 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageTypeSpecifier;
@@ -64,6 +62,7 @@ import javax.imageio.stream.ImageOutputStream;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
@@ -3307,7 +3306,7 @@ public final class FactoryUtils {
             File[] files = dir.listFiles(IMAGE_FILTER);
             File[] ret = new File[files.length];
             for (int j = 0; j < files.length; j++) {
-                ret[j]=files[j];
+                ret[j] = files[j];
             }
             return ret;
 
@@ -3325,7 +3324,7 @@ public final class FactoryUtils {
             }
             return ret;
         }
-        
+
     }
 
     public static File[] getFileListInFolderForImages(String imageFolder) {
@@ -4045,6 +4044,30 @@ public final class FactoryUtils {
 
     public static boolean deleteFile(File file) {
         return file.delete();
+    }
+    
+    public static boolean deleteDirectory(File dir){
+        try {
+            FileUtils.deleteDirectory(dir);
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    public static boolean deleteDirectory(String path){
+        File dir=new File(path);
+        return deleteDirectory(dir);
+    }
+
+    public static boolean removeDirectory(File dir){
+        return deleteDirectory(dir);
+    }
+
+    public static boolean removeDirectory(String path){
+        File dir=new File(path);
+        return removeDirectory(dir);
     }
 
     public static boolean deleteFile(String filePath) {
@@ -5243,6 +5266,14 @@ public final class FactoryUtils {
         return String.valueOf(chars);
     }
 
+    public static void copyDirectory(File sourceFile, File destFile) {
+        try {
+            FileUtils.copyDirectory(sourceFile, destFile);
+        } catch (IOException ex) {
+            Logger.getLogger(FactoryUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public static void copyFile(File sourceFile, File destFile) {
         if (!destFile.exists()) {
             try {
@@ -5830,4 +5861,103 @@ public final class FactoryUtils {
             ex.printStackTrace();
         }
     }
+
+    public static String getRelativePath(String absolutePath, String relativeTo) {
+        return convertToRelativePath(absolutePath, relativeTo);
+    }
+
+    public static String convertToRelativePath(String absolutePath, String relativeTo) {
+        StringBuilder relativePath = null;
+
+        // Thanks to:
+        // http://mrpmorris.blogspot.com/2007/05/convert-absolute-path-to-relative-path.html
+        absolutePath = absolutePath.replaceAll("\\\\", "/");
+        relativeTo = relativeTo.replaceAll("\\\\", "/");
+
+        if (absolutePath.equals(relativeTo) == true) {
+
+        } else {
+            String[] absoluteDirectories = absolutePath.split("/");
+            String[] relativeDirectories = relativeTo.split("/");
+
+            //Get the shortest of the two paths
+            int length = absoluteDirectories.length < relativeDirectories.length
+                    ? absoluteDirectories.length : relativeDirectories.length;
+
+            //Use to determine where in the loop we exited
+            int lastCommonRoot = -1;
+            int index;
+
+            //Find common root
+            for (index = 0; index < length; index++) {
+                if (absoluteDirectories[index].equals(relativeDirectories[index])) {
+                    lastCommonRoot = index;
+                } else {
+                    break;
+                    //If we didn't find a common prefix then throw
+                }
+            }
+            if (lastCommonRoot != -1) {
+                //Build up the relative path
+                relativePath = new StringBuilder();
+                //Add on the ..
+                for (index = lastCommonRoot + 1; index < absoluteDirectories.length; index++) {
+                    if (absoluteDirectories[index].length() > 0) {
+                        relativePath.append("../");
+                    }
+                }
+                for (index = lastCommonRoot + 1; index < relativeDirectories.length - 1; index++) {
+                    relativePath.append(relativeDirectories[index] + "/");
+                }
+                relativePath.append(relativeDirectories[relativeDirectories.length - 1]);
+            }
+        }
+        return relativePath == null ? null : relativePath.toString();
+    }
+
+    public static void listSystemProperties() {
+        System.getProperties().list(System.out);
+    }
+
+    public static String getOperatinSystemName() {
+        return System.getProperty("os.name");
+    }
+
+    public static void splitTrainValidTestFolder(String base_path, double r_train, double r_valid, double r_test) {
+        File[] folders = FactoryUtils.getDirectories(base_path);
+        FactoryUtils.removeDirectory(base_path+"train");
+        FactoryUtils.removeDirectory(base_path+"valid");
+        FactoryUtils.removeDirectory(base_path+"test");
+        FactoryUtils.makeDirectory(base_path + "train");
+        FactoryUtils.makeDirectory(base_path + "valid");
+        FactoryUtils.makeDirectory(base_path + "test");
+        for (File folder : folders) {
+            File[] imgs = FactoryUtils.getFileListDataSetForImageClassification(folder.getAbsolutePath());
+            List<File> lst = Arrays.asList(imgs);
+            Collections.shuffle(lst);
+            double train_r = 0.7;
+            double valid_r = 0.1;
+            double test_r = 0.2;
+            int n = imgs.length;
+            FactoryUtils.makeDirectory(base_path + "train/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "valid/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "test/" + folder.getName());
+            for (int i = 0; i < n; i++) {
+                if (i <= (int) (n * 0.7)) {
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "train/" + folder.getName()+"/"+ lst.get(i).getName()));
+                } else if (i > (int) (n * 0.7) && i < (int) (n * 0.8)) {
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "valid/" + folder.getName()+"/"+ lst.get(i).getName()));
+                } else {
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "test/" + folder.getName()+"/"+ lst.get(i).getName()));
+                }
+            }
+
+        }
+
+    }
+
+    public static void splitTrainValidTestFolder(String path) {
+        splitTrainValidTestFolder(path, 0.7, 0.1, 0.2);
+    }
+
 }

@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 public final class Train {
 
     // represents number of training samples processed before the model is updated
+//    private static final int BATCH_SIZE = 8;
 //    private static final int BATCH_SIZE = 16;
     private static final int BATCH_SIZE = 32;
 

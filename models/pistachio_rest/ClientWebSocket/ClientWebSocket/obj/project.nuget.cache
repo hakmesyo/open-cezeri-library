@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "nXou+ud9Foc4ya5t/4g2YNoH+yxD49QWc3Po390oo6twpwqOG/ztgsNuA+hK/Rn+bNLdtOwSbsR/3vWEotmNIQ==",
+  "success": true,
+  "projectFilePath": "C:\\Dropbox\\NetbeansProjects\\OpenCezeriLibrary\\models\\pistachio_rest\\ClientWebSocket\\ClientWebSocket\\ClientWebSocket.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\cezerilab\\.nuget\\packages\\websocketsharp\\1.0.3-rc11\\websocketsharp.1.0.3-rc11.nupkg.sha512"
+  ],
+  "logs": []
+}

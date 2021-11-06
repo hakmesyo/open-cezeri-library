@@ -39,7 +39,7 @@ public class FactoryWebCam {
     private boolean isImageRecord = false;
     private static String folderPath = "recorded";
     private static Dimension size;
-    private static boolean isFlipped=false;
+    private static boolean isFlipped = false;
 
     private FactoryWebCam() {
         frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -75,6 +75,25 @@ public class FactoryWebCam {
         size = WebcamResolution.VGA.getSize();
         webCam.setViewSize(size);
         webCam.open(true);
+        return factWebCam;
+    }
+
+    public FactoryWebCam startWebCAM() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        BufferedImage bf = webCam.getImage();
+                        frm.setImage(bf);
+                        Thread.sleep(25);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+
+        }).start();
         return factWebCam;
     }
 
@@ -123,7 +142,7 @@ public class FactoryWebCam {
         while (true) {
             bf = webCam.getImage();
             if (isFlipped) {
-                bf=ImageProcess.flipVertical(bf);
+                bf = ImageProcess.flipVertical(bf);
             }
             frm.setImage(bf);
             bf_rgb = ImageProcess.clone(bf);
@@ -144,7 +163,7 @@ public class FactoryWebCam {
                         writer.addVideoStream(0, 0, ICodec.ID.CODEC_ID_H264, size.width, size.height);
                         isRecord = true;
                         t_start = System.currentTimeMillis();
-                        System.out.println(folderPath + "/" + timeStamp + "/video_captured.ts"+" videosu kaydediliyor");
+                        System.out.println(folderPath + "/" + timeStamp + "/video_captured.ts" + " videosu kaydediliyor");
                     }
                 }
                 elapsed_time = System.currentTimeMillis() - t_start;
@@ -212,9 +231,9 @@ public class FactoryWebCam {
     public BufferedImage getImage() {
         return webCam.getImage();
     }
-    
-    public FactoryWebCam flipImageAlongVerticalAxis(){
-        isFlipped=!isFlipped;
+
+    public FactoryWebCam flipImageAlongVerticalAxis() {
+        isFlipped = !isFlipped;
         return factWebCam;
     }
 
