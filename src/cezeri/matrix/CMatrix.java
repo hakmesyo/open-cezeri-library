@@ -1761,6 +1761,7 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix plot() {
+        this.array=FactoryUtils.RemoveNaNToZero(this.toDoubleArray2D());
         if (!hold_on) {
             framePlot = new FramePlot(this);
         } else {

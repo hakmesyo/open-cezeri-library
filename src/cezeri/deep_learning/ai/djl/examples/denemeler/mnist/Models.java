@@ -54,18 +54,18 @@ public final class Models {
 //                        .setNumLayers(50)
 //                        .setOutSize(NUM_OF_OUTPUT)
 //                        .build();
-//        Block block =
-//                new Mlp(
-//                        3*IMAGE_HEIGHT * IMAGE_WIDTH,
-//                        NUM_OF_OUTPUT,
-//                        new int[] {128, 64});
-        SequentialBlock block = new SequentialBlock()
-                .add(Blocks.batchFlattenBlock(3 * IMAGE_WIDTH * IMAGE_HEIGHT))
-                .add(Linear.builder().setUnits(128).build())
-                .add(Activation.reluBlock())
-                .add(Linear.builder().setUnits(64).build())
-                .add(Activation.reluBlock())
-                .add(Linear.builder().setUnits(NUM_OF_OUTPUT).build());
+        Block block =
+                new Mlp(
+                        3*IMAGE_HEIGHT * IMAGE_WIDTH,
+                        NUM_OF_OUTPUT,
+                        new int[] {128, 64});
+//        SequentialBlock block = new SequentialBlock()
+//                .add(Blocks.batchFlattenBlock(3 * IMAGE_WIDTH * IMAGE_HEIGHT))
+//                .add(Linear.builder().setUnits(128).build())
+//                .add(Activation.reluBlock())
+//                .add(Linear.builder().setUnits(64).build())
+//                .add(Activation.reluBlock())
+//                .add(Linear.builder().setUnits(NUM_OF_OUTPUT).build());
 
         // set the neural network to the model
         model.setBlock(block);

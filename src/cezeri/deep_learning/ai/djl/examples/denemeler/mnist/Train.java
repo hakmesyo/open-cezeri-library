@@ -58,7 +58,7 @@ public final class Train {
         ImageFolder dataset = initDataset("c:/ai/djl/mnist_train");
 //        ImageFolder dataset = initDataset("c:/ai/djl/mnist_test");
         // Split the dataset set into training dataset and validate dataset
-        RandomAccessDataset[] datasets = dataset.randomSplit(10, 0);
+        RandomAccessDataset[] datasets = dataset.randomSplit(8, 2);
 
         // set loss function, which seeks to minimize errors
         // loss function evaluates model's predictions against the correct answer (during training)

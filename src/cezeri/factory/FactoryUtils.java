@@ -5521,6 +5521,17 @@ public final class FactoryUtils {
         return files;
     }
 
+    public static double[][] RemoveNaNToZero(double[][] d) {
+        int nr=d.length;
+        int nc=d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                d[i][j]=Double.isNaN(d[i][j])?0:d[i][j];
+            }
+        }
+        return d;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -5935,17 +5946,14 @@ public final class FactoryUtils {
             File[] imgs = FactoryUtils.getFileListDataSetForImageClassification(folder.getAbsolutePath());
             List<File> lst = Arrays.asList(imgs);
             Collections.shuffle(lst);
-            double train_r = 0.7;
-            double valid_r = 0.1;
-            double test_r = 0.2;
             int n = imgs.length;
             FactoryUtils.makeDirectory(base_path + "train/" + folder.getName());
             FactoryUtils.makeDirectory(base_path + "valid/" + folder.getName());
             FactoryUtils.makeDirectory(base_path + "test/" + folder.getName());
             for (int i = 0; i < n; i++) {
-                if (i <= (int) (n * 0.7)) {
+                if (i <= (int) (n * r_train)) {
                     FactoryUtils.copyFile(lst.get(i), new File(base_path + "train/" + folder.getName()+"/"+ lst.get(i).getName()));
-                } else if (i > (int) (n * 0.7) && i < (int) (n * 0.8)) {
+                } else if (i > (int) (n * r_train) && i <= (int) (n * (r_train+r_valid))) {
                     FactoryUtils.copyFile(lst.get(i), new File(base_path + "valid/" + folder.getName()+"/"+ lst.get(i).getName()));
                 } else {
                     FactoryUtils.copyFile(lst.get(i), new File(base_path + "test/" + folder.getName()+"/"+ lst.get(i).getName()));

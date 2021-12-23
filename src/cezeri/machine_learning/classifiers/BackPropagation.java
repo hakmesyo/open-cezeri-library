@@ -54,7 +54,6 @@ public class BackPropagation extends Thread {
 
     // Calculate the node activations
     public void FeedForward() {
-
         int i, j;
 
         // Since no weights contribute to the output 

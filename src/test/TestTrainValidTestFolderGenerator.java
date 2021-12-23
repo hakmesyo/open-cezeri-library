@@ -18,7 +18,9 @@ public class TestTrainValidTestFolderGenerator {
     }
 
     private static void trainValidTest() {
-        String base_path = "C:\\python_data\\dataset\\gatenet\\datasets\\pollens\\ds\\";
-        FactoryUtils.splitTrainValidTestFolder(base_path);
+//        String base_path = "C:\\python_data\\dataset\\gatenet\\datasets\\pollens\\ds\\";
+        String base_path ="C:\\Users\\cezerilab\\Desktop\\pollens_224\\ds";
+        
+        FactoryUtils.splitTrainValidTestFolder(base_path,0.7,0.1,0.2);
     }
 }

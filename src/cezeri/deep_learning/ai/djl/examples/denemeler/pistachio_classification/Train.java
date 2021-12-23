@@ -38,13 +38,13 @@ public final class Train {
     // represents number of training samples processed before the model is updated
 //    private static final int BATCH_SIZE = 8;
 //    private static final int BATCH_SIZE = 16;
-    private static final int BATCH_SIZE = 32;
+    private static final int BATCH_SIZE = 64;
 
     // the number of passes over the complete dataset
-    private static final int EPOCHS = 5;
+    private static final int EPOCHS = 10;
 
     public static void main(String[] args) throws IOException, TranslateException {
-        System.setProperty("DJL_CACHE_DIR", "c:/ai/djl");
+        System.setProperty("DJL_CACHE_DIR", "c:/ai/djl/my_cache");
         // the location to save the model
         Path modelDir = Paths.get("models");
 
