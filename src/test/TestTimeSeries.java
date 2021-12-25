@@ -12,7 +12,7 @@ import cezeri.types.TFigureAttribute;
  *
  * @author cezerilab
  */
-public class TestSilSil {
+public class TestTimeSeries {
     public static void main(String[] args) {
         int length=100;
         TFigureAttribute attrib = new TFigureAttribute();
@@ -54,4 +54,5 @@ public class TestSilSil {
         }
         return ret;
     }
+    
 }

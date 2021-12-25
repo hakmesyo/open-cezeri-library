@@ -13,8 +13,4 @@ import java.util.Arrays;
  * @author cezerilab
  */
 public class NewClass {
-    public static void main(String[] args) {
-        String path="./\\images\\test\\dfemale\\h_693.jpg";
-        String[] str=FactoryUtils.splitPath(path);
-    }
 }

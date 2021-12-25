@@ -13,7 +13,7 @@ import cezeri.matrix.CMatrix;
 
 public class UseCaseMatrixOperations {
     public static void main(String[] args) {
-        CMatrix cm = CMatrix.getInstance().rand(3840,2160,0,255).transpose().round()
+        CMatrix cm = CMatrix.getInstance().rand(640,480,0,255).transpose().round()
                 .tic()
 //                .m_imhist()
                 .imshow() 

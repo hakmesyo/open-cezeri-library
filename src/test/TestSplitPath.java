@@ -5,17 +5,18 @@
  */
 package test;
 
-import cezeri.matrix.CMatrix;
+import cezeri.factory.FactoryUtils;
+import java.util.Arrays;
 
 /**
  *
  * @author cezerilab
  */
-public class Test_DROI_Corner {
+public class TestSplitPath {
     public static void main(String[] args) {
-        CMatrix cm = CMatrix.getInstance()
-                .imread()
-                .imshow()
-                ;
+        String path="./\\images\\test\\dfemale\\h_693.jpg";
+        String[] str=FactoryUtils.splitPath(path);
+        System.out.println("str = " + Arrays.toString(str));
     }
+    
 }

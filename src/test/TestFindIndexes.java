@@ -13,12 +13,12 @@ import java.util.Arrays;
  *
  * @author cezerilab
  */
-public class TestSil_2 {
+public class TestFindIndexes {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
                 .imread("images/cezeri_logo.bmp")
                 .rgb2gray()
-                //.imshow()
+                .imshow()
                 .println()
                 .findIndex(TMatrixOperator.EQUALS, 0)
                 .println()
@@ -35,5 +35,5 @@ public class TestSil_2 {
         System.out.println(1894/84);
         System.out.println(1894%84);
     }
-   
+    
 }
