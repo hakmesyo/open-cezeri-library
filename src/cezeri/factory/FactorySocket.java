@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.java_websocket.client.WebSocketClient;
-import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.interfaces.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 
 /**

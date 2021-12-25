@@ -48,7 +48,8 @@ public final class Train {
 
         // create ImageFolder dataset from directory
 //        ImageFolder dataset = initDataset("c:/ai/djl/ut-zap50k-images-square");
-        ImageFolder dataset = initDataset("c:/ai/djl/dataset_pdr/dataset");
+//        ImageFolder dataset = initDataset("c:/ai/djl/dataset_pdr/dataset");
+        ImageFolder dataset = initDataset("models/number_dataset");
 //        ImageFolder dataset = initDataset("c:/ai/djl/mnist_test");
         // Split the dataset set into training dataset and validate dataset
         RandomAccessDataset[] datasets = dataset.randomSplit(10, 0);

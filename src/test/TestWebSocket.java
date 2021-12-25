@@ -5,7 +5,7 @@
  */
 package test;
 
-import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.interfaces.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.matrix.CMatrix;
 

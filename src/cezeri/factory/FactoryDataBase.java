@@ -5,7 +5,7 @@
  */
 package cezeri.factory;
 
-import cezeri.call_back_interface.CallBackDataBase;
+import cezeri.interfaces.call_back_interface.CallBackDataBase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;

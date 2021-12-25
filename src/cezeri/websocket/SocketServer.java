@@ -13,7 +13,7 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import cezeri.call_back_interface.CallBackWebSocket;
+import cezeri.interfaces.call_back_interface.CallBackWebSocket;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.factory.FactoryUtils;
 import java.nio.charset.StandardCharsets;

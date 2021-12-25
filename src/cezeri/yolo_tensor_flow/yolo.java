@@ -44,7 +44,8 @@ public class yolo {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("path:" + FactoryUtils.getDefaultDirectory());
 //        System.load(FactoryUtils.getDefaultDirectory() + "\\opencv_java420.dll"); // Load the openCV 4.2 dll //
-        System.load(FactoryUtils.getDefaultDirectory() + "\\opencv_java450.dll"); // Load the openCV 4.5 dll //
+//        System.load(FactoryUtils.getDefaultDirectory() + "\\opencv_java450.dll"); // Load the openCV 4.5 dll //
+        System.load(FactoryUtils.getDefaultDirectory() + "\\opencv_java453.dll"); // Load the openCV 4.5 dll //
 
 //        String modelWeights = "c:\\yolov3-tiny.weights"; //Download and load only wights for YOLO , this is obtained from official YOLO site//
 //        String modelConfiguration = "cfg/yolov3_tiny.cfg";//Download and load cfg file for YOLO , can be obtained from official site//

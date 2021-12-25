@@ -79,7 +79,7 @@ public class Train {
 
         Loss loss = Loss.softmaxCrossEntropyLoss();
 
-        int numEpochs = Integer.getInteger("MAX_EPOCH", 10);
+        int numEpochs = Integer.getInteger("MAX_EPOCH", 1);
         float lr = 0.5f;
 
         double[] trainLoss;

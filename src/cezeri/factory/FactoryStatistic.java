@@ -5,7 +5,7 @@
  */
 package cezeri.factory;
 
-import cezeri.types.EPerformanceMetrics;
+import cezeri.enums.EPerformanceMetrics;
 import static cezeri.factory.FactoryUtils.getSum;
 import java.awt.Image;
 import java.util.ArrayList;

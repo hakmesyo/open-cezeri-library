@@ -7,7 +7,7 @@ package cezeri.gui;
 
 import cezeri.types.TFigureAttribute;
 import cezeri.matrix.CMatrix;
-import cezeri.types.EPerformanceMetrics;
+import cezeri.enums.EPerformanceMetrics;
 import cezeri.factory.FactoryStatistic;
 import cezeri.factory.FactoryUtils;
 import java.awt.AlphaComposite;
