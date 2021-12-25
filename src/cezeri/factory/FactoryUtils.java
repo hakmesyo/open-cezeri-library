@@ -5532,6 +5532,32 @@ public final class FactoryUtils {
         return d;
     }
 
+    public static String[] splitPath(String path) {
+        path=path.replace("\\", "/");
+        String[] s=path.split("/");
+        return s;
+    }
+    
+    public static String getLastItemPath(String path) {
+        path=path.replace("\\", "/");
+        String[] s=path.split("/");
+        return s[s.length-1];
+    }
+    
+    public static String getItemPath(String path,int n) {
+        path=path.replace("\\", "/");
+        String[] s=path.split("/");
+        if (s.length<2) {
+            return s[0];
+        }
+        if (n<0) {
+            return s[s.length+n];
+        }else{
+            return s[n];
+        }
+        
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -5934,29 +5960,68 @@ public final class FactoryUtils {
         return System.getProperty("os.name");
     }
 
+    /**
+     *
+     * split base dataset as train, validation and test sets. 
+     * @param base_path : Base path should contain class folders.
+     * @param r_train : i.e 0.8  for train and 0.2 for test
+     * @param r_valid : i.e 0.05 for validation 
+     * @param r_test  : i.e 0.15 for test
+     */
     public static void splitTrainValidTestFolder(String base_path, double r_train, double r_valid, double r_test) {
+        FactoryUtils.removeDirectory(base_path+"/train");
+        FactoryUtils.removeDirectory(base_path+"/valid");
+        FactoryUtils.removeDirectory(base_path+"/test");
         File[] folders = FactoryUtils.getDirectories(base_path);
-        FactoryUtils.removeDirectory(base_path+"train");
-        FactoryUtils.removeDirectory(base_path+"valid");
-        FactoryUtils.removeDirectory(base_path+"test");
-        FactoryUtils.makeDirectory(base_path + "train");
-        FactoryUtils.makeDirectory(base_path + "valid");
-        FactoryUtils.makeDirectory(base_path + "test");
+        FactoryUtils.makeDirectory(base_path + "/train");
+        FactoryUtils.makeDirectory(base_path + "/valid");
+        FactoryUtils.makeDirectory(base_path + "/test");
         for (File folder : folders) {
             File[] imgs = FactoryUtils.getFileListDataSetForImageClassification(folder.getAbsolutePath());
             List<File> lst = Arrays.asList(imgs);
             Collections.shuffle(lst);
             int n = imgs.length;
-            FactoryUtils.makeDirectory(base_path + "train/" + folder.getName());
-            FactoryUtils.makeDirectory(base_path + "valid/" + folder.getName());
-            FactoryUtils.makeDirectory(base_path + "test/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "/train/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "/valid/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "/test/" + folder.getName());
             for (int i = 0; i < n; i++) {
                 if (i <= (int) (n * r_train)) {
-                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "train/" + folder.getName()+"/"+ lst.get(i).getName()));
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "/train/" + folder.getName()+"/"+ lst.get(i).getName()));
                 } else if (i > (int) (n * r_train) && i <= (int) (n * (r_train+r_valid))) {
-                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "valid/" + folder.getName()+"/"+ lst.get(i).getName()));
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "/valid/" + folder.getName()+"/"+ lst.get(i).getName()));
                 } else {
-                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "test/" + folder.getName()+"/"+ lst.get(i).getName()));
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "/test/" + folder.getName()+"/"+ lst.get(i).getName()));
+                }
+            }
+
+        }
+
+    }
+    
+    /**
+     * split base dataset as train and test sets. 
+     * @param base_path : Base path should contain class folders.
+     * @param r_train : i.e 0.8  for train and 0.2 for test
+     * @param r_test : i.e 0.2 for test 0.8 for train
+     */
+    public static void splitTrainTestFolder(String base_path, double r_train, double r_test) {
+        FactoryUtils.removeDirectory(base_path+"/train");
+        FactoryUtils.removeDirectory(base_path+"/test");
+        File[] folders = FactoryUtils.getDirectories(base_path);
+        FactoryUtils.makeDirectory(base_path + "/train");
+        FactoryUtils.makeDirectory(base_path + "/test");
+        for (File folder : folders) {
+            File[] imgs = FactoryUtils.getFileListDataSetForImageClassification(folder.getAbsolutePath());
+            List<File> lst = Arrays.asList(imgs);
+            Collections.shuffle(lst);
+            int n = imgs.length;
+            FactoryUtils.makeDirectory(base_path + "/train/" + folder.getName());
+            FactoryUtils.makeDirectory(base_path + "/test/" + folder.getName());
+            for (int i = 0; i < n; i++) {
+                if (i <= (int) (n * r_train)) {
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "/train/" + folder.getName()+"/"+ lst.get(i).getName()));
+                } else {
+                    FactoryUtils.copyFile(lst.get(i), new File(base_path + "/test/" + folder.getName()+"/"+ lst.get(i).getName()));
                 }
             }
 
@@ -5964,6 +6029,10 @@ public final class FactoryUtils {
 
     }
 
+    /**
+     * split 0.7 train, 0.1 validation and 0.2 test folder as default
+     * @param path
+     */
     public static void splitTrainValidTestFolder(String path) {
         splitTrainValidTestFolder(path, 0.7, 0.1, 0.2);
     }
