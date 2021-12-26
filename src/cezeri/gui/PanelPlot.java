@@ -406,7 +406,7 @@ public class PanelPlot extends javax.swing.JPanel {
             gr.drawLine(x0, q, x0 + art, q);
             gr.drawLine(w - fromRight, q, w - fromRight - art, q);
         }
-        gr.drawString(figureAttribute.axis[1], 20, 35);
+        gr.drawString(figureAttribute.axis_names[1], 20, 35);
     }
 
     private void drawXAxis(Graphics gr, int x0, int y0, int w, int fromRight, double[][] d) {
@@ -427,7 +427,7 @@ public class PanelPlot extends javax.swing.JPanel {
         double delta = maxX / n;
         gr.drawLine(x0, top, w - fromRight, 50);
         gr.drawLine(x0, y0 + 20, w - fromRight, y0 + 20);
-        gr.drawString(figureAttribute.axis[0], w - 90, y0 + 20);
+        gr.drawString(figureAttribute.axis_names[0], w - 90, y0 + 20);
         int q = 0;
         for (int i = 0; i <= n; i++) {
             xVal[i] = (Math.round(minX + i * delta));

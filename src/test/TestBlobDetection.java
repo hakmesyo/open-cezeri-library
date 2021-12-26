@@ -22,10 +22,10 @@ public class TestBlobDetection {
                 .imshow()            
                 
                 ;
-        CMatrix cm2 = CMatrix.getInstance()
-                .make_blobs(500, 5, 5)
-                .scatter()
-                //.println()
-                ;
+//        CMatrix cm2 = CMatrix.getInstance()
+//                .make_blobs(500, 5, 5)
+//                .scatter()
+//                //.println()
+//                ;
     }
 }

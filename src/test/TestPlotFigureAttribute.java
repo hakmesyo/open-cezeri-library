@@ -21,7 +21,7 @@ public class TestPlotFigureAttribute {
     public static void main(String[] args) {
 //        CMatrix cm1=CMatrix.getInstance().linspace(-30,30,60).gaussmf(1.2,10);
         TFigureAttribute a = new TFigureAttribute();
-        a.axis = new String[]{"Frequency", "Return Losss"};
+        a.axis_names = new String[]{"Frequency", "Return Losss"};
         a.figureCaption = "Optimum Resonans Figure";
         a.items = new String[]{"patch10", "patch20", "patch30"};
         a.title = "Resonans";

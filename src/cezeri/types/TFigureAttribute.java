@@ -19,7 +19,7 @@ public class TFigureAttribute {
     public String figureCaption="";
     public String title="";
 //    public String[] axis=new String[]{"Indexes","Values"};
-    public String[] axis=new String[]{"",""};
+    public String[] axis_names=new String[]{"",""};
 //    public String[] items=new String[]{"Observed","Simulated"};;
     public String[] items=new String[]{"",""};;
 //    public TPointType pointType=TPointType.LINE;
@@ -28,6 +28,19 @@ public class TFigureAttribute {
     public ArrayList<Double> perfMetricVal=new ArrayList();
     public boolean isStroke=false;
     public ArrayList<Stroke> stroke=new ArrayList<>();
+
+    public TFigureAttribute() {
+        
+    }
+    
+    public TFigureAttribute(String figureCaption,String title,String axisNames,String items) {
+        this.figureCaption=figureCaption;
+        this.title=title;
+        this.axis_names=axisNames.split(",");
+        this.items=items.split(",");
+    }
+    
+    
     
     public TFigureAttribute clone(){
         TFigureAttribute ret=new TFigureAttribute();
@@ -35,7 +48,7 @@ public class TFigureAttribute {
         ret.title=this.title;
         ret.isStroke=this.isStroke;
         ret.stroke=this.stroke;
-        ret.axis=FactoryMatrix.clone(this.axis);
+        ret.axis_names=FactoryMatrix.clone(this.axis_names);
         ret.items=FactoryMatrix.clone(this.items);
         ret.perfMetricStr=(ArrayList<String>)this.perfMetricStr.clone();
         ret.perfMetricVal=(ArrayList<Double>)this.perfMetricVal.clone();

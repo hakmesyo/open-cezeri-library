@@ -50,7 +50,7 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
                 cm.toDoubleArray2D()[1],
                 this.figureAttribute.perfMetricStr);
 //        this.figureAttribute.axis = new String[]{"Observed", "Simulated"};
-        this.figureAttribute.axis = axis;
+        this.figureAttribute.axis_names = axis;
         repaint();
     }
 
@@ -62,7 +62,7 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
                 cm.toDoubleArray2D()[1],
                 this.figureAttribute.perfMetricStr);
 //        this.figureAttribute.axis = new String[]{"Observed", "Simulated"};
-        this.figureAttribute.axis = axis;
+        this.figureAttribute.axis_names = axis;
         initialize();
         repaint();
     }
@@ -213,7 +213,7 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
             gr.drawLine(x0, q, x0 + w, q);
         }
         gr.setColor(Color.darkGray);
-        gr.drawString(figureAttribute.axis[1], x0 - 5, 35);
+        gr.drawString(figureAttribute.axis_names[1], x0 - 5, 35);
     }
 
     private void drawXAxis(Graphics2D gr, int x0, int y0, int h, int w, double[][] d) {
@@ -222,14 +222,14 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
         double deltaX = Math.abs(maxX - minX);
         double n = 10.0;
         int m = 160;
-        int strW = getMaxWidth(gr, figureAttribute.axis);
+        int strW = getMaxWidth(gr, figureAttribute.axis_names);
         int l = w - (x0 + m);
         double dx = l / n;
         double delta = deltaX / n;
         double[] xVal = new double[(int) n + 1];
         gr.setColor(Color.darkGray);
 //        gr.drawLine(x0, y0, w - m, y0);
-        gr.drawString(figureAttribute.axis[0], w - (140), y0);
+        gr.drawString(figureAttribute.axis_names[0], w - (140), y0);
         for (int i = 1; i < n; i++) {
             gr.setColor(Color.darkGray);
             int q = (int) (x0 + i * dx);
@@ -357,7 +357,7 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
                 cm.toDoubleArray2D()[0],
                 cm.toDoubleArray2D()[1],
                 this.figureAttribute.perfMetricStr);
-        this.figureAttribute.axis = new String[]{"Observed", "Simulated"};
+        this.figureAttribute.axis_names = new String[]{"Observed", "Simulated"};
         repaint();
     }
 
@@ -373,7 +373,7 @@ public final class PanelScatterPlot extends javax.swing.JPanel {
                 cm.toDoubleArray2D()[1],
                 this.figureAttribute.perfMetricStr);
 //        this.figureAttribute.axis = new String[]{"Observed", "Simulated"};
-        this.figureAttribute.axis = axis;
+        this.figureAttribute.axis_names = axis;
         repaint();
     }
 

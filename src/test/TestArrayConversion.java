@@ -16,7 +16,7 @@ public class TestArrayConversion {
     public static void main(String[] args){
         CMatrix cm=CMatrix.getInstance().tic().readImage("images\\horoz.jpg").toc("img read:").
                 showImage().toc("show:").
-                edgeDetectionCanny().toc("canny:").imshow().prev().imshow().
+                edgeDetectionCanny().toc("canny:").imshow().prev().
                 edgeDetectionSobel(50).toc("sobel:").imshow().prev().
                 edgeDetectionMusa(150).toc("musa:").imshow();
 //        CMatrix cm=CMatrix.getInstance()

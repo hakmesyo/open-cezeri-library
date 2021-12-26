@@ -26,7 +26,7 @@ public class TestMachineLearning {
         }
 //        perform test process
         TFigureAttribute attr=new TFigureAttribute();
-        attr.axis=new String[]{"Day", "m3/sn"};;
+        attr.axis_names=new String[]{"Day", "m3/sn"};;
         attr.items=new String[]{"Observed", "Simulated"};
         attr.title="SCA 4km";
         attr.isStroke=true;

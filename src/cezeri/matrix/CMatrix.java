@@ -123,6 +123,7 @@ import cezeri.enums.EnumRunTime;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.factory.FactoryTensorFlowJS;
+import cezeri.gui.FrameScatterBlob;
 import cezeri.types.TBlockType;
 import cezeri.types.TDJLModel;
 import cezeri.types.TRoi;
@@ -1714,15 +1715,54 @@ public final class CMatrix implements Serializable {
      * Plot scatter graph of the first two column vectors of the CMatrix Another
      * usage is an overloaded scatter method which takes two vector as an input
      * parameter or two CMatrix objects.
-     *
-     *
-     *
      * @return CMatrix
      */
     public CMatrix scatter() {
         FrameScatterPlot frm = new FrameScatterPlot(this);
         frm.setVisible(true);
         return this;
+    }
+    
+    /**
+     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
+     * usage is an overloaded scatter method which takes two vector as an input
+     * parameter or two CMatrix objects.
+     * 
+     * @return CMatrix
+     */
+    public CMatrix scatterBlob() {
+        FrameScatterBlob frm = new FrameScatterBlob(this);
+        frm.setVisible(true);
+        return this;
+    }
+    /**
+     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
+     * usage is an overloaded scatter method which takes two vector as an input
+     * parameter or two CMatrix objects.
+     * 
+     * @return CMatrix
+     */
+    
+    public CMatrix scatterBlob(TFigureAttribute attr) {
+        FrameScatterBlob frm = new FrameScatterBlob(this,attr);
+        frm.setVisible(true);
+        return this;
+    }
+
+    /**
+     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
+     * usage is an overloaded scatter method which takes two vector as an input
+     * parameter or two CMatrix objects.
+     * 
+     * @return CMatrix
+     */
+    
+    public CMatrix scatterBlob(String columns,TFigureAttribute attr) {
+        CMatrix ret = this.clone(this);
+        ret=ret.cmd(":", columns).cat(1, ret.cmd(":", "-1"));
+        FrameScatterBlob frm = new FrameScatterBlob(ret,attr);
+        frm.setVisible(true);
+        return ret;
     }
 
     /**
@@ -7203,15 +7243,15 @@ public final class CMatrix implements Serializable {
 
     public CMatrix bitPlaneMSB() {
         CMatrix ret = this.clone(this);
-
         ret.array = FactoryMatrix.bitPlaneMSB(ret.array);
+        ret.image=ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
 
     public CMatrix bitPlane(int n) {
         CMatrix ret = this.clone(this);
-
         ret.array = FactoryMatrix.bitPlane(ret.array, n);
+        ret.image=ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
 

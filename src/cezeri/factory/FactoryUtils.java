@@ -5558,6 +5558,18 @@ public final class FactoryUtils {
         
     }
 
+    public static Color[] getRandomColors(double[] d,long random_seed) {
+        Random rnd=new Random(random_seed);
+        Color[] ret=new Color[d.length];
+        for (int i = 0; i < ret.length; i++) {
+            float r=rnd.nextFloat();
+            float g=rnd.nextFloat();
+            float b=rnd.nextFloat();
+            ret[i]=new Color(r,g,b);
+        }
+        return ret;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
@@ -6035,6 +6047,20 @@ public final class FactoryUtils {
      */
     public static void splitTrainValidTestFolder(String path) {
         splitTrainValidTestFolder(path, 0.7, 0.1, 0.2);
+    }
+    
+    public static int getMaxWidth(Graphics gr, String[] t) {
+        Rectangle2D r1 = gr.getFont().getStringBounds(t[0], 0, t[0].length(), gr.getFontMetrics().getFontRenderContext());
+        Rectangle2D r2 = gr.getFont().getStringBounds(t[1], 0, t[1].length(), gr.getFontMetrics().getFontRenderContext());
+        int ret = (int) Math.max(r1.getWidth(), r2.getWidth()) + 20;
+        return ret;
+    }
+
+    public static int getMaxHeight(Graphics gr, String[] t) {
+        Rectangle2D r1 = gr.getFont().getStringBounds(t[0], 0, t[0].length(), gr.getFontMetrics().getFontRenderContext());
+        Rectangle2D r2 = gr.getFont().getStringBounds(t[1], 0, t[1].length(), gr.getFontMetrics().getFontRenderContext());
+        int ret = (int) Math.max(r1.getHeight(), r2.getHeight());
+        return ret;
     }
 
 }

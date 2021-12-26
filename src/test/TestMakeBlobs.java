@@ -24,26 +24,30 @@
 package test;
 
 import cezeri.matrix.CMatrix;
-
+import cezeri.types.TFigureAttribute;
 
 /**
  *
  * @author DELL LAB
  */
 public class TestMakeBlobs {
+
     public static void main(String[] args) {
-       
+
         CMatrix jm = CMatrix.getInstance()
-                .make_blobs(20, 10, 3)
-                .println()                
-                .scatter() 
-                ;
-        
-//                .addMainTitle("main")
-//                .addXTitle("m/sec")
-//                .addYTitle("lt")
-//                .buildAndShow()
-//                .head()
-//                ;
+                //                .make_blobs(300, 3, 5)
+                .make_blobs(300, 7, 5);
+
+        jm.scatterBlob();
+
+        jm.scatterBlob("3,5", new TFigureAttribute("Python Bloblarından",
+                "Different Blobs having various means and variances",
+                "F-3,F-5",
+                "Class-1,Class-2,Class-3,Class-4,Class-5"));
+//        jm.scatterBlob("0,2", new TFigureAttribute("Python Bloblarından",
+//                "Different Blobs having various means and variances",
+//                "F-1,F-2",
+//                "Class-1,Class-2,Class-3,Class-4,Class-5"));
+
     }
 }

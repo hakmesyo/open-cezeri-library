@@ -16,9 +16,9 @@ public class Test4KImage {
 
     public static void main(String[] args) {
 //        BufferedImage
-//        CMatrix cm=CMatrix.getInstance().imread("images\\leopard4k.jpeg")
+        CMatrix cm=CMatrix.getInstance().imread("images\\leopard4k.jpeg")
 //        CMatrix cm=CMatrix.getInstance().imread("images\\kaplan1.jpg")
-        CMatrix cm = CMatrix.getInstance().imread("images\\pullar.png")
+//        CMatrix cm = CMatrix.getInstance().imread("images\\pullar.png")
                 .imshow("rgb")
                 .imhist("rgb")
                 .rgb2hsv()

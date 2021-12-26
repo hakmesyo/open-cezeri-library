@@ -213,7 +213,7 @@ public class FactoryEvaluation {
     public static Evaluation performTest(Classifier model, Instances train, Instances test, boolean show_text, boolean show_plot) {
         String[] s = {"index", "value"};
         TFigureAttribute attr = new TFigureAttribute();
-        attr.axis = s;
+        attr.axis_names = s;
         return performTest(model, train, test, show_text, show_plot, attr);
     }
 

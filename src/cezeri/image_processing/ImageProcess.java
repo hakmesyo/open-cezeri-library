@@ -2420,6 +2420,8 @@ public final class ImageProcess {
     public static BufferedImage readImageFromFile(String fileName) {
         File file = new File(fileName);
         if (!file.exists()) {
+            System.err.println("Fatal Exception: Image File not found at specified path");
+            System.exit(-1);
             return null;
         }
         BufferedImage ret = null;
