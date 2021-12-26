@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.deep_learning.deep_mlp;
+package cezeri.deep_learning.h2d_mlp;
 
 import cezeri.matrix.CMatrix;
 import java.util.Random;

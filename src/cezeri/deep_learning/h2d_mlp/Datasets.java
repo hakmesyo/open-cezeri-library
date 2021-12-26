@@ -1,4 +1,4 @@
-package cezeri.deep_learning.deep_mlp;
+package cezeri.deep_learning.h2d_mlp;
 
 import cezeri.factory.FactoryUtils;
 import cezeri.matrix.CMatrix;

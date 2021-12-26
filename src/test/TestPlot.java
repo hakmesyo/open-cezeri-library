@@ -13,7 +13,15 @@ import cezeri.matrix.CMatrix;
  */
 public class TestPlot {
     public static void main(String[] args) {
-        CMatrix cm = CMatrix.getInstance().linspace(-10, 10, 360).sin().jitter(0.1).plot().rand(10,5).plot().prev().prev().plot();
+        CMatrix cm = CMatrix.getInstance()
+                .linspace(-10, 10, 360)
+                .sin()
+                .jitter(0.1)
+                .plot()
+//                .rand(10,5)
+//                .plot()
+               
+                ;
     }
     
 }

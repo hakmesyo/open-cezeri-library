@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cezeri.deep_learning.deep_mlp;
+package cezeri.deep_learning.h2d_mlp;
 
 import cezeri.factory.FactoryUtils;
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.Random;
  *
  * @author cezerilab
  */
-public class TestDeepMLP {
+public class TrainDeep2DMLP {
 
     public static int EPOCHS = 50;
     public static int BATCH_SIZE = 50;
