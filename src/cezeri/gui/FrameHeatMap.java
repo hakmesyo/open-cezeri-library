@@ -27,6 +27,7 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         initComponents();
         getHeatMapPanel().setMatrix(cm);
         this.setTitle(cm.name+" :: HeatMap");
+        cm.plotPanel=getHeatMapPanel();
     }
     
     public FrameHeatMap(CMatrix cm, int width, int height) {
@@ -35,6 +36,7 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         getHeatMapPanel().setMatrix(cm);
         this.setTitle(cm.name+" :: HeatMap");
         this.setSize(width, height+60);
+        cm.plotPanel=getHeatMapPanel();
         repaint();
     }
 
@@ -45,6 +47,7 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         getHeatMapPanel().setShowCellEdges(showCellEdge);
         this.setTitle(cm.name+" :: HeatMap");
         this.setSize(width, height+60);
+        cm.plotPanel=getHeatMapPanel();
         repaint();
     }
 
@@ -56,6 +59,7 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         getHeatMapPanel().setShowValue(showValue);
         this.setTitle(cm.name+" :: HeatMap");
         this.setSize(width, height+60);
+        cm.plotPanel=getHeatMapPanel();
         repaint();
     }
 

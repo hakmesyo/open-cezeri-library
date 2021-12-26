@@ -133,6 +133,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JPanel;
 
 /**
  *
@@ -177,6 +178,7 @@ public final class CMatrix implements Serializable {
     private Block BLOCK;
     public SocketServer TENSORFLOW_JS_SERVER;
     public InterfaceCallBack icbf;
+    public JPanel plotPanel;
 
     public CMatrix getCurrentMatrix() {
         return currentMatrix;
@@ -1715,6 +1717,7 @@ public final class CMatrix implements Serializable {
      * Plot scatter graph of the first two column vectors of the CMatrix Another
      * usage is an overloaded scatter method which takes two vector as an input
      * parameter or two CMatrix objects.
+     *
      * @return CMatrix
      */
     public CMatrix scatter() {
@@ -1722,12 +1725,12 @@ public final class CMatrix implements Serializable {
         frm.setVisible(true);
         return this;
     }
-    
+
     /**
-     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
-     * usage is an overloaded scatter method which takes two vector as an input
-     * parameter or two CMatrix objects.
-     * 
+     * Plot blob scatter graph of the first two column vectors of the CMatrix.
+     * Another usage is an overloaded scatter method which takes two vector as
+     * an input parameter or two CMatrix objects.
+     *
      * @return CMatrix
      */
     public CMatrix scatterBlob() {
@@ -1735,32 +1738,32 @@ public final class CMatrix implements Serializable {
         frm.setVisible(true);
         return this;
     }
+
     /**
-     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
-     * usage is an overloaded scatter method which takes two vector as an input
-     * parameter or two CMatrix objects.
-     * 
+     * Plot blob scatter graph of the first two column vectors of the CMatrix.
+     * Another usage is an overloaded scatter method which takes two vector as
+     * an input parameter or two CMatrix objects.
+     *
      * @return CMatrix
      */
-    
+
     public CMatrix scatterBlob(TFigureAttribute attr) {
-        FrameScatterBlob frm = new FrameScatterBlob(this,attr);
+        FrameScatterBlob frm = new FrameScatterBlob(this, attr);
         frm.setVisible(true);
         return this;
     }
 
     /**
-     * Plot blob scatter graph of the first two column vectors of the CMatrix. Another
-     * usage is an overloaded scatter method which takes two vector as an input
-     * parameter or two CMatrix objects.
-     * 
+     * Plot blob scatter graph of the first two column vectors of the CMatrix.
+     * Another usage is an overloaded scatter method which takes two vector as
+     * an input parameter or two CMatrix objects.
+     *
      * @return CMatrix
      */
-    
-    public CMatrix scatterBlob(String columns,TFigureAttribute attr) {
+    public CMatrix scatterBlob(String columns, TFigureAttribute attr) {
         CMatrix ret = this.clone(this);
-        ret=ret.cmd(":", columns).cat(1, ret.cmd(":", "-1"));
-        FrameScatterBlob frm = new FrameScatterBlob(ret,attr);
+        ret = ret.cmd(":", columns).cat(1, ret.cmd(":", "-1"));
+        FrameScatterBlob frm = new FrameScatterBlob(ret, attr);
         frm.setVisible(true);
         return ret;
     }
@@ -1801,7 +1804,7 @@ public final class CMatrix implements Serializable {
      * @return CMatrix
      */
     public CMatrix plot() {
-        this.array=FactoryUtils.RemoveNaNToZero(this.toDoubleArray2D());
+        this.array = FactoryUtils.RemoveNaNToZero(this.toDoubleArray2D());
         if (!hold_on) {
             framePlot = new FramePlot(this);
         } else {
@@ -3921,21 +3924,33 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix saveImage(String file_name) {
+        if (image == null) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }
         ImageProcess.saveImage(image, file_name);
         return this;
     }
 
     public CMatrix saveImage(String path, String file_name) {
+        if (image == null) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }
         ImageProcess.saveImage(image, path + "/" + file_name);
         return this;
     }
 
     public CMatrix saveImage() {
+        if (image == null) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }
         ImageProcess.saveImage(image);
         return this;
     }
 
     public CMatrix saveImageAtFolder(String folderPath) {
+        if (image == null) {
+            image = ImageProcess.pixelsToImageGray(array);
+        }
         ImageProcess.saveImageAtFolder(image, folderPath);
         return this;
     }
@@ -5942,12 +5957,12 @@ public final class CMatrix implements Serializable {
         w = cm.getColumnNumber();
         h = cm.getRowNumber();
         if (w <= size && h <= size) {
-            cm = cm.imresize(size+1, size+1);
+            cm = cm.imresize(size + 1, size + 1);
         } else if (w <= size) {
-            cm = cm.imresize(size+1, h);
-        } else if (h<=size) {
-            cm = cm.imresize(w, size+1);
-            
+            cm = cm.imresize(size + 1, h);
+        } else if (h <= size) {
+            cm = cm.imresize(w, size + 1);
+
         }
         w = cm.getColumnNumber();
         h = cm.getRowNumber();
@@ -7244,14 +7259,14 @@ public final class CMatrix implements Serializable {
     public CMatrix bitPlaneMSB() {
         CMatrix ret = this.clone(this);
         ret.array = FactoryMatrix.bitPlaneMSB(ret.array);
-        ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        ret.image = ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
 
     public CMatrix bitPlane(int n) {
         CMatrix ret = this.clone(this);
         ret.array = FactoryMatrix.bitPlane(ret.array, n);
-        ret.image=ImageProcess.pixelsToImageGray(ret.array);
+        ret.image = ImageProcess.pixelsToImageGray(ret.array);
         return ret;
     }
 
@@ -9162,6 +9177,25 @@ public final class CMatrix implements Serializable {
 
     public CMatrix clean() {
         return refresh();
+    }
+
+    public CMatrix savePlot(String path) {
+        if (plotPanel==null) {
+            System.err.println("You should call panel related commands beforehands (i.e. plot(), scatter(), scatterBlob() etc");
+            return this;
+        }
+        ImageProcess.saveGridImage(ImageProcess.getBufferedImage(plotPanel), path);
+        return this;
+    }
+
+    public CMatrix saveImageAs(String from, String to) {
+        if (to.contains(".svg")) {
+            ImageProcess.saveImageSVG(from, to);
+            return this;
+        }
+        BufferedImage img=ImageProcess.readImage(from);
+        ImageProcess.saveImage(img, to);
+        return this;
     }
 
 }

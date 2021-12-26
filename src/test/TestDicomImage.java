@@ -11,6 +11,6 @@ import java.awt.image.BufferedImage;
 public class TestDicomImage {
     public static void main(String[] args) {
         BufferedImage img=ImageProcess.convertDicomToBufferedImage("images/MASS_056_L_MLO.dcm");
-        ImageProcess.saveImageWithFormat(img, "images/test.png", "PNG");
+        ImageProcess.saveImage(img, "images/test.png");
     }
 }

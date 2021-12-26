@@ -33,6 +33,7 @@ public final class FrameScatterPlot extends javax.swing.JFrame {
         initComponents();
         getScatterPlotPanel().setMatrix(cm);
         this.setTitle(cm.name+" :: Scatter");
+        cm.plotPanel=getScatterPlotPanel();
     }
     
     public FrameScatterPlot(CMatrix cm,TFigureAttribute attr) {
@@ -42,6 +43,7 @@ public final class FrameScatterPlot extends javax.swing.JFrame {
         getScatterPlotPanel().setMatrix(cm);
         getScatterPlotPanel().setFigureAttribute(this.figureAttribute);
         this.setTitle(cm.name+" :: Scatter");
+        cm.plotPanel=getScatterPlotPanel();
     }
 
     /**

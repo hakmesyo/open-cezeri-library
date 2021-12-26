@@ -34,6 +34,7 @@ public class FramePlot extends javax.swing.JFrame {
         TFigureAttribute attr=new TFigureAttribute();
         this.figureAttribute=attr;
         getPlotPanel().setFigureAttribute(attr); 
+        cm.plotPanel=getPlotPanel();
     }
     
     public FramePlot(CMatrix cm,double[] x) {
@@ -44,6 +45,7 @@ public class FramePlot extends javax.swing.JFrame {
         this.figureAttribute=attr;
         getPlotPanel().setFigureAttribute(attr); 
         getPlotPanel().setXAxis(x);
+        cm.plotPanel=getPlotPanel();
     }
     
     public FramePlot(CMatrix cm,TFigureAttribute attr) {
@@ -52,6 +54,7 @@ public class FramePlot extends javax.swing.JFrame {
         this.setTitle((attr.figureCaption.isEmpty())? cm.name+" :: Plot":attr.figureCaption);
         initComponents();
         getPlotPanel().setFigureAttribute(this.figureAttribute);
+        cm.plotPanel=getPlotPanel();
     }
 
     public FramePlot(CMatrix cm,TFigureAttribute attr,double[] x) {
@@ -60,6 +63,7 @@ public class FramePlot extends javax.swing.JFrame {
         this.setTitle((attr.figureCaption.isEmpty())? cm.name+" :: Plot":attr.figureCaption);
         initComponents();
         getPlotPanel().setFigureAttribute(this.figureAttribute);
+        cm.plotPanel=getPlotPanel();
         getPlotPanel().setXAxis(x);
     }
     

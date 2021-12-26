@@ -43,7 +43,10 @@ public class TestMakeBlobs {
         jm.scatterBlob("3,5", new TFigureAttribute("Python Bloblarından",
                 "Different Blobs having various means and variances",
                 "F-3,F-5",
-                "Class-1,Class-2,Class-3,Class-4,Class-5"));
+                "Class-1,Class-2,Class-3,Class-4,Class-5"))
+                .savePlot("images/blob.png")
+                .saveImageAs("images/blob.png","images/blob.svg")
+                ;
 //        jm.scatterBlob("0,2", new TFigureAttribute("Python Bloblarından",
 //                "Different Blobs having various means and variances",
 //                "F-1,F-2",

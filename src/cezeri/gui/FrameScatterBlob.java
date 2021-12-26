@@ -35,6 +35,7 @@ public final class FrameScatterBlob extends javax.swing.JFrame {
         getScatterBlobPanel().setRandomSeed(System.currentTimeMillis());
         getScatterBlobPanel().setMatrix(cm);
         this.setTitle(cm.name+" :: Scatter Blob");
+        cm.plotPanel=getScatterBlobPanel();
     }
     
     public FrameScatterBlob(CMatrix cm,TFigureAttribute attr) {
@@ -45,6 +46,7 @@ public final class FrameScatterBlob extends javax.swing.JFrame {
         getScatterBlobPanel().setMatrix(cm);
         getScatterBlobPanel().setFigureAttribute(this.figureAttribute);
         this.setTitle(cm.name+" :: "+attr.figureCaption);
+        cm.plotPanel=getScatterBlobPanel();
     }
 
     /**

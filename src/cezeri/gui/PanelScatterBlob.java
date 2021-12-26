@@ -109,6 +109,8 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         paintDataPoints(gr, mp);
         if (lblShow) {
             checkDataPoints(gr, mp, px, py);
+        }else{
+            lbl.setVisible(false);
         }
         super.paintComponents(gr);
     }

@@ -2506,15 +2506,19 @@ public final class ImageProcess {
             Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
+
     }
 
-    public static void saveImageWithFormat(BufferedImage img, String path, String fileType) {
-        File outputFile = new File(path);
-        try {
-            ImageIO.write(img, fileType, outputFile);
-        } catch (IOException ex) {
-            Logger.getLogger(ImageProcess.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static void saveImageSVG(BufferedImage img, String dest_path) {
+        String path=dest_path.replace("."+FactoryUtils.getFileExtension(dest_path), ".png");
+        saveImage(img, path);
+        RasterToVector rtv=new RasterToVector(path);
+        rtv.convertToSVG(dest_path);
+    }
+    
+    public static void saveImageSVG(String source_path, String dest_path) {
+        RasterToVector rtv=new RasterToVector(source_path);
+        rtv.convertToSVG(dest_path);
     }
 
     public static BufferedImage convertDicomToBufferedImage(String filePath) {

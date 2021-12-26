@@ -32,6 +32,7 @@ public class FrameImageHistogram extends javax.swing.JFrame {
         cm.name+="|Histogram";
         this.cm =cm;// cm.getHistogram();
         initComponents();
+        cm.plotPanel=getHistogramPanel();
 //        getHistogramPanel().setMatrix(cm.getHistogram());
     }
 

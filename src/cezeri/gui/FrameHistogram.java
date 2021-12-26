@@ -28,6 +28,7 @@ public class FrameHistogram extends javax.swing.JFrame {
         this.cm =cm;
         this.hist=hist;
         initComponents();
+        cm.plotPanel=getHistogramPanel();
     }
     
     public FrameHistogram(CMatrix cm,CMatrix hist,String title) {
@@ -37,6 +38,7 @@ public class FrameHistogram extends javax.swing.JFrame {
         this.hist=hist;
         this.title=title;
         initComponents();
+        cm.plotPanel=getHistogramPanel();
     }
 
     public FrameHistogram(CMatrix cm,CMatrix hist,String title,boolean isStatisticsVisible) {
@@ -47,6 +49,7 @@ public class FrameHistogram extends javax.swing.JFrame {
         this.title=title;
         this.isStatisticsVisible=isStatisticsVisible;
         initComponents();
+        cm.plotPanel=getHistogramPanel();
     }
 
 
