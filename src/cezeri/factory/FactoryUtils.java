@@ -5558,10 +5558,10 @@ public final class FactoryUtils {
         
     }
 
-    public static Color[] getRandomColors(double[] d,long random_seed) {
+    public static Color[] getRandomColors(int n,long random_seed) {
         Random rnd=new Random(random_seed);
-        Color[] ret=new Color[d.length];
-        for (int i = 0; i < ret.length; i++) {
+        Color[] ret=new Color[n];
+        for (int i = 0; i < n; i++) {
             float r=rnd.nextFloat();
             float g=rnd.nextFloat();
             float b=rnd.nextFloat();

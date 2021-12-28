@@ -16,12 +16,12 @@ import java.util.ArrayList;
  * @author BAP1
  */
 public class TFigureAttribute {
-    public String figureCaption="";
-    public String title="";
-//    public String[] axis=new String[]{"Indexes","Values"};
-    public String[] axis_names=new String[]{"",""};
+    public String figureCaption="Default Caption";
+    public String title="Plot";
+    public String[] axis_names=new String[]{"Indexes","Values"};
+//    public String[] axis_names=new String[]{"",""};
 //    public String[] items=new String[]{"Observed","Simulated"};;
-    public String[] items=new String[]{"",""};;
+    public String[] items=new String[]{"X1","X2"};;
 //    public TPointType pointType=TPointType.LINE;
     public String pointType="-";
     public ArrayList<String> perfMetricStr=new ArrayList();

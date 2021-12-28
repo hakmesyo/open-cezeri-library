@@ -7,8 +7,6 @@ package cezeri.gui;
 
 import cezeri.types.TFigureAttribute;
 import cezeri.matrix.CMatrix;
-import cezeri.enums.EPerformanceMetrics;
-import cezeri.factory.FactoryStatistic;
 import cezeri.factory.FactoryUtils;
 import cezeri.matrix.CPoint;
 import java.awt.AlphaComposite;
@@ -19,16 +17,13 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.JLabel;
 
 /**
  *
  * @author BAP1
  */
-public final class PanelScatterBlob extends javax.swing.JPanel {
+public final class PanelPloty extends javax.swing.JPanel {
 
     private CMatrix cm = null;
     private JLabel lbl = null;
@@ -36,52 +31,78 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
     private Point mousePos = new Point(0, 0);
     private String strStat = "";
     private int fontSize = 18;
-    private TFigureAttribute figureAttribute;
-    private String[] axis=new String[]{"Dimension-1", "Dimension-2"};;
+    private TFigureAttribute figureAttribute = null;
+    private String[] axis = new String[]{"Range", "Value"};
     private Color[] distinct_colors;
     private double[] distinct_color_indexes;
     private long rand_seed;
     private String[] items;
-    private String title="Basic Scatter Plot";
+    private String title = "Basic Plot";
 
-    public PanelScatterBlob() {
+    public PanelPloty() {
         initialize();
         repaint();
     }
 
-    public PanelScatterBlob(CMatrix cm) {
+    public PanelPloty(CMatrix cm) {
         this.cm = cm;
         initialize();
-        double[][] dm=cm.toDoubleArray2D();
-        double[] d=FactoryUtils.getDistinctValues(dm[dm.length-1]);
-        this.items = new String[d.length];
-        for (int i = 0; i < d.length; i++) {
-            this.items[i]="Blob-"+(i+1);
+        double[][] dm = cm.toDoubleArray2D();
+        this.items = new String[dm[0].length];
+        for (int i = 0; i < items.length; i++) {
+            this.items[i] = "Line-" + (i + 1);
         }
+        distinct_colors = FactoryUtils.getRandomColors(dm[0].length, rand_seed);
         repaint();
     }
 
-    public PanelScatterBlob(CMatrix cm, TFigureAttribute attr) {
+    public PanelPloty(CMatrix cm, TFigureAttribute attr) {
         this.cm = cm;
         this.figureAttribute = attr;
-        this.axis=attr.axis_names;
-        this.items=attr.items;
-        this.title=attr.title;
+        this.axis = attr.axis_names;
+        double[][] dm = cm.toDoubleArray2D();
+        if (attr.items != null) {
+            this.items = attr.items;
+        } else {
+            this.items = new String[dm[0].length];
+            for (int i = 0; i < items.length; i++) {
+                this.items[i] = "Line-" + (i + 1);
+            }
+        }
+        distinct_colors = FactoryUtils.getRandomColors(dm[0].length, rand_seed);
+        this.title = attr.title;
         initialize();
         repaint();
+    }
+
+    public void setFigureAttribute(TFigureAttribute attr) {
+        this.figureAttribute = attr;
+        this.axis = attr.axis_names;
+        this.items = attr.items;
+        this.title = attr.title;
+        repaint();
+    }
+
+    public void setMatrix(CMatrix cm) {
+        this.cm = cm;
+        //this.axis = attr.axis_names;
+        double[][] dm = cm.toDoubleArray2D();
+        this.items = new String[dm[0].length];
+        for (int i = 0; i < items.length; i++) {
+            this.items[i] = "Line-" + (i + 1);
+        }
+        distinct_colors = FactoryUtils.getRandomColors(dm[0].length, rand_seed);
+        repaint();
+    }
+
+    public CMatrix getMatrix() {
+        return this.cm;
     }
 
     @Override
     public void paint(Graphics gr1) {
         Graphics2D gr = (Graphics2D) gr1;
-        gr.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-         if (cm.getRowNumber() == 1) {
-            gr.drawString("You can't plot scatter diagram on single observation", getWidth() / 2 - 50, getHeight() / 2);
-            super.paintComponents(gr);
-            return;
-        }
+        gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         Font fnt = gr.getFont();
         gr.setFont(new Font(fnt.getFontName(), 1, fontSize));
         gr.setColor(Color.white);
@@ -92,7 +113,7 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         gr.drawRect(0, 0, w - 1, h - 1);
         gr.drawRect(1, 1, w - 3, h - 3);
         gr.setColor(Color.black);
-        gr.drawString(this.title, (w-title.length()*10)/2,30);
+        gr.drawString(this.title, (w - title.length() * 10) / 2, 30);
 
         int px = 100;
         int py = h - 70;
@@ -102,29 +123,33 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
 
         drawYAxis(gr, px, py, r.width, cm.toDoubleArray2D());
         drawXAxis(gr, px, py, r.height, w, cm.toDoubleArray2D());
-        BlobPoint[] mp = mappingDataToScreenCoordinates(cm.toDoubleArray2D(), w, h, px, py);
-        drawItems(gr,this.items,w,h);
-        
+        CPoint[][] mp = mappingDataToScreenCoordinates(cm.toDoubleArray2D(), w, h, px, py);
+        drawItems(gr, this.items, w, h);
+
         gr.setColor(Color.darkGray);
         paintDataPoints(gr, mp);
         if (lblShow) {
             checkDataPoints(gr, mp, px, py);
-        }else{
+        } else {
             lbl.setVisible(false);
         }
         super.paintComponents(gr);
     }
 
-    private void checkDataPoints(Graphics gr, BlobPoint[] mp, int px, int py) {
-        for (int i = 0; i < mp.length; i++) {
-            if (mp[i].x > mousePos.x - 5 && mp[i].x < mousePos.x + 5 && mp[i].y > mousePos.y - 5 && mp[i].y < mousePos.y + 5) {
-                gr.setColor(Color.red);
-                gr.fillOval(mp[i].x - 5, mp[i].y - 5, 10, 10);
-                
-                String msg=" "+FactoryUtils.formatDouble(cm.toDoubleArray2D()[0][i],2) + " , " + FactoryUtils.formatDouble(cm.toDoubleArray2D()[1][i],2);
-                lbl.setText("<html><body>"+items[mp[i].itemIndex]+"<br>"+msg+"</body></html>");
-                lbl.setLocation(mousePos.x + 10, mousePos.y - 15);
-                return;
+    private void checkDataPoints(Graphics gr, CPoint[][] mp, int px, int py) {
+        int nr = mp.length;
+        int nc = mp[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                if (mp[i][j].column > mousePos.x - 5 && mp[i][j].column < mousePos.x + 5 && mp[i][j].row > mousePos.y - 5 && mp[i][j].row < mousePos.y + 5) {
+                    gr.setColor(Color.red);
+                    gr.fillOval(mp[i][j].column - 5, mp[i][j].row - 5, 10, 10);
+
+                    String msg = " " + FactoryUtils.formatDouble(cm.toDoubleArray2D()[0][i], 2) + " , " + FactoryUtils.formatDouble(cm.toDoubleArray2D()[1][i], 2);
+                    lbl.setText("<html><body>" + items[mp[i][j].itemIndex] + "<br>" + msg + "</body></html>");
+                    lbl.setLocation(mousePos.x + 10, mousePos.y - 15);
+                    return;
+                }
             }
         }
         lbl.setVisible(false);
@@ -154,7 +179,7 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 lblShow = false;
             }
-            
+
         });
 
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -175,32 +200,35 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         });
     }
 
-    private void paintDataPoints(Graphics2D gr, BlobPoint[] mp) {
-        int r = (int)Math.round(10+getWidth()/670.0);
-        for (int i = 0; i < mp.length; i++) {
-            float alpha = 0.35f;
-            AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
-            gr.setComposite(alcom);
-            gr.setColor(mp[i].color);
-            gr.fillOval(mp[i].x - r / 2, mp[i].y - r / 2, r, r);
-            gr.setColor(Color.black);
-            gr.drawOval(mp[i].x - r / 2, mp[i].y - r / 2, r, r);
-            alpha = 1f;
-            alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
-            gr.setComposite(alcom);
+    private void paintDataPoints(Graphics2D gr, CPoint[][] mp) {
+        int r = (int) Math.round(10 + getWidth() / 670.0);
+        int nr = mp.length;
+        int nc = mp[0].length;
+        for (int i = 0; i < nr - 1; i++) {
+            for (int j = 0; j < nc - 1; j++) {
+                float alpha = 0.35f;
+                AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+                gr.setComposite(alcom);
+                gr.setColor(distinct_colors[j]);
+                //gr.drawPolyline(xp, yp, f.getColumnNumber());
+                gr.drawLine(mp[i][j].column, mp[i][j].row, mp[i + 1][j + 1].column, mp[i + 1][j + 1].row);
+                alpha = 1f;
+                alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+                gr.setComposite(alcom);
+            }
         }
     }
-    
-    private void drawItems(Graphics2D gr, String[] items,int w,int h) {
+
+    private void drawItems(Graphics2D gr, String[] items, int w, int h) {
         gr.setColor(Color.gray);
-        gr.drawString("Items",w-110,100);
-        gr.drawString("--------------",w-130,120);
-        int dt=25;
+        gr.drawString("Items", w - 110, 100);
+        gr.drawString("--------------", w - 130, 120);
+        int dt = 25;
         for (int i = 0; i < items.length; i++) {
             gr.setColor(distinct_colors[i]);
-            gr.drawString(items[i],w-120,140+dt*i);
+            gr.drawString(items[i], w - 120, 140 + dt * i);
         }
-        
+
     }
 
     private void drawYAxis(Graphics2D gr, int x0, int y0, int w, double[][] d) {
@@ -241,7 +269,7 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         double delta = deltaX / n;
         double[] xVal = new double[(int) n + 1];
         gr.setColor(Color.darkGray);
-        gr.drawString(this.axis[0], w - (140), y0+30);
+        gr.drawString(this.axis[0], w - (140), y0 + 30);
         for (int i = 1; i < n; i++) {
             gr.setColor(Color.darkGray);
             int q = (int) (x0 + i * dx);
@@ -252,8 +280,8 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         }
     }
 
-    private BlobPoint[] mappingDataToScreenCoordinates(double[][] d, int w, int h, int px, int py) {
-        BlobPoint[] ret = new BlobPoint[d[0].length];
+    private CPoint[][] mappingDataToScreenCoordinates(double[][] d, int w, int h, int px, int py) {
+        CPoint[][] ret = new CPoint[d.length][d[0].length];
         double maxY = FactoryUtils.getMaximum(d[1]);
         double minY = FactoryUtils.getMinimum(d[1]);
         double deltaY = Math.abs(maxY - minY);
@@ -263,16 +291,15 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         int m = 160;
         double cellWidth = (w - (px + m)) / deltaX;
         double cellHeight = ((h - 140) / deltaY);
-        int last_index=d.length-1;
-        distinct_color_indexes=FactoryUtils.getDistinctValues(d[last_index]);
-        distinct_colors=FactoryUtils.getRandomColors(distinct_color_indexes.length,rand_seed);
-        for (int j = 0; j < d[0].length; j++) {
-            BlobPoint p = new BlobPoint();
-            p.x = (int) (px + (d[0][j] - minX) * cellWidth);
-            p.y = (int) (py - (d[1][j] - minY) * cellHeight);
-            p.color=distinct_colors[(int)d[last_index][j]];
-            p.itemIndex=(int)d[last_index][j];
-            ret[j] = p;
+        int nr = d.length;
+        int nc = d[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                CPoint p = new CPoint();
+                p.column = (int) (px + (d[0][j] - minX) * cellWidth);
+                p.row = (int) (py - (d[1][j] - minY) * cellHeight);
+                ret[i][j] = p;
+            }
         }
         return ret;
     }
@@ -298,53 +325,20 @@ public final class PanelScatterBlob extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    public void setFigureAttribute(TFigureAttribute attr) {
-        this.figureAttribute = attr;
-        this.axis = attr.axis_names;
-        this.items=attr.items;
-        this.title=attr.title;
-        repaint();
-    }
-
-    public void setMatrix(CMatrix cm) {
-        cm = cm.transpose();
-        this.cm = cm;
-        double[][] dm=cm.toDoubleArray2D();
-        double[] d=FactoryUtils.getDistinctValues(dm[dm.length-1]);
-        this.items = new String[d.length];
-        for (int i = 0; i < d.length; i++) {
-            this.items[i]="Blob-"+(i+1);
-        }
-        
-        repaint();
-    }
-
-    public CMatrix getMatrix() {
-        return this.cm;
-    }
-
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
         repaint();
     }
 
     void setRandomSeed(long seed) {
-        rand_seed=seed;
+        rand_seed = seed;
     }
 
     void setClassTitle(String class_title) {
-        items=class_title.split(",");
+        items = class_title.split(",");
     }
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-}
-
-class BlobPoint{
-    int x;
-    int y;
-    Color color;
-    int itemIndex;
 }

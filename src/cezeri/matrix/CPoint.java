@@ -23,6 +23,7 @@ public final class CPoint implements Serializable{
     public String dir;
     public CPoint assignedObject;
     public boolean isAssigned=false;
+    public int itemIndex;
     
     public CPoint(){
         

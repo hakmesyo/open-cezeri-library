@@ -10,79 +10,54 @@ import cezeri.image_processing.ImageProcess;
 import cezeri.matrix.CMatrix;
 import cezeri.factory.FactoryMatrix;
 import cezeri.factory.FactoryUtils;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
 
 /**
  *
  * @author BAP1
  */
-public class FramePlot extends javax.swing.JFrame {
+public final class FramePloty extends javax.swing.JFrame {
 
     private CMatrix cm;
     private TFigureAttribute figureAttribute;
     private boolean isSort = true;
 
-    /**
-     * Creates new form CPlot
-     */
-    public FramePlot(CMatrix cm) {
+    public FramePloty(CMatrix cm) {
         this.cm = cm;
-        this.setTitle(cm.name + " :: Plot");
         initComponents();
-        TFigureAttribute attr = new TFigureAttribute();
-        this.figureAttribute = attr;
-        getPlotPanel().setFigureAttribute(attr);
         getPlotPanel().setRandomSeed(System.currentTimeMillis());
-        cm.plotPanel = getPlotPanel();
-        initialize();
+        getPlotPanel().setMatrix(cm);
+        this.setTitle(cm.name+" :: Plot");
+        cm.plotPanel=getPlotPanel();
     }
-
-    public FramePlot(CMatrix cm, double[] x) {
+    
+    public FramePloty(CMatrix cm,TFigureAttribute attr) {
         this.cm = cm;
-        this.setTitle(cm.name + " :: Plot");
+        this.figureAttribute=attr;
         initComponents();
-        TFigureAttribute attr = new TFigureAttribute();
-        this.figureAttribute = attr;
-        getPlotPanel().setFigureAttribute(attr);
-        getPlotPanel().setXAxis(x);
         getPlotPanel().setRandomSeed(System.currentTimeMillis());
-        cm.plotPanel = getPlotPanel();
-        initialize();
-    }
-
-    public FramePlot(CMatrix cm, TFigureAttribute attr) {
-        this.cm = cm;
-        this.figureAttribute = attr;
-        this.setTitle((attr.figureCaption.isEmpty()) ? cm.name + " :: Plot" : attr.figureCaption);
-        initComponents();
+        getPlotPanel().setMatrix(cm);
         getPlotPanel().setFigureAttribute(this.figureAttribute);
-        getPlotPanel().setRandomSeed(System.currentTimeMillis());
-        cm.plotPanel = getPlotPanel();
-        initialize();
+        this.setTitle(cm.name+" :: "+attr.figureCaption);
+        cm.plotPanel=getPlotPanel();
     }
-
-    public FramePlot(CMatrix cm, TFigureAttribute attr, double[] x) {
-        this.cm = cm;
-        this.figureAttribute = attr;
-        this.setTitle((attr.figureCaption.isEmpty()) ? cm.name + " :: Plot" : attr.figureCaption);
-        initComponents();
-        getPlotPanel().setFigureAttribute(this.figureAttribute);
-        cm.plotPanel = getPlotPanel();
-        getPlotPanel().setRandomSeed(System.currentTimeMillis());
-        getPlotPanel().setXAxis(x);
-        initialize();
-    }
-
+    
     public void setMatrix(CMatrix cm) {
         this.cm = cm;
+        getPlotPanel().setRandomSeed(System.currentTimeMillis());
         getPlotPanel().setMatrix(cm);
+        getPlotPanel().setFigureAttribute(this.figureAttribute);
+        this.setTitle(cm.name+" :: "+"Ploty");
+        cm.plotPanel=getPlotPanel();
+    }
+    
+    public void setFigureAttribute(TFigureAttribute attr) {
+        this.figureAttribute=attr;
+        getPlotPanel().setRandomSeed(System.currentTimeMillis());
+        getPlotPanel().setMatrix(cm);
+        getPlotPanel().setFigureAttribute(this.figureAttribute);
+        this.setTitle(cm.name+" :: "+attr.figureCaption);
+        cm.plotPanel=getPlotPanel();
     }
 
     /**
@@ -94,28 +69,27 @@ public class FramePlot extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        panel_plot = new cezeri.gui.PanelPlot(cm);
+        panel_blob = new cezeri.gui.PanelPloty();
         jPanel2 = new javax.swing.JPanel();
         btn_dataGrid = new javax.swing.JButton();
-        btn_scatter = new javax.swing.JButton();
+        btn_plot = new javax.swing.JButton();
         btn_save = new javax.swing.JButton();
         txt_dpi = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         btnSort = new javax.swing.JButton();
-        btn_refresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        panel_plot.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panel_blob.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        javax.swing.GroupLayout panel_plotLayout = new javax.swing.GroupLayout(panel_plot);
-        panel_plot.setLayout(panel_plotLayout);
-        panel_plotLayout.setHorizontalGroup(
-            panel_plotLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout panel_blobLayout = new javax.swing.GroupLayout(panel_blob);
+        panel_blob.setLayout(panel_blobLayout);
+        panel_blobLayout.setHorizontalGroup(
+            panel_blobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        panel_plotLayout.setVerticalGroup(
-            panel_plotLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panel_blobLayout.setVerticalGroup(
+            panel_blobLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 563, Short.MAX_VALUE)
         );
 
@@ -128,10 +102,10 @@ public class FramePlot extends javax.swing.JFrame {
             }
         });
 
-        btn_scatter.setText("scatter");
-        btn_scatter.addActionListener(new java.awt.event.ActionListener() {
+        btn_plot.setText("Plot");
+        btn_plot.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_scatterActionPerformed(evt);
+                btn_plotActionPerformed(evt);
             }
         });
 
@@ -153,13 +127,6 @@ public class FramePlot extends javax.swing.JFrame {
             }
         });
 
-        btn_refresh.setText("refresh");
-        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refreshActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -167,29 +134,27 @@ public class FramePlot extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(btn_dataGrid)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_scatter, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btn_plot, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btn_save, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 343, Short.MAX_VALUE)
-                .addComponent(btn_refresh)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
                 .addComponent(btnSort)
                 .addGap(89, 89, 89))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(btn_dataGrid)
-                .addComponent(btn_scatter)
                 .addComponent(btn_save)
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel2)
-                .addComponent(btnSort)
-                .addComponent(btn_refresh))
+                .addComponent(jLabel2))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(btn_dataGrid)
+                .addComponent(btn_plot)
+                .addComponent(btnSort))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -197,14 +162,14 @@ public class FramePlot extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(panel_plot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panel_blob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panel_plot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(panel_blob, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -215,11 +180,11 @@ public class FramePlot extends javax.swing.JFrame {
         new FrameDataGrid(cm).setVisible(true);
     }//GEN-LAST:event_btn_dataGridActionPerformed
 
-    private void btn_scatterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_scatterActionPerformed
-        TFigureAttribute attr = new TFigureAttribute();
-        attr.figureCaption = this.getTitle();
-        getPlotPanel().getMatrix().scatter(attr);
-    }//GEN-LAST:event_btn_scatterActionPerformed
+    private void btn_plotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_plotActionPerformed
+        TFigureAttribute attr=new TFigureAttribute();
+        attr.figureCaption=this.getTitle();
+        getPlotPanel().getMatrix().plot(attr);
+    }//GEN-LAST:event_btn_plotActionPerformed
 
     private void btn_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_saveActionPerformed
         savePanel();
@@ -229,12 +194,26 @@ public class FramePlot extends javax.swing.JFrame {
         sort();
     }//GEN-LAST:event_btnSortActionPerformed
 
-    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        getPlotPanel().setMatrix(this.cm);
-    }//GEN-LAST:event_btn_refreshActionPerformed
+    private void sort() {
+        if (isSort) {
+            CMatrix m2 = cm.clone(cm);
+            double[][] d = m2.toDoubleArray2D();
+            double[] d2 = FactoryMatrix.clone(d[0]);
+            int[] index = FactoryUtils.sortArrayAndReturnIndex(d2, "desc");
+            CMatrix cmx = FactoryUtils.sortRows(m2, index);
+            getPlotPanel().setMatrix(cmx);
+            isSort = false;
+            btnSort.setText("unsort");
+            return;
+        } else {
+            getPlotPanel().setMatrix(cm);
+            btnSort.setText("sort");
+            isSort = true;
+        }
+    }
 
-    public PanelPlot getPlotPanel() {
-        return (PanelPlot) panel_plot;
+    public PanelPloty getPlotPanel() {
+        return (PanelPloty) panel_blob;
     }
 
     /**
@@ -263,35 +242,20 @@ public class FramePlot extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(FramePlot.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                FramePlot frm = new FramePlot(CMatrix.getInstance().rand(2, 13));
+                FramePloty frm = new FramePloty(CMatrix.getInstance().randn(2, 130).timesScalar(1));
                 frm.setVisible(true);
                 String[] s = {"Observed", "Simulated"};
-                TFigureAttribute attr = new TFigureAttribute();
-                attr.items = s;
-                frm.getPlotPanel().setFigureAttribute(attr);
+//                frm.getScatterPlotPanel().setAxisText(s);
             }
         });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSort;
-    private javax.swing.JButton btn_dataGrid;
-    private javax.swing.JButton btn_refresh;
-    private javax.swing.JButton btn_save;
-    private javax.swing.JButton btn_scatter;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel panel_plot;
-    private javax.swing.JTextField txt_dpi;
-    // End of variables declaration//GEN-END:variables
-
     private void savePanel() {
-        PanelPlot cp = getPlotPanel();
+        PanelPloty cp = getPlotPanel();
         int dpi = Integer.parseInt(txt_dpi.getText());
         double scale = dpi / 96.0;
         cp.setSize((int) (cp.getWidth() * scale), (int) (cp.getHeight() * scale));
@@ -302,43 +266,21 @@ public class FramePlot extends javax.swing.JFrame {
             FactoryUtils.showMessage("kaydedilemedi CPlotFrame.savePanel()");
         }
         cp.setSize((int) (cp.getWidth() / scale), (int) (cp.getHeight() / scale));
+//        cp.setFontSize((int)(scale*10));
     }
 
-    private void sort() {
-        if (isSort) {
-            String sortType = FactoryUtils.inputMessage("Write sorting type [asc,desc]", "asc");
-            CMatrix m2 = cm.clone(cm);
-            double[][] d = m2.toDoubleArray2D();
-            double[] d2 = FactoryMatrix.clone(FactoryUtils.transpose(d)[0]);
-            int[] index = FactoryUtils.sortArrayAndReturnIndex(d2, sortType);
-            CMatrix cmx = FactoryUtils.sortRows(m2, index);
-            getPlotPanel().setMatrix(cmx);
-            isSort = false;
-            btnSort.setText("unsort");
-            return;
-        } else {
-            getPlotPanel().setMatrix(cm);
-            btnSort.setText("sort");
-            isSort = true;
-        }
-    }
 
-    public void setPlotType(String plotType) {
-        getPlotPanel().setPlotType(plotType);
-    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSort;
+    private javax.swing.JButton btn_dataGrid;
+    private javax.swing.JButton btn_plot;
+    private javax.swing.JButton btn_save;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel panel_blob;
+    private javax.swing.JTextField txt_dpi;
+    // End of variables declaration//GEN-END:variables
 
-    public void setFigureAttribute(TFigureAttribute fg) {
-        this.figureAttribute = fg;
-        getPlotPanel().setFigureAttribute(this.figureAttribute);
-    }
 
-    private void initialize() {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Cancel");
-        getRootPane().getActionMap().put("Cancel", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-        });
-    }
+
 }

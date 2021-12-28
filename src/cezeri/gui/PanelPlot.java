@@ -8,11 +8,9 @@ package cezeri.gui;
 import cezeri.types.TFigureAttribute;
 import cezeri.matrix.CMatrix;
 import cezeri.matrix.CPoint;
-import cezeri.types.TPointType;
 import cezeri.factory.FactoryUtils;
 import static cezeri.factory.FactoryUtils.generateColor;
-import cezeri.utils.MersenneTwister;
-import cezeri.utils.UniqueRandomNumbers;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,8 +20,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
-import java.util.Random;
 import javax.swing.JLabel;
 
 /**
@@ -35,41 +34,58 @@ public class PanelPlot extends javax.swing.JPanel {
     private CMatrix f;
     private double[] xAxis;
     private Color[] color;
-    private boolean isShowPoint = false;
+    private boolean isShowPoint = true;
     private boolean lblShow = false;
     private Point mousePos = new Point(0, 0);
     private JLabel lbl = null;
     private double scale = 1;
-//    private String type="-";
     private TFigureAttribute figureAttribute;
+    private String[] items;
+    private long rand_seed;
+    private float alpha_blending = 0.65f;
+    private boolean isMousePressed = false;
+    Graphics2D gr;
+    CPoint[][] mp;
+    int selectedLineIndex = -1;
+    boolean isLineSelected = false;
 
     public PanelPlot(CMatrix ff) {
         this.f = ff.transpose();
-        color = generateColor(f.getRowNumber());
+        items = new String[f.getRowNumber()];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = "Line-" + (i + 1);
+        }
         this.figureAttribute = new TFigureAttribute();
+        initialize();
         repaint();
     }
 
     public PanelPlot(CMatrix ff, double[] x) {
         this.xAxis = x;
         this.f = ff.transpose();
-        color = generateColor(f.getRowNumber());
+        items = new String[f.getRowNumber()];
+        for (int i = 0; i < items.length; i++) {
+            items[i] = "Line-" + (i + 1);
+        }
         this.figureAttribute = new TFigureAttribute();
+        initialize();
         repaint();
     }
 
     public PanelPlot(CMatrix ff, TFigureAttribute attr) {
         this.f = ff.transpose();
-        color = generateColor(f.getRowNumber());
         this.figureAttribute = attr;
+        this.items = attr.items;
+        initialize();
         repaint();
     }
 
     public PanelPlot(CMatrix ff, TFigureAttribute attr, double[] x) {
         this.xAxis = x;
         this.f = ff.transpose();
-        color = generateColor(f.getRowNumber());
         this.figureAttribute = attr;
+        this.items = attr.items;
+        initialize();
         repaint();
     }
 
@@ -79,62 +95,49 @@ public class PanelPlot extends javax.swing.JPanel {
     }
 
     public void paint(Graphics gr1) {
-        Graphics2D gr = (Graphics2D) gr1;
-        gr.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-         Font fnt = gr.getFont();
+        gr = (Graphics2D) gr1;
+        gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        Font fnt = gr.getFont();
         gr.setFont(new Font(fnt.getFontName(), 1, 18));
-        gr.setColor(Color.lightGray);
+        gr.setColor(Color.white);
         int w = getWidth();
         int h = getHeight();
+        int fromRight = 150;
+        int fromLeft = 100;
+        int fromTop = 50;
+        int fromBottom = 70;
+        int canvas_width = getWidth() - (fromLeft + fromRight);
+        int canvas_height = getHeight() - (fromBottom + fromTop);
         gr.fillRect(0, 0, w, h);
         gr.setColor(Color.red);
         gr.drawRect(0, 0, w - 1, h - 1);
         gr.drawRect(1, 1, w - 3, h - 3);
-        gr.setColor(Color.black);
+        gr.setColor(Color.darkGray);
         int titleWidth = FactoryUtils.getGraphicsTextWidth(gr, figureAttribute.title);
         int pTitleX = (w - titleWidth) / 2;
-        gr.drawString(figureAttribute.title, pTitleX, 40);
+        gr.drawString(figureAttribute.title, pTitleX, 30);
         int px = 100;
-        int py = h - 70;
-        int fromRight = 100;
+        int py = h - 90;
         gr.setColor(Color.white);
-        int fromLeft = 100;
-        int fromTop = 50;
-        int canvas_width = w - 2 * fromLeft;
-        int canvas_height = h - 2 * fromTop;
+        gr.setColor(Color.decode("#EAEAF2"));
         gr.fillRect(fromLeft, fromTop, canvas_width, canvas_height);
-
-        CPoint[][] mp = mappingDataToScreenCoordinates(f.toDoubleArray2D(), fromLeft, fromTop, canvas_width, canvas_height);
-        for (int r = 0; r < f.getRowNumber(); r++) {
-            gr.setColor(color[r]);
-            int[] xp = new int[f.getColumnNumber()];
-            int[] yp = new int[f.getColumnNumber()];
-
-            for (int j = 0; j < f.getColumnNumber(); j++) {
-                CPoint p = mp[r][j];
-                yp[j] = p.row;
-                xp[j] = p.column;
-            }
-            if (r > 0) {
-//                gr.setStroke(thindashed);
-            }
-            drawDataPoints(gr, xp, yp, f.getColumnNumber(), r);
-
-            if (isShowPoint) {
-                paintDataPoints(gr, xp, yp);
-            }
-            if (lblShow) {
-                checkDataPoints(gr, mp, px, py);
-            }
-
-        }
-        gr.setStroke(new BasicStroke());
-        paintItemList(gr, figureAttribute.items);
-        gr.setColor(Color.black);
         drawYAxis(gr, px, py, w, fromRight, f.toDoubleArray2D());
         drawXAxis(gr, px, py, w, fromRight, f.toDoubleArray2D());
+        drawItems(gr, this.items, w, h);
+
+        mp = mappingDataToScreenCoordinates(f.toDoubleArray2D(), fromLeft, fromTop, canvas_width, canvas_height);
+        if (isMousePressed) {
+            selectedLineIndex = selectLine(mp);
+            isMousePressed = false;
+        }
+        for (int r = 0; r < f.getRowNumber(); r++) {
+            drawPolyLines(gr, mp, r);
+        }
+        drawMouseAxis(gr, mousePos, fromLeft, fromTop, canvas_width, canvas_height);
+        checkDataPoints(gr, mp, fromLeft, fromTop, canvas_width, canvas_height);
+        gr.setStroke(new BasicStroke());
+        gr.setColor(Color.black);
     }
 
     private CPoint[][] mappingDataToScreenCoordinates(double[][] d, int fromLeft, int fromTop, int w, int h) {
@@ -148,8 +151,13 @@ public class PanelPlot extends javax.swing.JPanel {
         for (int r = 0; r < d.length; r++) {
             for (int c = 0; c < d[0].length; c++) {
                 CPoint p = new CPoint();
-                p.column = (int) (fromLeft + c * cellWidth);
-                p.row = (int) ((fromTop + h) - (d[r][c] - minY) * cellHeight);
+                if (c == 0) {
+                    p.column = (int) Math.round(fromLeft + (c) * cellWidth);
+                } else {
+                    p.column = (int) Math.round(fromLeft + (c + 1) * cellWidth);
+                }
+
+                p.row = (int) Math.round((fromTop + h) - (d[r][c] - minY) * cellHeight);
                 ret[r][c] = p;
             }
         }
@@ -158,7 +166,8 @@ public class PanelPlot extends javax.swing.JPanel {
 
     public void setMatrix(CMatrix m) {
         this.f = m.transpose();
-        color = generateColor(f.getRowNumber());
+        rand_seed = System.currentTimeMillis();
+        color = FactoryUtils.getRandomColors(f.getRowNumber(), rand_seed);
         figureAttribute.items = generateItemText(f.getRowNumber());
         repaint();
     }
@@ -168,6 +177,7 @@ public class PanelPlot extends javax.swing.JPanel {
     }
 
     private void initialize() {
+
         lbl = new JLabel("X:Y");
         this.add(lbl);
         lbl.setBounds(new Rectangle(10, 0, 100, 20));
@@ -178,35 +188,51 @@ public class PanelPlot extends javax.swing.JPanel {
         addMouseListener(new java.awt.event.MouseAdapter() {
 
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                lblShow = true;
-                lbl.setVisible(true);
-                mousePos = evt.getPoint();
-                repaint();
+                isMousePressed = true;
             }
 
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                lblShow = false;
+//                isMousePressed = false;
             }
+
         });
 
         this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
 
             public void mouseMoved(java.awt.event.MouseEvent e) {
+                mousePos = e.getPoint();
+                repaint();
             }
 
             public void mouseDragged(java.awt.event.MouseEvent e) {
-                mousePos = e.getPoint();
-                lbl.setVisible(true);
-                repaint();
+//                mousePos = e.getPoint();
+//                lbl.setVisible(true);
+//                repaint();
             }
         });
+
     }
 
-    private void paintDataPoints(Graphics gr, Point[] mp) {
-        int r = 6;
-        for (int i = 0; i < mp.length; i++) {
-            gr.drawOval(mp[i].x - r / 2, mp[i].y - r / 2, r, r);
+    private int selectLine(CPoint[][] mp) {
+        int ret = -1;
+        int nr = mp.length;
+        int nc = mp[0].length;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                if (mp[i][j].row > mousePos.y - 5
+                        && mp[i][j].row < mousePos.y + 5
+                        && mp[i][j].column > mousePos.x - 5
+                        && mp[i][j].column < mousePos.x + 5) {
+                    ret = i;
+                    isLineSelected = true;
+                    return ret;
+
+                }
+            }
         }
+        isLineSelected = false;
+        isMousePressed = false;
+        return ret;
     }
 
     private String[] generateItemText(int n) {
@@ -220,157 +246,107 @@ public class PanelPlot extends javax.swing.JPanel {
         return ret;
     }
 
-    private void drawDataPoints(Graphics2D gr, int[] xp, int[] yp, int ncols, int nr) {
+    private void drawPolyLines(Graphics2D gr, CPoint[][] mp, int nr) {
+        gr.setColor(color[nr]);
+        int[] xp = new int[f.getColumnNumber()];
+        int[] yp = new int[f.getColumnNumber()];
+        for (int j = 0; j < f.getColumnNumber(); j++) {
+            CPoint p = mp[nr][j];
+            yp[j] = p.row;
+            xp[j] = p.column;
+        }
         String pType = figureAttribute.pointType;
+        Stroke prev = gr.getStroke();
+        Stroke stroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        if (selectedLineIndex != -1) {
+            if (selectedLineIndex == nr) {
+//                System.out.println("buldu:" + nr);
+                float alpha = 0.75f;
+                AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+                gr.setComposite(alcom);
+                stroke = new BasicStroke(7, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            } else {
+                float alpha = 0.15f;
+                AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+                gr.setComposite(alcom);
+                stroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            }
+        } else {
+            float alpha = this.alpha_blending;
+            AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+            gr.setComposite(alcom);
+        }
         if (pType.contains("-")) {
             if (figureAttribute.isStroke) {
                 gr.setStroke(figureAttribute.stroke.get(nr));
                 gr.drawPolyline(xp, yp, f.getColumnNumber());
-//            gr.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             } else {
+                gr.setStroke(stroke);
                 gr.drawPolyline(xp, yp, f.getColumnNumber());
             }
         }
-        if (!(pType.contains("-") && pType.length()==1)) {
-            String p = ".";
-            if (pType.length() > 1) {
-                p = pType.substring(1, 2);
-            } else {
-                p = pType;
-            }
-            switch (p) {
-                case ".": {
-                    int a = 5;
-                    int b = 2;
-                    for (int i = 0; i < xp.length; i++) {
-                        gr.fillRect(xp[i] - a / 2, yp[i] - a / 2, a, a);
-                    }
-                    break;
-                }
-                case "o": {
-                    int a = 4;
-                    int b = 8;
-                    for (int i = 0; i < xp.length; i++) {
-                        gr.fillOval(xp[i] - a, yp[i] - a, b, b);
-                    }
-                    break;
-                }
-                default: {
-                    for (int i = 0; i < xp.length; i++) {
-                        gr.drawString(p, xp[i]-3, yp[i]+10);
-                    }
-                    break;
+        if (isShowPoint) {
+            paintDataPoints(gr, xp, yp);
+        }
+        float alpha = 1f;
+        AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+        gr.setComposite(alcom);
+        gr.setStroke(prev);
+    }
 
-                }
-            }
+    private void drawMouseAxis(Graphics2D gr, Point mousePos, int fromLeft, int fromTop, int canvas_width, int canvas_height) {
+        if (mousePos.x > fromLeft && mousePos.x < fromLeft + canvas_width && mousePos.y > fromTop && mousePos.y < fromTop + canvas_height) {
+            Color prevColor = gr.getColor();
+            gr.setColor(Color.red);
+            Stroke prev = gr.getStroke();
+            Stroke s = new BasicStroke(2.0f, // Width 
+                    BasicStroke.CAP_SQUARE, // End cap 
+                    BasicStroke.JOIN_MITER, // Join style 
+                    10.0f, // Miter limit 
+                    new float[]{5.0f, 5.0f}, // Dash pattern 
+                    0.0f);
+            gr.setStroke(s);
+            float alpha = 0.35f;
+            AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+            gr.setComposite(alcom);
+            gr.drawLine(fromLeft, mousePos.y, fromLeft + canvas_width, mousePos.y);
+            gr.drawLine(mousePos.x, fromTop, mousePos.x, fromTop + canvas_height);
 
-            /*
-            if (figureAttribute.pointType.equals("-o")) {
-                int a = 4;
-                int b = 8;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawOval(xp[i] - a, yp[i] - a, b, b);
-                }
-            }
-            if (figureAttribute.pointType.equals("-.")) {
-                int a = 1;
-                int b = 2;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawLine(xp[i] - a, yp[i] - a, xp[i] + a, yp[i] + a);
-                    gr.drawLine(xp[i] + a, yp[i] - a, xp[i] - a, yp[i] + a);
-                    gr.drawLine(xp[i] - b, yp[i], xp[i] + b, yp[i]);
-                    gr.drawLine(xp[i], yp[i] - b, xp[i], yp[i] + b);
-                }
-            }
-            if (figureAttribute.pointType.equals("-*")) {
-                int a = 2;
-                int b = 4;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawLine(xp[i] - a, yp[i] - a, xp[i] + a, yp[i] + a);
-                    gr.drawLine(xp[i] + a, yp[i] - a, xp[i] - a, yp[i] + a);
-                    gr.drawLine(xp[i] - b, yp[i], xp[i] + b, yp[i]);
-                    gr.drawLine(xp[i], yp[i] - b, xp[i], yp[i] + b);
-                }
-            }
-            if (figureAttribute.pointType.equals(".")) {
-                int a = 1;
-                int b = 2;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawLine(xp[i] - a, yp[i] - a, xp[i] + a, yp[i] + a);
-                    gr.drawLine(xp[i] + a, yp[i] - a, xp[i] - a, yp[i] + a);
-                    gr.drawLine(xp[i] - b, yp[i], xp[i] + b, yp[i]);
-                    gr.drawLine(xp[i], yp[i] - b, xp[i], yp[i] + b);
-                }
-            }
-            if (figureAttribute.pointType.equals("*")) {
-                int a = 2;
-                int b = 4;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawLine(xp[i] - a, yp[i] - a, xp[i] + a, yp[i] + a);
-                    gr.drawLine(xp[i] + a, yp[i] - a, xp[i] - a, yp[i] + a);
-                    gr.drawLine(xp[i] - b, yp[i], xp[i] + b, yp[i]);
-                    gr.drawLine(xp[i], yp[i] - b, xp[i], yp[i] + b);
-                }
-            }
-            if (figureAttribute.pointType.equals("o")) {
-                int a = 4;
-                int b = 8;
-                for (int i = 0; i < xp.length; i++) {
-                    gr.drawOval(xp[i] - a, yp[i] - a, b, b);
-                }
-            }
-             */
+            alpha = 1f;
+            alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+            gr.setComposite(alcom);
+            gr.setStroke(prev);
+            gr.setColor(prevColor);
         }
     }
 
-    private void checkDataPoints(Graphics gr, CPoint[][] mp, int px, int py) {
+    private void checkDataPoints(Graphics gr, CPoint[][] mp, int fromLeft, int fromTop, int canvas_width, int canvas_height) {
         for (int i = 0; i < mp.length; i++) {
             for (int j = 0; j < mp[0].length; j++) {
-                if (mp[i][j].row > mousePos.x - 5 && mp[i][j].row < mousePos.x + 5
-                        && mp[i][j].column > mousePos.y - 5 && mp[i][j].column < mousePos.y + 5) {
+//                if (    mp[i][j].row > mousePos.y - 5 && 
+//                        mp[i][j].row < mousePos.y + 5 && 
+//                        mp[i][j].column > mousePos.x - 5 && 
+//                        mp[i][j].column < mousePos.x + 5) {
+                if (mp[i][j].column > mousePos.x - 5 && mp[i][j].column < mousePos.x + 5) {
                     gr.setColor(Color.red);
-                    gr.fillRect(mp[i][j].row - 5, mp[i][j].column - 5, 10, 10);
-                    lbl.setText(FactoryUtils.formatDouble(f.toDoubleArray2D()[0][i]) + " , " + FactoryUtils.formatDouble(f.toDoubleArray2D()[1][i]));
-                    lbl.setLocation(mousePos.x - 30, mousePos.y - 25);
+                    gr.fillRect(mp[i][j].column - 5, mp[i][j].row - 5, 10, 10);
+                    gr.setColor(Color.red);
+                    gr.drawRect(mp[i][j].column - 25, fromTop - 20, 50, 20);
+                    gr.drawRect(mp[i][j].column - 25, fromTop + canvas_height + 3, 50, 20);
+                    gr.setColor(Color.gray);
+                    gr.drawString("" + j, mp[i][j].column - 17, fromTop - 3);
+                    gr.drawString("" + j, mp[i][j].column - 17, fromTop + canvas_height + 20);
                     break;
                 }
-            }
-        }
-    }
-
-    private void paintItemList(Graphics2D gr, String[] t) {
-        if (figureAttribute.items == null || figureAttribute.items.length == 0) {
-            return;
-        }
-        if (color.length != t.length) {
-            return;
-        }
-        int w = getWidth();
-        int h = getHeight();
-        gr.setColor(Color.red);
-        int strWidth = getMaxWidth(gr, t);
-        int strHeight = getMaxHeight(gr, t);
-        int itemW = (int) (strWidth * scale) - 15;
-        int itemH = (int) (strHeight * scale);
-//        gr.drawRect(w - itemW, 20, itemW+10, itemH * t.length + 10);
-        for (int i = 0; i < color.length; i++) {
-            gr.setColor(this.color[i]);
-            if (figureAttribute.isStroke) {
-                int hh = 70 + (itemH + 20) * i;
-                gr.drawString(t[i], w - itemW, hh - 10);
-                gr.setStroke(figureAttribute.stroke.get(i));
-                gr.drawLine(w - itemW, hh, w - 10, hh);
-                gr.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            } else {
-                gr.drawString(t[i], w - itemW, 70 + itemH * i);
             }
         }
     }
 
     private void paintDataPoints(Graphics gr, int[] xp, int[] yp) {
-        int r = 5;
+        int r = 6;
         for (int i = 0; i < xp.length; i++) {
-            gr.drawRect(xp[i] - r / 2, yp[i] - r / 2, r, r);
+            gr.fillRect(xp[i] - r / 2, yp[i] - r / 2, r, r);
         }
     }
 
@@ -378,11 +354,8 @@ public class PanelPlot extends javax.swing.JPanel {
         double maxY = getMaxYValue(d);
         double minY = getMinYValue(d);
         double deltaY = maxY - minY;
-        double n = Math.round(y0/100.0);
-//        int l = y0 - 60;
+        double n = Math.round(y0 / 100.0);
         int l = y0 - 50;
-//        double ratio=y0/n;
-        
         int top = 50;
         gr.drawLine(x0, top, x0, y0 + 20);
         gr.drawLine(w - fromRight, top, w - fromRight, y0 + 20);
@@ -391,28 +364,32 @@ public class PanelPlot extends javax.swing.JPanel {
         double dY = l / n;
         int q = 0;
         int art = 5;
-//        int shift = 25;
         int shift = 20;
         for (int i = 0; i <= n; i++) {
+            gr.setColor(Color.darkGray);
             if (maxY > 1) {
                 yVal[i] = Math.round(Math.round((i * delta + minY) * n) / n);
             } else {
                 yVal[i] = (i * delta + minY);
             }
 
-//            gr.drawString(FactoryUtils.formatDoubleAsString(yVal[i],1) + "", x0 - 80, (int) (y0 - i * dY+shift) + art);
             gr.drawString(FactoryUtils.formatDoubleAsString(yVal[i], 3) + "", x0 - 80, (int) (y0 - i * dY + shift) + art);
             q = (int) (y0 - i * dY + shift);
-            gr.drawLine(x0, q, x0 + art, q);
-            gr.drawLine(w - fromRight, q, w - fromRight - art, q);
+            gr.setColor(Color.white);
+            if (i < n) {
+                gr.drawLine(x0, q - (int) dY / 2, x0 + w - fromRight, q - (int) dY / 2);
+            }
+            gr.drawLine(x0, q, x0 + w - fromRight, q);
         }
+        gr.setColor(Color.darkGray);
         gr.drawString(figureAttribute.axis_names[1], 20, 35);
     }
 
     private void drawXAxis(Graphics gr, int x0, int y0, int w, int fromRight, double[][] d) {
+        gr.setColor(Color.darkGray);
         double maxX = 0;
         double minX = 0;
-        double n = Math.round(w/150.0);
+        double n = Math.round(w / 150.0);
         int l = w - (x0 + fromRight);
         double dx = l / n;
         double[] xVal = new double[(int) n + 1];
@@ -425,18 +402,25 @@ public class PanelPlot extends javax.swing.JPanel {
             maxX = getMaxXValue(d);
         }
         double delta = maxX / n;
-        gr.drawLine(x0, top, w - fromRight, 50);
-        gr.drawLine(x0, y0 + 20, w - fromRight, y0 + 20);
-        gr.drawString(figureAttribute.axis_names[0], w - 90, y0 + 20);
+        gr.drawString(figureAttribute.axis_names[0], w - 110, y0 + 40);
         int q = 0;
         for (int i = 0; i <= n; i++) {
-            xVal[i] = (Math.round(minX + i * delta));
+            gr.setColor(Color.darkGray);
+            if (i < n) {
+                xVal[i] = (Math.round(minX + i * delta));
+            } else {
+                xVal[i] = (Math.round(minX + i * delta)) - 1;
+            }
+
             q = (int) (x0 + i * dx);
-//            gr.drawString((int) xVal[i] + "", q - 10, y0 + 40);
-            gr.drawString(FactoryUtils.formatDoubleAsString(xVal[i],3), q - 10, y0 + 40);
-            gr.drawLine(q, top, q, top + 5);
-            gr.drawLine(q, y0 + 20, q, y0 + 20 - 5);
+            gr.drawString(FactoryUtils.formatDoubleAsString(xVal[i], 3), q - 10, y0 + 40);
+            gr.setColor(Color.white);
+            if (i < n) {
+                gr.drawLine(q + (int) dx / 2, top, q + (int) dx / 2, y0 + 20);
+            }
+            gr.drawLine(q, top, q, y0 + 20);
         }
+        gr.setColor(Color.darkGray);
     }
 
     private double getMaxYValue(double[][] d) {
@@ -551,4 +535,21 @@ public class PanelPlot extends javax.swing.JPanel {
 //        }
 //        return ret;
 //    }
+    private void drawItems(Graphics2D gr, String[] items, int w, int h) {
+        gr.setColor(Color.gray);
+        gr.drawString("Items", w - 110, 100);
+        gr.drawString("--------------", w - 130, 120);
+        int dt = 25;
+        for (int i = 0; i < items.length; i++) {
+            gr.setColor(color[i]);
+            gr.drawString(items[i], w - 120, 140 + dt * i);
+        }
+
+    }
+
+    public void setRandomSeed(long currentTimeMillis) {
+        this.rand_seed = currentTimeMillis;
+        color = FactoryUtils.getRandomColors(f.getRowNumber(), rand_seed);
+    }
+
 }

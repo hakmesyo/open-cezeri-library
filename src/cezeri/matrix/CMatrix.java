@@ -124,6 +124,7 @@ import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.factory.FactoryTensorFlowJS;
 import cezeri.gui.FrameScatterBlob;
+import cezeri.gui.FramePloty;
 import cezeri.types.TBlockType;
 import cezeri.types.TDJLModel;
 import cezeri.types.TRoi;
@@ -153,6 +154,7 @@ public final class CMatrix implements Serializable {
     private Instances wekaInstance = null;
     public static FrameImage frameImage = null;
     private static FramePlot framePlot = null;
+    private static FramePloty framePloty = null;
     private static FrameHeatMap frameHeatMap = null;
     public String plotType = "-";
     private List<String> columnNames = new ArrayList();
@@ -1196,6 +1198,12 @@ public final class CMatrix implements Serializable {
         return p;
     }
 
+    /**
+     * Generate square matrix
+     * @param from_inclusive
+     * @param to_exclusive
+     * @return
+     */
     public CMatrix range2D(double from_inclusive, double to_exclusive) {
         CMatrix ret = new CMatrix();
         ret.setArray(FactoryMatrix.range2D(from_inclusive, to_exclusive, 1));
@@ -1210,6 +1218,18 @@ public final class CMatrix implements Serializable {
 
     public CMatrix range(double from_inclusive, double to_exclusive) {
         return vector(from_inclusive, to_exclusive - 1);
+    }
+
+    public CMatrix range(double from_inclusive, double to_exclusive,int ncols) {
+        CMatrix ret = new CMatrix();
+        ret.setArray(FactoryMatrix.range(from_inclusive, to_exclusive, ncols));
+        return ret;
+    }
+
+    public CMatrix range(double from_inclusive, double to_exclusive,double step, int ncols) {
+        CMatrix ret = new CMatrix();
+        ret.setArray(FactoryMatrix.range(from_inclusive, to_exclusive, step, ncols));
+        return ret;
     }
 
     public CMatrix range(int[] p) {
@@ -1817,6 +1837,28 @@ public final class CMatrix implements Serializable {
         fg.pointType = plotType;
         framePlot.setFigureAttribute(fg);
         framePlot.setVisible(true);
+        return this;
+    }
+    
+    /**
+     * Matlab compatible command: plot the curves of each column in the matrix
+     *
+     * @return CMatrix
+     */
+    public CMatrix ploty() {
+        this.array = FactoryUtils.RemoveNaNToZero(this.toDoubleArray2D());
+        if (!hold_on) {
+            framePloty = new FramePloty(this);
+        } else {
+            if (framePloty == null) {
+                framePloty = new FramePloty(this);
+            }
+            framePloty.setMatrix(this);
+        }
+        TFigureAttribute fg = new TFigureAttribute();
+        fg.pointType = plotType;
+        framePloty.setFigureAttribute(fg);
+        framePloty.setVisible(true);
         return this;
     }
 
