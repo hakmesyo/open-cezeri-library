@@ -103,6 +103,7 @@ public class FramePlot extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         btnSort = new javax.swing.JButton();
         btn_refresh = new javax.swing.JButton();
+        chk_trace = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -160,6 +161,18 @@ public class FramePlot extends javax.swing.JFrame {
             }
         });
 
+        chk_trace.setText("trace");
+        chk_trace.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                chk_traceItemStateChanged(evt);
+            }
+        });
+        chk_trace.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                chk_tracePropertyChange(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -174,7 +187,9 @@ public class FramePlot extends javax.swing.JFrame {
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 343, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 278, Short.MAX_VALUE)
+                .addComponent(chk_trace)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btn_refresh)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSort)
@@ -189,7 +204,8 @@ public class FramePlot extends javax.swing.JFrame {
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel2)
                 .addComponent(btnSort)
-                .addComponent(btn_refresh))
+                .addComponent(btn_refresh)
+                .addComponent(chk_trace))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -232,6 +248,14 @@ public class FramePlot extends javax.swing.JFrame {
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         getPlotPanel().setMatrix(this.cm);
     }//GEN-LAST:event_btn_refreshActionPerformed
+
+    private void chk_tracePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_chk_tracePropertyChange
+        
+    }//GEN-LAST:event_chk_tracePropertyChange
+
+    private void chk_traceItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_chk_traceItemStateChanged
+        getPlotPanel().setTrace(chk_trace.isSelected());
+    }//GEN-LAST:event_chk_traceItemStateChanged
 
     public PanelPlot getPlotPanel() {
         return (PanelPlot) panel_plot;
@@ -284,6 +308,7 @@ public class FramePlot extends javax.swing.JFrame {
     private javax.swing.JButton btn_refresh;
     private javax.swing.JButton btn_save;
     private javax.swing.JButton btn_scatter;
+    private javax.swing.JCheckBox chk_trace;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel panel_plot;

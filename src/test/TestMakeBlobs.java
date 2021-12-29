@@ -33,11 +33,30 @@ import cezeri.types.TFigureAttribute;
 public class TestMakeBlobs {
 
     public static void main(String[] args) {
+//        CMatrix cm = CMatrix.getInstance()
+//                .imread("images/pullar.png")
+//                .imshow()
+//                .getRedChannelColor()
+//                .imshow()
+//                .hist(256)
+//                .shape()
+////                ;
+//        CMatrix cm2 = CMatrix.getInstance()
+//                .imread("images/pullar.png")
+//                .getGreenChannelColor()
+//                .imshow()
+//                .hist(256)
+//                .shape()
+//                .println()
+//                ;
+        
+                
+        
         CMatrix cm = CMatrix.getInstance()
-                .range(-100, 100,1,7)
+                .range(-100, 100,1,3)
                 .shape()
                 .perlinNoise(0.1)
-//                .map(-250, 250)
+                .map(0, 250)
 //                .ploty()
                 .plot()
 //                .plot()
@@ -45,8 +64,8 @@ public class TestMakeBlobs {
 
 //        CMatrix jm = CMatrix.getInstance()
 //                //                .make_blobs(300, 3, 5)
-//                .make_blobs(300, 2, 5);
-//
+//                .make_blobs(300, 2, 5).scatterBlob();
+
 //        jm.scatterBlob();
 
 //        jm.scatterBlob("0,1", new TFigureAttribute("Python Bloblarından",

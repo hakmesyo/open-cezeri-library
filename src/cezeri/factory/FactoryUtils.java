@@ -5570,6 +5570,18 @@ public final class FactoryUtils {
         return ret;
     }
 
+    public static int getLongestStringIndex(String[] items) {
+        int n=0;
+        int ret=0;
+        for (int i = 0; i < items.length; i++) {
+            if (n<items[i].length()) {
+                n=items[i].length();
+                ret=i;
+            }
+        }
+        return ret;
+    }
+
     public <T> List<T> toArrayList(T[][] twoDArray) {
         List<T> list = new ArrayList<T>();
         for (T[] array : twoDArray) {
