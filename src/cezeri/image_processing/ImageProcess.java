@@ -1526,12 +1526,12 @@ public final class ImageProcess {
     public static CMatrix getHistogram(CMatrix cm) {
         if (cm.getImage().getType() == BufferedImage.TYPE_BYTE_GRAY) {
             short[] d = cm.toShortArray1D();
-            int[] ret = FactoryMatrix.getHistogram(d, 256);
+            double[] ret = FactoryMatrix.getHistogram(d, 256);
             cm.setArray(ret);
             cm = cm.transpose();
         } else {
             int[][][] d = imageToPixelsColorInt(cm.getImage());
-            int[][] ret = FactoryMatrix.getHistogram(d, 256);
+            double[][] ret = FactoryMatrix.getHistogram(d, 256);
             cm.setArray(ret);
         }
         cm.name += "|" + "Histogram";

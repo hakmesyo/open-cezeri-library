@@ -78,7 +78,18 @@ public class TestHeatMap {
                 CMatrix cm = CMatrix.getInstance(d)
 //                        .scatter()
 //                        .plot()
-                        .heatmap(Color.cyan,500,500,true,true)
+//                        .heatmap(Color.cyan,500,500,true,true)
+                        .imread("images/pullar.png")  
+//                        .imshow()
+//                        .imhist()
+//                        .rgb2gray()
+                        .hist(256)
+//                        .prev()
+//                        .rgb2gray()
+//                        .imshow()
+//                        .hist()
+                        //.plot()
+                        //.heatmap()
                         ;
 
                 

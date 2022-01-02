@@ -3022,7 +3022,7 @@ public final class FactoryUtils {
     }
 
     public static double[] getPDFData(double[] d) {
-        double[] hst = getHistogram(d, 255);
+        double[] hst = FactoryMatrix.getHistogram(d, 255);
         double sum = sum(hst);
         double[] ret = new double[d.length];
         for (int i = 0; i < d.length; i++) {
@@ -4315,37 +4315,37 @@ public final class FactoryUtils {
         return inside;
     }
 
-    public static double[] getHistogram(double[] d, int nBins) {
-        double[] ret = new double[nBins];
-        double min = getMinimum(d);
-        boolean eksili = false;
-        if (min < 0) {
-            eksili = true;
-        }
-        double max = getMaximum(d);
-        double delta = 0;
-        if (min < 0 && max > 0) {
-            delta = Math.abs(Math.abs(max) + Math.abs(min)) / (nBins - 1);
-        }
-        if ((min <= 0 && max <= 0) || (min >= 0 && max >= 0)) {
-            delta = Math.abs(Math.abs(max) - Math.abs(min)) / (nBins - 1);
-        }
-        int index = 0;
-        for (int i = 0; i < d.length; i++) {
-            index = (int) Math.round((d[i] - min) / delta);
-            if (index >= ret.length) {
-                index = ret.length - 1;
-            }
-            if (index < 0) {
-                index = 0;
-            }
-            if (d[i] == min) {
-                int a = 1;
-            }
-            ret[index]++;
-        }
-        return ret;
-    }
+//    public static double[] getHistogram(double[] d, int nBins) {
+//        double[] ret = new double[nBins];
+//        double min = getMinimum(d);
+//        boolean eksili = false;
+//        if (min < 0) {
+//            eksili = true;
+//        }
+//        double max = getMaximum(d);
+//        double delta = 0;
+//        if (min < 0 && max > 0) {
+//            delta = Math.abs(Math.abs(max) + Math.abs(min)) / (nBins - 1);
+//        }
+//        if ((min <= 0 && max <= 0) || (min >= 0 && max >= 0)) {
+//            delta = Math.abs(Math.abs(max) - Math.abs(min)) / (nBins - 1);
+//        }
+//        int index = 0;
+//        for (int i = 0; i < d.length; i++) {
+//            index = (int) Math.round((d[i] - min) / delta);
+//            if (index >= ret.length) {
+//                index = ret.length - 1;
+//            }
+//            if (index < 0) {
+//                index = 0;
+//            }
+//            if (d[i] == min) {
+//                int a = 1;
+//            }
+//            ret[index]++;
+//        }
+//        return ret;
+//    }
 
     /**
      * generate n different colors
@@ -4380,42 +4380,42 @@ public final class FactoryUtils {
         return cl;
     }
 
-    public static double[][] getHistogram(double[][] array) {
-        double[][] d = FactoryMatrix.clone(array);
-        d = transpose(d);
-        int nBins = (int) (getMaximum(array) - getMinimum(array)) + 1;
-        double[][] ret = new double[d.length][nBins];
-        for (int i = 0; i < d.length; i++) {
-            ret[i] = getHistogram(d[i], nBins);
-        }
-        return transpose(ret);
-    }
-
-    public static double[][] getHistogram(double[][] array, int nBins) {
-        double[][] d = FactoryMatrix.clone(array);
-        d = transpose(d);
-        double[][] ret = new double[d.length][nBins];
-        for (int i = 0; i < d.length; i++) {
-            ret[i] = getHistogram(d[i], nBins);
-        }
+//    public static double[][] getHistogram(double[][] array) {
+//        double[][] d = FactoryMatrix.clone(array);
+//        d = transpose(d);
+//        int nBins = (int) (getMaximum(array) - getMinimum(array)) + 1;
+//        double[][] ret = new double[d.length][nBins];
+//        for (int i = 0; i < d.length; i++) {
+//            ret[i] = getHistogram(d[i], nBins);
+//        }
 //        return transpose(ret);
-        return ret;
+//    }
+//
+//    public static double[][] getHistogram(double[][] array, int nBins) {
+//        double[][] d = FactoryMatrix.clone(array);
+//        d = transpose(d);
+//        double[][] ret = new double[d.length][nBins];
+//        for (int i = 0; i < d.length; i++) {
+//            ret[i] = getHistogram(d[i], nBins);
+//        }
+////        return transpose(ret);
+//        return ret;
+//    }
+
+    public static double[] hist(double[][] array) {
+        return FactoryMatrix.getHistogram(array,256);
     }
 
-    public static double[][] hist(double[][] array) {
-        return getHistogram(array);
-    }
-
-    public static double[][] hist(double[][] array, int nBins) {
-        return getHistogram(array, nBins);
+    public static double[] hist(double[][] array, int nBins) {
+        return FactoryMatrix.getHistogram(array, nBins);
     }
 
     public static double[] hist(double[] array, int nBins) {
-        return getHistogram(array, nBins);
+        return FactoryMatrix.getHistogram(array, nBins);
     }
 
     public static int[] hist(int[] array, int nBins) {
-        return FactoryUtils.toIntArray1D(getHistogram(FactoryUtils.toDoubleArray1D(array), nBins));
+        return FactoryUtils.toIntArray1D(FactoryMatrix.getHistogram(FactoryUtils.toDoubleArray1D(array), nBins));
     }
 
     public static double[][] shiftOnRow(double[][] d, int q) {

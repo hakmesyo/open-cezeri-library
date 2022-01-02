@@ -108,9 +108,11 @@ public class PanelHistogram extends TPanelData {
     private void drawAxisX(Graphics2D gr, int dx, int dy, int px, int py) {
         int k = 5;
 //        double[] d = FactoryUtils.toDoubleArray(hist[0]);
-        double[] d = new double[hist.length];
-        double min = FactoryUtils.getMinimum(cm.toDoubleArray2D());
-        double max = FactoryUtils.getMaximum(cm.toDoubleArray2D());
+        double[] d = new double[hist[0].length];
+//        double min = FactoryUtils.getMinimum(cm.toDoubleArray2D());
+//        double max = FactoryUtils.getMaximum(cm.toDoubleArray2D());
+        double min = 0;
+        double max = hist[0].length;
         double delta = Math.abs(max - min) / k;
         int n = d.length / k;
         int nd = FactoryUtils.getDigitNumber(delta);
@@ -161,22 +163,22 @@ public class PanelHistogram extends TPanelData {
         double delta1 = Math.abs(max1 - min1);
         CMatrix ctm = cm.transpose();
         int ppx = px;
-        for (int k = 0; k < hist[0].length; k++) {
+        for (int k = 0; k < hist.length; k++) {
             px = ppx;
             double min2 = FactoryUtils.getMinimum(ctm.toDoubleArray2D()[k]);
             double max2 = FactoryUtils.getMaximum(ctm.toDoubleArray2D()[k]);
             double delta2 = Math.abs(max2 - min2);
             double oran = delta2 / delta1;
             double norm = (dx * 1.0 / delta2) * oran;
-            double normX = (dx * 1.0 / hist.length) * oran;
+            double normX = (dx * 1.0 / hist[0].length) * oran;
             int x = 0;
             int x2 = 0;
             int y = 0;
             px += (min2 - min1) * norm;
-            for (int i = 0; i < hist.length; i++) {
+            for (int i = 0; i < hist[0].length; i++) {
                 x = (int) (i * normX);
                 x2 = (int) ((i + 1) * normX);
-                y = (int) (hist[i][k] * normY);
+                y = (int) (hist[k][i] * normY);
                 float alpha = 0.35f;
                 AlphaComposite alcom = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
                 gr.setComposite(alcom);

@@ -68,7 +68,7 @@ public class FrameImageHistogram extends javax.swing.JFrame {
         panel_plot.setLayout(panel_plotLayout);
         panel_plotLayout.setHorizontalGroup(
             panel_plotLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+            .addGap(0, 602, Short.MAX_VALUE)
         );
         panel_plotLayout.setVerticalGroup(
             panel_plotLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,7 +107,7 @@ public class FrameImageHistogram extends javax.swing.JFrame {
                 .addComponent(txt_dpi, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
-                .addContainerGap(376, Short.MAX_VALUE))
+                .addContainerGap(364, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -82,6 +82,7 @@ public final class FrameHeatMap extends javax.swing.JFrame {
         btn_dataGrid = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(700, 730));
 
         panel_heat_map.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 

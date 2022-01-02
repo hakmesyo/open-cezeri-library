@@ -2335,7 +2335,7 @@ public final class CMatrix implements Serializable {
     /**
      * Matlab compatible command: show image histogram
      *
-     * is used for only images for matrix you should use hist instead
+     * is used for only images. For any other matrix you should use hist instead
      *
      * @return original CMatrix
      */
@@ -2386,8 +2386,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix hist() {
         CMatrix ret = this.clone(this);
-
-        ret.array = FactoryUtils.hist(ret.array);
+        double[] d=FactoryMatrix.getHistogram(ret.array,256);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         ret.bar();
         return this;
     }
@@ -2406,7 +2406,8 @@ public final class CMatrix implements Serializable {
         } else if (ret.getRowNumber() == 1 && ret.getColumnNumber() > 1) {
             ret = ret.transpose();
         }
-        ret.array = FactoryUtils.hist(ret.array, nBins);
+        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret);
         frm.setVisible(true);
         return ret;
@@ -2421,7 +2422,8 @@ public final class CMatrix implements Serializable {
     public CMatrix hist(int nBins, String title) {
         CMatrix ret = this.clone(this);
 
-        ret.array = FactoryUtils.hist(ret.array, nBins);
+        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret, title);
         frm.setVisible(true);
         return this;
@@ -2436,7 +2438,8 @@ public final class CMatrix implements Serializable {
     public CMatrix hist(int nBins, String title, boolean isStatisticsVisible) {
         CMatrix ret = this.clone(this);
 
-        ret.array = FactoryUtils.hist(ret.array, nBins);
+        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret, title, isStatisticsVisible);
         frm.setVisible(true);
         return this;
@@ -2451,14 +2454,16 @@ public final class CMatrix implements Serializable {
     public CMatrix getHistogramData() {
         CMatrix ret = this.clone(this);
 
-        ret.array = FactoryUtils.hist(ret.array);
+        double[] d=FactoryMatrix.getHistogram(ret.array,256);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         return ret;
     }
 
     public CMatrix getHistogramData(int nBins) {
         CMatrix ret = this.clone(this);
 
-        ret.array = FactoryUtils.hist(ret.array, nBins);
+        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
+        ret.array = FactoryMatrix.reshape(d,d.length,1);
         return ret;
     }
 
@@ -5238,11 +5243,14 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix getHistogram() {
-        int[] d = this.toIntArray1D();
-        int[] ret = ImageProcess.getHistogram(d);
-        CMatrix cm = CMatrix.getInstance(ret);
+        CMatrix ret = this.clone(this);
+        double[] d = FactoryMatrix.getHistogram(ret.array,256);
+        ret.setArray(d);
+        return ret;
+    }
 
-        return cm;
+    public CMatrix getHistogram(int nBins) {
+        return hist(nBins);
     }
 
     /**
@@ -7905,7 +7913,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateColumn(int n) {
         CMatrix ret = this.clone(this);
         CMatrix ret2 = this.clone(this);
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < n; i++) {
             ret = ret.cat(1, ret2);
         }
         return ret;
@@ -7945,10 +7953,30 @@ public final class CMatrix implements Serializable {
     public CMatrix replicateRow(int n) {
         CMatrix ret = this.clone(this);
         CMatrix ret2 = this.clone(this);
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < n; i++) {
             ret = ret.cat(2, ret2);
         }
         return ret;
+    }
+
+    /**
+     * Replicate/Duplicate the Matrix n times along row
+     *
+     * @param n
+     * @return
+     */
+    public CMatrix replicate(int n) {
+        return replicateRow(n).replicateColumn(n);
+    }
+    /**
+     * Replicate/Duplicate the Matrix n times along row
+     *
+     * @param nr
+     * @param nc
+     * @return
+     */
+    public CMatrix replicate(int nr,int nc) {
+        return replicateRow(nr).replicateColumn(nc);
     }
 
     /**

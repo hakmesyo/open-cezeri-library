@@ -574,7 +574,7 @@ public final class FactoryMatrix implements Serializable {
         int n3 = input[0][0].length;
         double[][][] result = new double[n1][n2][n3];
         for (int i = 0; i < n1; i++) {
-            result[i]=clone(input[i]);
+            result[i] = clone(input[i]);
         }
         return result;
     }
@@ -1193,7 +1193,7 @@ public final class FactoryMatrix implements Serializable {
 //            m[i] = v.get(a);
 //            v.remove(a);
 //        }
-        int[] array = lst.stream().mapToInt(i->i).toArray();
+        int[] array = lst.stream().mapToInt(i -> i).toArray();
         return array;
     }
 
@@ -1910,8 +1910,8 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static int[] getHistogram(int[] d, int n) {
-        int[] ret = new int[n];
+    public static double[] getHistogram(int[] d, int n) {
+        double[] ret = new double[n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < d.length; j++) {
                 if (d[j] == i) {
@@ -1922,8 +1922,8 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static int[] getHistogram(short[] d, int n) {
-        int[] ret = new int[n];
+    public static double[] getHistogram(double[] d, int n) {
+        double[] ret = new double[n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < d.length; j++) {
                 if (d[j] == i) {
@@ -1934,11 +1934,93 @@ public final class FactoryMatrix implements Serializable {
         return ret;
     }
 
-    public static int[][] getHistogram(int[][][] d, int n) {
+    public static double[] getHistogram(double[][] d, int nBins) {
+        double[] ret = new double[nBins];
+        int nr = d.length;
+        int nc = d[0].length;
+        double min=FactoryUtils.getMinimum(d);
+        double max=FactoryUtils.getMaximum(d);
+        double delta=(max-min)/nBins;
+        for (int i = 0; i < nBins; i++) {
+            for (int j = 0; j < nr; j++) {
+                for (int k = 0; k < nc; k++) {
+                    if (d[j][k] >= i*delta+min && d[j][k] <= (i+1)*delta+min) {
+                        ret[i]++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    
+    public static double[] getHistogram(int[][] d, int n) {
+        double[] ret = new double[n];
+        int nr = d.length;
+        int nc = d[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < nr; j++) {
+                for (int k = 0; k < nc; k++) {
+                    if (d[j][k] == i) {
+                        ret[i]++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+    
+    public static float[] getHistogram(float[][] d, int n) {
+        float[] ret = new float[n];
+        int nr = d.length;
+        int nc = d[0].length;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < nr; j++) {
+                for (int k = 0; k < nc; k++) {
+                    if (d[j][k] == i) {
+                        ret[i]++;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    public static double[] getHistogram(short[] d, int n) {
+        double[] ret = new double[n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < d.length; j++) {
+                if (d[j] == i) {
+                    ret[i]++;
+                }
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] getHistogram(int[][][] d, int n) {
         int n1 = d.length;
         int n2 = d[0].length;
         int n3 = d[0][0].length;
-        int[][] ret = new int[n3 - 1][n];
+        double[][] ret = new double[n3 - 1][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j < n3; j++) {
+                for (int k = 0; k < n1; k++) {
+                    for (int m = 0; m < n2; m++) {
+                        if (d[k][m][j] == i) {
+                            ret[j - 1][i]++;
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] getHistogram(double[][][] d, int n) {
+        int n1 = d.length;
+        int n2 = d[0].length;
+        int n3 = d[0][0].length;
+        double[][] ret = new double[n3 - 1][n];
         for (int i = 0; i < n; i++) {
             for (int j = 1; j < n3; j++) {
                 for (int k = 0; k < n1; k++) {
@@ -1979,8 +2061,8 @@ public final class FactoryMatrix implements Serializable {
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 rt[i][j] = Math.abs(d1[i][j] - d2[i][j]);
-                if (rt[i][j]>10) {
-                    int a=1;
+                if (rt[i][j] > 10) {
+                    int a = 1;
                 }
             }
         }
@@ -2597,11 +2679,11 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-    
+
     public static double[][] fillRandMatrixWithSeed(double[][] d, int seed) {
         int nr = d.length;
         int nc = d[0].length;
-        SplittableRandom r=new SplittableRandom(seed);
+        SplittableRandom r = new SplittableRandom(seed);
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
                 d[i][j] = r.nextDouble();
@@ -2609,7 +2691,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-    
+
     public static double[][] fillRandMatrix(double[][] d, int max) {
         SecureRandom r = new SecureRandom();
         for (int i = 0; i < d.length; i++) {
@@ -2639,9 +2721,9 @@ public final class FactoryMatrix implements Serializable {
         }
         return d;
     }
-    
+
     public static double[][] fillRandMatrixWithSeed(double[][] d, double max, int seed) {
-        SplittableRandom rnd=new SplittableRandom(seed);
+        SplittableRandom rnd = new SplittableRandom(seed);
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
                 d[i][j] = rnd.nextDouble() * max;
@@ -2670,14 +2752,14 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] fillRandMatrixTimeSeries(double[][] d, double min, double max, Random rnd) {
-        int nr=d.length;
-        int nc=d[0].length;
-        d=fillRandMatrix(d,min,max,rnd);
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        d = fillRandMatrix(d, min, max, rnd);
+        double[][] ret = new double[nr][nc];
         for (int j = 0; j < nc; j++) {
-            ret[0][j]=d[0][j];
+            ret[0][j] = d[0][j];
             for (int i = 1; i < nr; i++) {
-                ret[i][j] = ret[i-1][j]+d[i][j];
+                ret[i][j] = ret[i - 1][j] + d[i][j];
             }
         }
         return ret;
@@ -2704,7 +2786,7 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] fillRandMatrixWithSeed(double[][] d, double min, double max, int seed) {
-        SplittableRandom rnd=new SplittableRandom(seed);
+        SplittableRandom rnd = new SplittableRandom(seed);
         for (int i = 0; i < d.length; i++) {
             for (int j = 0; j < d[0].length; j++) {
                 d[i][j] = min + rnd.nextDouble() * (max - min);
@@ -3145,7 +3227,7 @@ public final class FactoryMatrix implements Serializable {
         }
         return ret;
     }
-    
+
     public static double[][] reshapeBasedOnRows(double[] d, int r, int c) {
         double[][] ret = new double[r][c];
         if (d.length != r * c) {
@@ -3249,7 +3331,7 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] range(double from_inclusive, double to_exclusive, int ncols) {
-        double step=1;
+        double step = 1;
         int delta = (int) ((to_exclusive - from_inclusive) / step);
         double[][] ret = new double[delta][ncols];
         for (int i = 0; i < delta; i++) {
@@ -3563,7 +3645,7 @@ public final class FactoryMatrix implements Serializable {
         String[][] ret = new String[m.length][m[0].length];
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
-                ret[i][j] = String.valueOf((int)m[i][j]);
+                ret[i][j] = String.valueOf((int) m[i][j]);
 //                ret[i][j] = String.valueOf(formatDouble(m[i][j], 3));
             }
         }
@@ -3571,36 +3653,36 @@ public final class FactoryMatrix implements Serializable {
     }
 
     public static double[][] flipRight(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=d[i][nc-1-j];
+                ret[i][j] = d[i][nc - 1 - j];
             }
         }
         return ret;
     }
-    
+
     public static double[][] flipDown(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=d[nr-1-i][j];
+                ret[i][j] = d[nr - 1 - i][j];
             }
         }
         return ret;
     }
-    
+
     public static double[][] flipBoth(double[][] d) {
-        int nr=d.length;
-        int nc=d[0].length;
-        double[][] ret=new double[nr][nc];
+        int nr = d.length;
+        int nc = d[0].length;
+        double[][] ret = new double[nr][nc];
         for (int i = 0; i < nr; i++) {
             for (int j = 0; j < nc; j++) {
-                ret[i][j]=d[nr-1-i][nc-1-j];
+                ret[i][j] = d[nr - 1 - i][nc - 1 - j];
             }
         }
         return ret;
