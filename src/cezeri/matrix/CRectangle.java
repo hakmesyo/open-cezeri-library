@@ -5,6 +5,8 @@
  */
 package cezeri.matrix;
 
+import java.awt.Rectangle;
+
 /**
  *
  * @author BAP1
@@ -38,6 +40,13 @@ public final class CRectangle {
         column=c;
         width=w;
         height=h;                
+    }
+    
+    public CRectangle(Rectangle r){
+        row=r.y;
+        column=r.x;
+        width=r.width;
+        height=r.height;                
     }
     
     @Override

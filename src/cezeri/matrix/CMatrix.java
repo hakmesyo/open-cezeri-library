@@ -123,6 +123,7 @@ import cezeri.enums.EnumRunTime;
 import cezeri.factory.FactoryDJL;
 import cezeri.factory.FactoryDataBase;
 import cezeri.factory.FactoryTensorFlowJS;
+import cezeri.factory.FactoryWebCam;
 import cezeri.gui.FrameScatterBlob;
 import cezeri.gui.FramePloty;
 import cezeri.types.TBlockType;
@@ -1200,6 +1201,7 @@ public final class CMatrix implements Serializable {
 
     /**
      * Generate square matrix
+     *
      * @param from_inclusive
      * @param to_exclusive
      * @return
@@ -1220,13 +1222,13 @@ public final class CMatrix implements Serializable {
         return vector(from_inclusive, to_exclusive - 1);
     }
 
-    public CMatrix range(double from_inclusive, double to_exclusive,int ncols) {
+    public CMatrix range(double from_inclusive, double to_exclusive, int ncols) {
         CMatrix ret = new CMatrix();
         ret.setArray(FactoryMatrix.range(from_inclusive, to_exclusive, ncols));
         return ret;
     }
 
-    public CMatrix range(double from_inclusive, double to_exclusive,double step, int ncols) {
+    public CMatrix range(double from_inclusive, double to_exclusive, double step, int ncols) {
         CMatrix ret = new CMatrix();
         ret.setArray(FactoryMatrix.range(from_inclusive, to_exclusive, step, ncols));
         return ret;
@@ -1766,7 +1768,6 @@ public final class CMatrix implements Serializable {
      *
      * @return CMatrix
      */
-
     public CMatrix scatterBlob(TFigureAttribute attr) {
         FrameScatterBlob frm = new FrameScatterBlob(this, attr);
         frm.setVisible(true);
@@ -1839,7 +1840,7 @@ public final class CMatrix implements Serializable {
         framePlot.setVisible(true);
         return this;
     }
-    
+
     /**
      * Matlab compatible command: plot the curves of each column in the matrix
      *
@@ -2386,8 +2387,8 @@ public final class CMatrix implements Serializable {
      */
     public CMatrix hist() {
         CMatrix ret = this.clone(this);
-        double[] d=FactoryMatrix.getHistogram(ret.array,256);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, 256);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         ret.bar();
         return this;
     }
@@ -2406,8 +2407,8 @@ public final class CMatrix implements Serializable {
         } else if (ret.getRowNumber() == 1 && ret.getColumnNumber() > 1) {
             ret = ret.transpose();
         }
-        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, nBins);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret);
         frm.setVisible(true);
         return ret;
@@ -2422,8 +2423,8 @@ public final class CMatrix implements Serializable {
     public CMatrix hist(int nBins, String title) {
         CMatrix ret = this.clone(this);
 
-        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, nBins);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret, title);
         frm.setVisible(true);
         return this;
@@ -2438,8 +2439,8 @@ public final class CMatrix implements Serializable {
     public CMatrix hist(int nBins, String title, boolean isStatisticsVisible) {
         CMatrix ret = this.clone(this);
 
-        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, nBins);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         FrameHistogram frm = new FrameHistogram(this.clone(this), ret, title, isStatisticsVisible);
         frm.setVisible(true);
         return this;
@@ -2454,16 +2455,16 @@ public final class CMatrix implements Serializable {
     public CMatrix getHistogramData() {
         CMatrix ret = this.clone(this);
 
-        double[] d=FactoryMatrix.getHistogram(ret.array,256);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, 256);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         return ret;
     }
 
     public CMatrix getHistogramData(int nBins) {
         CMatrix ret = this.clone(this);
 
-        double[] d=FactoryMatrix.getHistogram(ret.array,nBins);
-        ret.array = FactoryMatrix.reshape(d,d.length,1);
+        double[] d = FactoryMatrix.getHistogram(ret.array, nBins);
+        ret.array = FactoryMatrix.reshape(d, d.length, 1);
         return ret;
     }
 
@@ -5244,7 +5245,7 @@ public final class CMatrix implements Serializable {
 
     public CMatrix getHistogram() {
         CMatrix ret = this.clone(this);
-        double[] d = FactoryMatrix.getHistogram(ret.array,256);
+        double[] d = FactoryMatrix.getHistogram(ret.array, 256);
         ret.setArray(d);
         return ret;
     }
@@ -5280,7 +5281,7 @@ public final class CMatrix implements Serializable {
     }
 
     public double getSkewness() {
-        int[] nums = toIntArray1D();
+        double[] nums = toDoubleArray1D();
         int n = nums.length;
         double mean = FactoryUtils.getMean(nums);
         double deviation = 0.0d;
@@ -6783,14 +6784,6 @@ public final class CMatrix implements Serializable {
         hold_on = false;
     }
 
-    public int toplaNewApproach(int... a) {
-        int t = 0;
-        for (int i = 0; i < a.length; i++) {
-            t += a[i];
-        }
-        return t;
-    }
-
     public CPoint getSize() {
         return new CPoint(this.getRowNumber(), this.getColumnNumber());
     }
@@ -7166,11 +7159,19 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix detectFaces(String type) {
-        return new CMatrix(ImageProcess.detectFaces(type, this.image));
+        CMatrix ret = this.clone(this);
+        ret.setImage(ImageProcess.detectFaces(type, this.image));
+        ret.setArray(ImageProcess.bufferedImageToArray2D(ret.getImage()));
+        return ret;
     }
 
     public Rectangle[] getFaceLocations(String type) {
         Rectangle[] ret = ImageProcess.getFacesRectangles(type, this.image);
+        return ret;
+    }
+
+    public CRectangle[] getFaceLocationsAsCRectangle(String type) {
+        CRectangle[] ret = ImageProcess.getFacesRectanglesAsCRectangle(type, this.image);
         return ret;
     }
 
@@ -7968,6 +7969,7 @@ public final class CMatrix implements Serializable {
     public CMatrix replicate(int n) {
         return replicateRow(n).replicateColumn(n);
     }
+
     /**
      * Replicate/Duplicate the Matrix n times along row
      *
@@ -7975,7 +7977,7 @@ public final class CMatrix implements Serializable {
      * @param nc
      * @return
      */
-    public CMatrix replicate(int nr,int nc) {
+    public CMatrix replicate(int nr, int nc) {
         return replicateRow(nr).replicateColumn(nc);
     }
 
@@ -9250,7 +9252,7 @@ public final class CMatrix implements Serializable {
     }
 
     public CMatrix savePlot(String path) {
-        if (plotPanel==null) {
+        if (plotPanel == null) {
             System.err.println("You should call panel related commands beforehands (i.e. plot(), scatter(), scatterBlob() etc");
             return this;
         }
@@ -9263,8 +9265,27 @@ public final class CMatrix implements Serializable {
             ImageProcess.saveImageSVG(from, to);
             return this;
         }
-        BufferedImage img=ImageProcess.readImage(from);
+        BufferedImage img = ImageProcess.readImage(from);
         ImageProcess.saveImage(img, to);
+        return this;
+    }
+
+    /**
+     * start camera (index=0 by default)
+     * @return
+     */
+    public CMatrix startCamera() {
+        FactoryWebCam.openWebCam(0).startWebCAM();
+        return this;
+    }
+
+    /**
+     * start camera with index number
+     * @param cameraIndex : in case you have one more cameras installed type the desired camera index
+     * @return
+     */
+    public CMatrix startCamera(int cameraIndex) {
+        FactoryWebCam.openWebCam(0).startWebCAM();
         return this;
     }
 

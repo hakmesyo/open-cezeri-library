@@ -156,6 +156,28 @@ public class PanelPicture extends JPanel {
                 imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 lbl.setText(getImageSize() + "X:Y");
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
+            } else if (activateRevert) {
+                currBufferedImage=ImageProcess.ocv_negativeImage(currBufferedImage);
+            } else if (activateOriginal) {
+                currBufferedImage= ImageProcess.ocv_cloneImage(originalBufferedImage);;
+            } else if (activateGray) {
+                currBufferedImage=ImageProcess.ocv_rgb2gray(originalBufferedImage);
+            } else if (activateHSV) {
+                currBufferedImage=ImageProcess.ocv_rgb2hsv(originalBufferedImage);
+            } else if (activateRedChannel) {
+//                long t1=FactoryUtils.tic();
+//                currBufferedImage=ImageProcess.ocv_rgb2RedChannel(originalBufferedImage);
+                currBufferedImage=ImageProcess.getRedChannelColor(originalBufferedImage);
+//                t1=FactoryUtils.toc(t1);
+            } else if (activateGreenChannel) {
+//                currBufferedImage=ImageProcess.ocv_rgb2RedChannel(originalBufferedImage);
+                currBufferedImage=ImageProcess.getGreenChannelColor(originalBufferedImage);
+            } else if (activateBlueChannel) {
+//                currBufferedImage=ImageProcess.ocv_rgb2RedChannel(originalBufferedImage);
+                currBufferedImage=ImageProcess.getBlueChannelColor(originalBufferedImage);
+            } else if (activateEdge) {
+//                currBufferedImage=ImageProcess.ocv_rgb2RedChannel(originalBufferedImage);
+                currBufferedImage=ImageProcess.ocv_edgeDetectionCanny(originalBufferedImage);
             }
 //            else {
 //                gr.drawImage(currBufferedImage, fromLeft, fromTop, this);
@@ -376,13 +398,13 @@ public class PanelPicture extends JPanel {
 
             public void mouseMoved(java.awt.event.MouseEvent e) {
                 drawableMousePos = new CPoint(e.getPoint().y - fromTop, e.getPoint().x - fromLeft);
-                repaint();
+                //repaint();
             }
 
             public void mouseDragged(java.awt.event.MouseEvent e) {
                 mousePos = e.getPoint();
 //                System.out.println("row:"+(mousePos.y-fromTop)+" col:"+(mousePos.x-fromLeft));
-                repaint();
+                //repaint();
             }
         });
     }
@@ -468,11 +490,11 @@ public class PanelPicture extends JPanel {
                     currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "red");
                     imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 } else if (obj.getText().equals("Green")) {
-                    activateRedChannel = true;
+                    activateGreenChannel = true;
                     currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "green");
                     imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 } else if (obj.getText().equals("Blue")) {
-                    activateRedChannel = true;
+                    activateBlueChannel = true;
                     currBufferedImage = ImageProcess.isolateChannel(originalBufferedImage, "blue");
                     imgData = ImageProcess.bufferedImageToArray2D(currBufferedImage);
                 } else if (obj.getText().equals("Equalize")) {
@@ -514,17 +536,17 @@ public class PanelPicture extends JPanel {
                         CPoint[] plst = new CPoint[drawableRoiList.size()];
                         plst = drawableRoiList.toArray(plst);
                         int[][] d = new int[drawableRoiList.size()][2];
-                        String line="";
+                        String line = "";
                         for (int i = 0; i < drawableRoiList.size(); i++) {
                             d[i][0] = plst[i].row;
                             d[i][1] = plst[i].column;
-                            line+=plst[i].row+","+plst[i].column+";";
+                            line += plst[i].row + "," + plst[i].column + ";";
                         }
                         String fileName = FactoryUtils.inputMessage("Write Unique ID Label", "");
                         if (!FactoryUtils.isFolderExist("data")) {
-                            FactoryUtils.makeDirectory("data");                            
+                            FactoryUtils.makeDirectory("data");
                         }
-                        line=imageFileName+";"+fileName+";"+line+"\n";
+                        line = imageFileName + ";" + fileName + ";" + line + "\n";
                         FactoryUtils.writeOnFile("data/DROI_Corners.txt", line);
                         //FactoryUtils.writeToFile("data\\" + fileName, d);
                     }

@@ -86,7 +86,7 @@ public class FactoryWebCam {
                     try {
                         BufferedImage bf = webCam.getImage();
                         frm.setImage(bf);
-                        Thread.sleep(25);
+                        Thread.sleep(5);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(FactoryWebCam.class.getName()).log(Level.SEVERE, null, ex);
                     }

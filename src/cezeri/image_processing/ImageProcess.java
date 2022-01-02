@@ -77,9 +77,9 @@ import org.opencv.objdetect.CascadeClassifier;
  * @author venap3
  */
 public final class ImageProcess {
-//    static{
-//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-//    }
+    static{
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
 
     /**
      * Conversion from RGB space to LAB space (CIE)
@@ -1316,8 +1316,27 @@ public final class ImageProcess {
     public static BufferedImage ocv_rgb2gray(BufferedImage img) {
         Mat rgbImage = ocv_img2Mat(img);
         Mat imageGray = new Mat();
-        Imgproc.cvtColor(rgbImage, imageGray, Imgproc.COLOR_BGR2GRAY);
+        if (img.getType()==0 || img.getType()==1) {
+            Imgproc.cvtColor(rgbImage, imageGray, Imgproc.COLOR_RGB2GRAY);
+        }else if (img.getType()==4){
+            Imgproc.cvtColor(rgbImage, imageGray, Imgproc.COLOR_BGR2GRAY);
+        }        
         return ocv_mat2Img(imageGray);
+    }
+
+    public static BufferedImage ocv_rgb2RedChannel(BufferedImage img) {
+        Mat rgbImage = ocv_img2Mat(img);
+        ArrayList<Mat> bgr=new ArrayList();
+	Core.split(rgbImage, bgr);
+        int type = bgr.get(2).type();
+        System.out.println("type = " + type);
+        Mat imageRed = new Mat();
+        if (img.getType()==0 || img.getType()==1) {
+            Imgproc.cvtColor(bgr.get(2), imageRed, Imgproc.COLOR_GRAY2RGB);
+        }else if (img.getType()==4){
+            Imgproc.cvtColor(bgr.get(2), imageRed, Imgproc.COLOR_GRAY2BGR);
+        }        
+        return ocv_mat2Img(imageRed);
     }
 
     public static BufferedImage ocv_rgb2gray(Mat rgbImage) {
@@ -3492,7 +3511,16 @@ public final class ImageProcess {
         Rectangle[] ret = new Rectangle[faceDetections.toArray().length];
         for (int i = 0; i < rects.length; i++) {
             Rect r = rects[i];
-            ret[i] = new Rectangle(r.y, r.x, r.width, r.height);
+            ret[i] = new Rectangle(r.x, r.y, r.width, r.height);
+        }
+        return ret;
+    }
+    
+    public static CRectangle[] getFacesRectanglesAsCRectangle(String type, BufferedImage img) {
+        Rectangle[] rects=getFacesRectangles(type, img);
+        CRectangle[] ret=new CRectangle[rects.length];
+        for (int i = 0; i < ret.length; i++) {
+            ret[i]=new CRectangle(rects[i]);
         }
         return ret;
     }
@@ -3823,6 +3851,21 @@ public final class ImageProcess {
         Mat blurredImage = new Mat();
         Imgproc.medianBlur(frame, blurredImage, 5);
         BufferedImage out = ocv_mat2Img(blurredImage);
+        return out;
+    }
+
+    public static BufferedImage ocv_negativeImage(BufferedImage bf) {
+        Mat frame = ImageProcess.ocv_img2Mat(bf);
+        Mat negativeImage = new Mat();
+        Core.bitwise_not(frame, negativeImage);
+        BufferedImage out = ocv_mat2Img(negativeImage);
+        return out;
+    }
+
+    public static BufferedImage ocv_cloneImage(BufferedImage bf) {
+        Mat frame = ImageProcess.ocv_img2Mat(bf);
+        Mat cloneImage = frame.clone();
+        BufferedImage out = ocv_mat2Img(cloneImage);
         return out;
     }
 
