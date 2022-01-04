@@ -6,6 +6,8 @@
 package test;
 
 import cezeri.matrix.CMatrix;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -13,9 +15,14 @@ import cezeri.matrix.CMatrix;
  */
 public class TestCamera {
     public static void main(String[] args) {
-        CMatrix cm = CMatrix.getInstance()
-                .startCamera(0)
-                
-                ;
+        List lst=new ArrayList();
+        lst.add(5);
+        lst.add(10);
+        System.out.println("lst = " + lst);
+        
+//        CMatrix cm = CMatrix.getInstance()
+//                .startCamera(0)
+//                
+//                ;
     }
 }
