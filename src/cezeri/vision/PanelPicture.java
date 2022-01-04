@@ -159,7 +159,7 @@ public class PanelPicture extends JPanel {
             } else if (activateRevert) {
                 currBufferedImage=ImageProcess.ocv_negativeImage(currBufferedImage);
             } else if (activateOriginal) {
-                currBufferedImage= ImageProcess.ocv_cloneImage(originalBufferedImage);;
+                //currBufferedImage= ImageProcess.ocv_cloneImage(originalBufferedImage);;
             } else if (activateGray) {
                 currBufferedImage=ImageProcess.ocv_rgb2gray(originalBufferedImage);
             } else if (activateHSV) {

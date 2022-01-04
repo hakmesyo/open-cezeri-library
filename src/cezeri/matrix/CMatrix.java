@@ -9285,7 +9285,7 @@ public final class CMatrix implements Serializable {
      * @return
      */
     public CMatrix startCamera(int cameraIndex) {
-        FactoryWebCam.openWebCam(0).startWebCAM();
+        FactoryWebCam.openWebCam(cameraIndex).startWebCAM();
         return this;
     }
 

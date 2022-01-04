@@ -14,7 +14,7 @@ import cezeri.matrix.CMatrix;
 public class TestCamera {
     public static void main(String[] args) {
         CMatrix cm = CMatrix.getInstance()
-                .startCamera()
+                .startCamera(0)
                 
                 ;
     }

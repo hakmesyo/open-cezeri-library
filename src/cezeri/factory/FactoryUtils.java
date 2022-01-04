@@ -4,6 +4,7 @@
  */
 package cezeri.factory;
 
+import ai.djl.ndarray.types.Shape;
 import au.com.bytecode.opencsv.CSVReader;
 import cezeri.interfaces.InterfaceCallBack;
 import cezeri.utils.SerialType;
@@ -1520,6 +1521,17 @@ public final class FactoryUtils {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
                 ret[i][j] = m[i][j] * 1.0;
+            }
+        }
+        return ret;
+    }
+
+    public static double[][] toDoubleArray2D(float[] m,int nr,int nc) {
+        double[][] ret = new double[nr][nc];
+        int k=0;
+        for (int i = 0; i < nr; i++) {
+            for (int j = 0; j < nc; j++) {
+                ret[i][j] = m[k++] * 1.0;
             }
         }
         return ret;
