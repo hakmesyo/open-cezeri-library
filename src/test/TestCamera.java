@@ -15,14 +15,10 @@ import java.util.List;
  */
 public class TestCamera {
     public static void main(String[] args) {
-        List lst=new ArrayList();
-        lst.add(5);
-        lst.add(10);
-        System.out.println("lst = " + lst);
-        
-//        CMatrix cm = CMatrix.getInstance()
-//                .startCamera(0)
-//                
-//                ;
+       
+        CMatrix cm = CMatrix.getInstance()
+                .startCamera(0)
+                
+                ;
     }
 }

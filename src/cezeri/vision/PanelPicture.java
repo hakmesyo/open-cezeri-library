@@ -404,7 +404,7 @@ public class PanelPicture extends JPanel {
             public void mouseDragged(java.awt.event.MouseEvent e) {
                 mousePos = e.getPoint();
 //                System.out.println("row:"+(mousePos.y-fromTop)+" col:"+(mousePos.x-fromLeft));
-                //repaint();
+                repaint();
             }
         });
     }

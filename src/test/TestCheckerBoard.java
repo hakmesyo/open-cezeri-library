@@ -21,8 +21,8 @@ public class TestCheckerBoard {
                 .map(0, 255)                
 //                .replicateColumn(3)
 //                .replicateRow(3)
-                .replicate(3)
-//                .replicate(3,3)
+//                .replicate(3)
+                .replicate(3,3)
                 .imshow()  
 //                .heatmap(Color.BLUE)
                 
