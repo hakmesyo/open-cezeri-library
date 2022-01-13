@@ -38,6 +38,7 @@ public class TestBenchMark {
             CMatrix cm2=CMatrix.getInstance().randn(n, n).multiplyScalar(100).round();
             CMatrix cm3=cm1.dot(cm2);            
             System.out.println("\ncmatrix cost = " + (System.currentTimeMillis() - cmt));
+            
             System.gc();
         }
     }
